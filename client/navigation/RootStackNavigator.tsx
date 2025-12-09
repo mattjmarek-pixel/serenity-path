@@ -1,12 +1,16 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainTabNavigator from "@/navigation/MainTabNavigator";
-import ModalScreen from "@/screens/ModalScreen";
+import SupportScreen from "@/screens/SupportScreen";
+import JournalScreen from "@/screens/JournalScreen";
+import JournalEntryScreen from "@/screens/JournalEntryScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
   Main: undefined;
-  Modal: undefined;
+  Support: undefined;
+  Journal: undefined;
+  JournalEntry: { entryId?: string } | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -22,11 +26,26 @@ export default function RootStackNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Modal"
-        component={ModalScreen}
+        name="Support"
+        component={SupportScreen}
         options={{
           presentation: "modal",
-          headerTitle: "Modal",
+          headerTitle: "Support Resources",
+        }}
+      />
+      <Stack.Screen
+        name="Journal"
+        component={JournalScreen}
+        options={{
+          headerTitle: "Journal",
+        }}
+      />
+      <Stack.Screen
+        name="JournalEntry"
+        component={JournalEntryScreen}
+        options={{
+          presentation: "modal",
+          headerTitle: "New Entry",
         }}
       />
     </Stack.Navigator>
