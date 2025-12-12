@@ -8,7 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 
 const DAILY_REFLECTIONS = [
   {
@@ -120,7 +120,7 @@ export default function ReflectionsScreen() {
           styles.bookmarkButton,
           { 
             backgroundColor: bookmarked.has(currentReflection.id) 
-              ? Colors.light.secondary 
+              ? theme.accent 
               : theme.backgroundDefault,
             opacity: pressed ? 0.8 : 1,
           },
@@ -129,12 +129,12 @@ export default function ReflectionsScreen() {
         <Feather
           name="heart"
           size={20}
-          color={bookmarked.has(currentReflection.id) ? "#FFFFFF" : Colors.light.primary}
+          color={bookmarked.has(currentReflection.id) ? "#FFFFFF" : theme.primary}
         />
         <ThemedText
           style={[
             styles.bookmarkText,
-            { color: bookmarked.has(currentReflection.id) ? "#FFFFFF" : Colors.light.primary },
+            { color: bookmarked.has(currentReflection.id) ? "#FFFFFF" : theme.primary },
           ]}
         >
           {bookmarked.has(currentReflection.id) ? "Saved" : "Save to Favorites"}

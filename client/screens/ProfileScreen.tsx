@@ -11,7 +11,7 @@ import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollV
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 const MILESTONES = [
@@ -48,12 +48,12 @@ function SettingsItem({ icon, label, onPress, showChevron = true, danger = false
       <Feather
         name={icon as any}
         size={20}
-        color={danger ? Colors.light.emergency : Colors.light.primary}
+        color={danger ? theme.emergency : theme.primary}
       />
       <ThemedText
         style={[
           styles.settingsLabel,
-          danger && { color: Colors.light.emergency },
+          danger && { color: theme.emergency },
         ]}
       >
         {label}
@@ -121,12 +121,12 @@ export default function ProfileScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       <View style={styles.profileHeader}>
-        <View style={[styles.avatar, { backgroundColor: Colors.light.accent }]}>
-          <Feather name="user" size={40} color={Colors.light.primary} />
+        <View style={[styles.avatar, { backgroundColor: theme.accent + "30" }]}>
+          <Feather name="user" size={40} color={theme.primary} />
         </View>
         <ThemedText type="h3" style={styles.userName}>{userName}</ThemedText>
         <Pressable style={({ pressed }) => [styles.editButton, { opacity: pressed ? 0.6 : 1 }]}>
-          <ThemedText style={{ color: Colors.light.primary }}>Edit Profile</ThemedText>
+          <ThemedText style={{ color: theme.primary }}>Edit Profile</ThemedText>
         </Pressable>
       </View>
 
@@ -137,7 +137,7 @@ export default function ProfileScreen() {
             <ThemedText type="h4">{sobrietyDate}</ThemedText>
           </View>
           <Pressable style={({ pressed }) => [styles.editDateButton, { opacity: pressed ? 0.7 : 1 }]}>
-            <Feather name="edit-2" size={16} color={Colors.light.primary} />
+            <Feather name="edit-2" size={16} color={theme.primary} />
           </Pressable>
         </View>
       </Card>
@@ -152,7 +152,7 @@ export default function ProfileScreen() {
                   styles.milestoneDot,
                   {
                     backgroundColor: milestone.achieved
-                      ? Colors.light.secondary
+                      ? theme.accent
                       : theme.backgroundSecondary,
                   },
                 ]}
@@ -165,7 +165,7 @@ export default function ProfileScreen() {
                 type="small"
                 style={[
                   styles.milestoneLabel,
-                  { color: milestone.achieved ? Colors.light.secondary : theme.textSecondary },
+                  { color: milestone.achieved ? theme.accent : theme.textSecondary },
                 ]}
               >
                 {milestone.label}

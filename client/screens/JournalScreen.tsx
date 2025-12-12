@@ -9,7 +9,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 interface JournalEntry {
@@ -60,11 +60,11 @@ export default function JournalScreen() {
         <ThemedText type="small" style={{ color: theme.textSecondary }}>
           {item.date}
         </ThemedText>
-        <View style={[styles.moodBadge, { backgroundColor: Colors.light.accent }]}>
+        <View style={[styles.moodBadge, { backgroundColor: theme.accent + "30" }]}>
           <Feather
             name={MOOD_ICONS[item.mood] as any || "circle"}
             size={14}
-            color={Colors.light.primary}
+            color={theme.primary}
           />
         </View>
       </View>
@@ -101,7 +101,7 @@ export default function JournalScreen() {
         onPress={() => navigation.navigate("JournalEntry")}
         style={({ pressed }) => [
           styles.fab,
-          { backgroundColor: Colors.light.primary, opacity: pressed ? 0.8 : 1 },
+          { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
           { bottom: insets.bottom + Spacing.xl },
         ]}
       >

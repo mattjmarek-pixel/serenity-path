@@ -11,7 +11,7 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 
 const MILESTONES = [
@@ -102,30 +102,30 @@ export default function HomeScreen() {
         </ThemedText>
         <View style={styles.counterRow}>
           <View style={styles.counterItem}>
-            <ThemedText type="hero" style={[styles.counterNumber, { color: Colors.light.primary }]}>
+            <ThemedText type="hero" style={[styles.counterNumber, { color: theme.primary }]}>
               {timeElapsed.days}
             </ThemedText>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Days</ThemedText>
           </View>
           <View style={styles.counterDivider} />
           <View style={styles.counterItem}>
-            <ThemedText type="h2" style={[styles.smallCounter, { color: Colors.light.primary }]}>
+            <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
               {String(timeElapsed.hours).padStart(2, "0")}
             </ThemedText>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Hours</ThemedText>
           </View>
           <View style={styles.counterDivider} />
           <View style={styles.counterItem}>
-            <ThemedText type="h2" style={[styles.smallCounter, { color: Colors.light.primary }]}>
+            <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
               {String(timeElapsed.minutes).padStart(2, "0")}
             </ThemedText>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Mins</ThemedText>
           </View>
         </View>
         {nextMilestone ? (
-          <View style={[styles.milestonePreview, { backgroundColor: Colors.light.accent + "30" }]}>
-            <Feather name="award" size={16} color={Colors.light.primary} />
-            <ThemedText type="small" style={{ color: Colors.light.primary }}>
+          <View style={[styles.milestonePreview, { backgroundColor: theme.accent + "30" }]}>
+            <Feather name="award" size={16} color={theme.primary} />
+            <ThemedText type="small" style={{ color: theme.primary }}>
               {daysToNextMilestone} days until {nextMilestone.label}
             </ThemedText>
           </View>
@@ -139,7 +139,7 @@ export default function HomeScreen() {
             {achievedMilestones.map((milestone) => (
               <View
                 key={milestone.days}
-                style={[styles.milestoneBadge, { backgroundColor: Colors.light.secondary }]}
+                style={[styles.milestoneBadge, { backgroundColor: theme.accent }]}
               >
                 <Feather name="award" size={16} color="#FFFFFF" />
                 <ThemedText style={styles.milestoneBadgeText}>{milestone.label}</ThemedText>
@@ -153,15 +153,15 @@ export default function HomeScreen() {
         <ThemedText type="h4" style={styles.sectionTitle}>Today's Reflection</ThemedText>
         <Card onPress={handleReflectionPress} style={styles.reflectionPreview}>
           <View style={styles.reflectionHeader}>
-            <Feather name="book-open" size={20} color={Colors.light.primary} />
+            <Feather name="book-open" size={20} color={theme.primary} />
             <ThemedText type="h4" style={styles.reflectionTitle}>Step By Step</ThemedText>
           </View>
           <ThemedText type="body" numberOfLines={2} style={styles.reflectionSnippet}>
             We learn to walk before we can run. In recovery, we take things one day at a time...
           </ThemedText>
           <View style={styles.reflectionFooter}>
-            <ThemedText type="small" style={{ color: Colors.light.primary }}>Read more</ThemedText>
-            <Feather name="chevron-right" size={16} color={Colors.light.primary} />
+            <ThemedText type="small" style={{ color: theme.primary }}>Read more</ThemedText>
+            <Feather name="chevron-right" size={16} color={theme.primary} />
           </View>
         </Card>
       </View>
@@ -170,12 +170,12 @@ export default function HomeScreen() {
         <ThemedText type="h4" style={styles.sectionTitle}>Quick Stats</ThemedText>
         <View style={styles.statsRow}>
           <Card style={styles.statCard} elevation={1}>
-            <Feather name="users" size={24} color={Colors.light.primary} />
+            <Feather name="users" size={24} color={theme.secondary} />
             <ThemedText type="h3" style={styles.statNumber}>12</ThemedText>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Meetings</ThemedText>
           </Card>
           <Card style={styles.statCard} elevation={1}>
-            <Feather name="edit-3" size={24} color={Colors.light.secondary} />
+            <Feather name="edit-3" size={24} color={theme.accent} />
             <ThemedText type="h3" style={styles.statNumber}>8</ThemedText>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Journal Entries</ThemedText>
           </Card>

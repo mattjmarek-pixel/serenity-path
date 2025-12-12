@@ -8,7 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 const MOODS = [
@@ -43,16 +43,16 @@ export default function JournalEntryScreen() {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={() => navigation.goBack()} style={styles.headerButton}>
-          <ThemedText style={{ color: Colors.light.primary }}>Cancel</ThemedText>
+          <ThemedText style={{ color: theme.primary }}>Cancel</ThemedText>
         </Pressable>
       ),
       headerRight: () => (
         <Pressable onPress={handleSave} style={styles.headerButton}>
-          <ThemedText style={{ color: Colors.light.primary, fontWeight: "600" }}>Save</ThemedText>
+          <ThemedText style={{ color: theme.primary, fontWeight: "600" }}>Save</ThemedText>
         </Pressable>
       ),
     });
-  }, [navigation, content, selectedMood]);
+  }, [navigation, content, selectedMood, theme.primary]);
 
   return (
     <KeyboardAwareScrollViewCompat
@@ -78,10 +78,10 @@ export default function JournalEntryScreen() {
                 styles.moodButton,
                 {
                   backgroundColor: selectedMood === mood.id 
-                    ? Colors.light.primary 
+                    ? theme.primary 
                     : theme.backgroundDefault,
                   borderColor: selectedMood === mood.id 
-                    ? Colors.light.primary 
+                    ? theme.primary 
                     : theme.border,
                   opacity: pressed ? 0.8 : 1,
                 },
@@ -90,7 +90,7 @@ export default function JournalEntryScreen() {
               <Feather
                 name={mood.icon as any}
                 size={20}
-                color={selectedMood === mood.id ? "#FFFFFF" : Colors.light.primary}
+                color={selectedMood === mood.id ? "#FFFFFF" : theme.primary}
               />
               <ThemedText
                 style={[

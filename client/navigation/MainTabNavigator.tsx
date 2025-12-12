@@ -10,7 +10,7 @@ import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
 import ReflectionsStackNavigator from "@/navigation/ReflectionsStackNavigator";
 import StepsStackNavigator from "@/navigation/StepsStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
-import { Colors, Spacing, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export type MainTabParamList = {
@@ -29,6 +29,7 @@ function SupportPlaceholder() {
 
 function SupportTabButton() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { theme } = useTheme();
   
   return (
     <Pressable
@@ -36,7 +37,7 @@ function SupportTabButton() {
       style={({ pressed }) => [
         styles.fabButton,
         { 
-          backgroundColor: Colors.light.primary,
+          backgroundColor: theme.primary,
           opacity: pressed ? 0.8 : 1,
           transform: [{ scale: pressed ? 0.95 : 1 }],
         },

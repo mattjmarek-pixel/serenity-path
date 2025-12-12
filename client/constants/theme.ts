@@ -2,40 +2,42 @@ import { Platform } from "react-native";
 
 export const Colors = {
   light: {
-    text: "#2D3748",
-    textSecondary: "#718096",
+    text: "#1A1A2E",
+    textSecondary: "#6B6B80",
     buttonText: "#FFFFFF",
-    tabIconDefault: "#718096",
-    tabIconSelected: "#5B7C99",
-    link: "#5B7C99",
-    backgroundRoot: "#F8F9FA",
+    tabIconDefault: "#6B6B80",
+    tabIconSelected: "#7B3FF2",
+    link: "#7B3FF2",
+    backgroundRoot: "#F8F7FC",
     backgroundDefault: "#FFFFFF",
-    backgroundSecondary: "#F0F4F8",
-    backgroundTertiary: "#E2E8F0",
-    primary: "#5B7C99",
-    secondary: "#7FA99B",
-    accent: "#A8DADC",
-    emergency: "#E85D75",
-    success: "#7FA99B",
-    border: "#E2E8F0",
+    backgroundSecondary: "#F0EFF5",
+    backgroundTertiary: "#E5E4EB",
+    primary: "#7B3FF2",
+    secondary: "#3A9BD9",
+    accent: "#06D6A0",
+    emergency: "#C62828",
+    success: "#06D6A0",
+    warning: "#FB8500",
+    border: "#E5E4EB",
   },
   dark: {
-    text: "#F7FAFC",
-    textSecondary: "#A0AEC0",
+    text: "#F5F5F7",
+    textSecondary: "#A0A0B0",
     buttonText: "#FFFFFF",
-    tabIconDefault: "#718096",
-    tabIconSelected: "#A8DADC",
-    link: "#A8DADC",
-    backgroundRoot: "#1A202C",
-    backgroundDefault: "#2D3748",
-    backgroundSecondary: "#4A5568",
-    backgroundTertiary: "#718096",
-    primary: "#5B7C99",
-    secondary: "#7FA99B",
-    accent: "#A8DADC",
-    emergency: "#E85D75",
-    success: "#7FA99B",
-    border: "#4A5568",
+    tabIconDefault: "#6B6B80",
+    tabIconSelected: "#9B6FF2",
+    link: "#9B6FF2",
+    backgroundRoot: "#0F0F1A",
+    backgroundDefault: "#1A1A2E",
+    backgroundSecondary: "#252540",
+    backgroundTertiary: "#353555",
+    primary: "#9B6FF2",
+    secondary: "#4AAEE8",
+    accent: "#1EEDB5",
+    emergency: "#E53935",
+    success: "#1EEDB5",
+    warning: "#FFA033",
+    border: "#353555",
   },
 };
 
@@ -67,56 +69,53 @@ export const BorderRadius = {
 export const Typography = {
   hero: {
     fontSize: 56,
-    fontWeight: "700" as const,
+    fontFamily: "CrimsonPro_700Bold",
   },
   h1: {
     fontSize: 32,
-    fontWeight: "700" as const,
+    fontFamily: "CrimsonPro_700Bold",
   },
   h2: {
     fontSize: 28,
-    fontWeight: "700" as const,
+    fontFamily: "CrimsonPro_700Bold",
   },
   h3: {
     fontSize: 24,
-    fontWeight: "600" as const,
+    fontFamily: "CrimsonPro_600SemiBold",
   },
   h4: {
     fontSize: 20,
-    fontWeight: "600" as const,
+    fontFamily: "CrimsonPro_600SemiBold",
   },
   body: {
     fontSize: 16,
-    fontWeight: "400" as const,
+    fontFamily: "Inter_400Regular",
   },
   small: {
     fontSize: 14,
-    fontWeight: "400" as const,
+    fontFamily: "Inter_400Regular",
   },
   link: {
     fontSize: 16,
-    fontWeight: "400" as const,
+    fontFamily: "Inter_500Medium",
+  },
+  button: {
+    fontSize: 16,
+    fontFamily: "Inter_600SemiBold",
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    sans: "system-ui",
-    serif: "ui-serif",
-    rounded: "ui-rounded",
-    mono: "ui-monospace",
+export const Fonts = {
+  inter: {
+    regular: "Inter_400Regular",
+    medium: "Inter_500Medium",
+    semiBold: "Inter_600SemiBold",
+    bold: "Inter_700Bold",
   },
-  default: {
-    sans: "normal",
-    serif: "serif",
-    rounded: "normal",
-    mono: "monospace",
+  crimsonPro: {
+    regular: "CrimsonPro_400Regular",
+    medium: "CrimsonPro_500Medium",
+    semiBold: "CrimsonPro_600SemiBold",
+    bold: "CrimsonPro_700Bold",
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded:
-      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+};

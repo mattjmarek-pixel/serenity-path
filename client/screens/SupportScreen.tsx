@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 
 interface SponsorInfo {
   name: string;
@@ -81,7 +81,7 @@ export default function SupportScreen() {
         onPress={() => makeCall("988")}
         style={({ pressed }) => [
           styles.emergencyCard,
-          { backgroundColor: Colors.light.emergency, opacity: pressed ? 0.9 : 1 },
+          { backgroundColor: theme.emergency, opacity: pressed ? 0.9 : 1 },
         ]}
       >
         <View style={styles.emergencyIcon}>
@@ -98,7 +98,7 @@ export default function SupportScreen() {
         onPress={() => makeCall("18004574673")}
         style={({ pressed }) => [
           styles.hotlineCard,
-          { backgroundColor: Colors.light.primary, opacity: pressed ? 0.9 : 1 },
+          { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 },
         ]}
       >
         <View style={styles.emergencyIcon}>
@@ -146,7 +146,7 @@ export default function SupportScreen() {
               onPress={saveSponsor}
               style={({ pressed }) => [
                 styles.saveButton,
-                { backgroundColor: Colors.light.primary, opacity: pressed ? 0.8 : 1 },
+                { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
               ]}
             >
               <ThemedText style={styles.saveButtonText}>Save</ThemedText>
@@ -156,8 +156,8 @@ export default function SupportScreen() {
       ) : sponsor ? (
         <Card style={styles.sponsorCard}>
           <View style={styles.sponsorHeader}>
-            <View style={[styles.sponsorAvatar, { backgroundColor: Colors.light.accent }]}>
-              <Feather name="user" size={24} color={Colors.light.primary} />
+            <View style={[styles.sponsorAvatar, { backgroundColor: theme.accent + "30" }]}>
+              <Feather name="user" size={24} color={theme.primary} />
             </View>
             <View style={styles.sponsorInfo}>
               <ThemedText type="h4">{sponsor.name}</ThemedText>
@@ -169,7 +169,7 @@ export default function SupportScreen() {
               onPress={() => makeCall(sponsor.phone)}
               style={({ pressed }) => [
                 styles.sponsorActionButton,
-                { backgroundColor: Colors.light.primary, opacity: pressed ? 0.8 : 1 },
+                { backgroundColor: theme.secondary, opacity: pressed ? 0.8 : 1 },
               ]}
             >
               <Feather name="phone" size={18} color="#FFFFFF" />
@@ -179,7 +179,7 @@ export default function SupportScreen() {
               onPress={() => sendText(sponsor.phone)}
               style={({ pressed }) => [
                 styles.sponsorActionButton,
-                { backgroundColor: Colors.light.secondary, opacity: pressed ? 0.8 : 1 },
+                { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
               ]}
             >
               <Feather name="message-circle" size={18} color="#FFFFFF" />
@@ -190,7 +190,7 @@ export default function SupportScreen() {
             onPress={startEditing}
             style={({ pressed }) => [styles.editLink, { opacity: pressed ? 0.6 : 1 }]}
           >
-            <ThemedText style={{ color: Colors.light.primary }}>Edit sponsor info</ThemedText>
+            <ThemedText style={{ color: theme.primary }}>Edit sponsor info</ThemedText>
           </Pressable>
         </Card>
       ) : (
@@ -201,7 +201,7 @@ export default function SupportScreen() {
             { backgroundColor: theme.backgroundDefault, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          <Feather name="user-plus" size={32} color={Colors.light.primary} />
+          <Feather name="user-plus" size={32} color={theme.primary} />
           <ThemedText type="h4" style={styles.addSponsorText}>Add Sponsor</ThemedText>
           <ThemedText style={[styles.addSponsorSubtext, { color: theme.textSecondary }]}>
             Add your sponsor's contact for quick access
@@ -215,7 +215,7 @@ export default function SupportScreen() {
 
       <Card style={styles.resourceCard}>
         <View style={styles.resourceRow}>
-          <Feather name="globe" size={20} color={Colors.light.primary} />
+          <Feather name="globe" size={20} color={theme.primary} />
           <ThemedText style={styles.resourceText}>Find local AA meetings</ThemedText>
           <Feather name="chevron-right" size={20} color={theme.textSecondary} />
         </View>
@@ -223,7 +223,7 @@ export default function SupportScreen() {
 
       <Card style={styles.resourceCard}>
         <View style={styles.resourceRow}>
-          <Feather name="book" size={20} color={Colors.light.primary} />
+          <Feather name="book" size={20} color={theme.primary} />
           <ThemedText style={styles.resourceText}>AA Literature & Big Book</ThemedText>
           <Feather name="chevron-right" size={20} color={theme.textSecondary} />
         </View>

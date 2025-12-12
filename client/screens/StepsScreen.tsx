@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, Colors, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 
 const TWELVE_STEPS = [
   { id: "1", number: 1, title: "Honesty", content: "We admitted we were powerless over alcohol—that our lives had become unmanageable." },
@@ -95,7 +95,7 @@ export default function StepsScreen() {
           <ThemedText
             style={[
               styles.segmentText,
-              { color: activeTab === "steps" ? Colors.light.primary : theme.textSecondary },
+              { color: activeTab === "steps" ? theme.primary : theme.textSecondary },
             ]}
           >
             12 Steps
@@ -111,7 +111,7 @@ export default function StepsScreen() {
           <ThemedText
             style={[
               styles.segmentText,
-              { color: activeTab === "traditions" ? Colors.light.primary : theme.textSecondary },
+              { color: activeTab === "traditions" ? theme.primary : theme.textSecondary },
             ]}
           >
             12 Traditions
@@ -126,7 +126,7 @@ export default function StepsScreen() {
             style={({ pressed }) => [styles.itemHeader, { opacity: pressed ? 0.7 : 1 }]}
           >
             <View style={styles.itemHeaderLeft}>
-              <View style={[styles.numberBadge, { backgroundColor: Colors.light.primary }]}>
+              <View style={[styles.numberBadge, { backgroundColor: theme.primary }]}>
                 <ThemedText style={styles.numberText}>{item.number}</ThemedText>
               </View>
               <ThemedText type="h4" style={styles.itemTitle}>{item.title}</ThemedText>
@@ -152,12 +152,12 @@ export default function StepsScreen() {
                 <Feather
                   name={reflectedItems.has(item.id) ? "check-square" : "square"}
                   size={20}
-                  color={reflectedItems.has(item.id) ? Colors.light.secondary : theme.textSecondary}
+                  color={reflectedItems.has(item.id) ? theme.accent : theme.textSecondary}
                 />
                 <ThemedText
                   style={[
                     styles.reflectedText,
-                    { color: reflectedItems.has(item.id) ? Colors.light.secondary : theme.textSecondary },
+                    { color: reflectedItems.has(item.id) ? theme.accent : theme.textSecondary },
                   ]}
                 >
                   Reflected upon

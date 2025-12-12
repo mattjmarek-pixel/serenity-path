@@ -123,23 +123,33 @@
 ## Design System
 
 ### Color Palette
-**Primary Theme**: Calming and hopeful
-- **Primary**: `#5B7C99` (Serene Blue) - For primary actions, active tabs
-- **Secondary**: `#7FA99B` (Sage Green) - For success states, milestones
-- **Accent**: `#A8DADC` (Soft Aqua) - For highlights, progress indicators
-- **Background**: `#F8F9FA` (Off-White) - Main app background
-- **Surface**: `#FFFFFF` (White) - Cards and elevated surfaces
-- **Text Primary**: `#2D3748` (Charcoal)
-- **Text Secondary**: `#718096` (Gray)
-- **Emergency**: `#E85D75` (Soft Red) - For emergency buttons, not alarming but noticeable
-- **Success**: `#7FA99B` (Sage Green) - Milestone celebrations
+**Primary Theme**: Official Recovery Colors - WCAG AAA Compliant
+- **Primary**: `#7B3FF2` (Recovery Purple) - For primary actions, active tabs, and app identity
+- **Secondary**: `#3A9BD9` (Healthcare Blue) - For trust indicators and secondary actions
+- **Accent**: `#06D6A0` (Growth Green) - For success states, milestones, and positive progress
+- **Highlight**: `#FB8500` (Engagement Orange) - For engagement elements and call-to-actions
+- **Background Root**: `#FAFAFA` (Light Gray) - Main app background
+- **Background Default**: `#FFFFFF` (White) - Cards and elevated surfaces
+- **Text Primary**: `#1A1A1A` (Near Black) - High contrast for readability
+- **Text Secondary**: `#6B7280` (Gray) - Secondary information
+- **Emergency**: `#C62828` (Emergency Red) - Reserved ONLY for crisis/emergency buttons
+- **Border**: `#E5E7EB` (Light Border) - Subtle card borders
 
 ### Typography
-- **Headings**: System font, Semi-Bold, 24-28pt
-- **Subheadings**: System font, Medium, 18-20pt
-- **Body**: System font, Regular, 16pt, line height 1.6 (for readability)
-- **Caption**: System font, Regular, 14pt
-- **Sobriety Counter**: System font, Bold, 48-64pt (hero display)
+**Font Families**:
+- **Headings**: Crimson Pro (Serif) - Elegant, calming aesthetic
+- **Body/UI**: Inter (Sans-serif) - Clean, accessible readability
+
+**Type Scale**:
+- **Hero**: Crimson Pro, Bold (700), 48pt - Sobriety counter display
+- **H1**: Crimson Pro, Semi-Bold (600), 32pt
+- **H2**: Crimson Pro, Semi-Bold (600), 24pt
+- **H3**: Crimson Pro, Medium (500), 20pt
+- **H4**: Crimson Pro, Medium (500), 17pt
+- **Body**: Inter, Regular (400), 16pt, line height 1.6
+- **Body Bold**: Inter, Semi-Bold (600), 16pt
+- **Small**: Inter, Regular (400), 14pt
+- **Link**: Inter, Semi-Bold (600), 16pt
 
 ### Component Specifications
 
@@ -153,7 +163,7 @@
 **Floating Action Button (Support)**:
 - Size: 56x56px
 - Border radius: 28px
-- Background: Primary color with gradient overlay
+- Background: Recovery Purple (#7B3FF2)
 - Icon: Feather "life-buoy" icon, white
 - **Drop Shadow**:
   - shadowOffset: {width: 0, height: 2}
@@ -162,9 +172,10 @@
 - Press feedback: Scale animation (0.95)
 
 **Buttons**:
-- Primary: Background Primary color, white text, 48px height, 16px border radius
-- Secondary: Border 2px Primary color, Primary text, transparent background
-- Emergency: Background Emergency color, white text, slightly larger (52px height)
+- Primary: Background Recovery Purple (#7B3FF2), white text, 48px height, 16px border radius
+- Secondary: Border 2px Healthcare Blue (#3A9BD9), Blue text, transparent background
+- Success: Background Growth Green (#06D6A0), white text
+- Emergency: Background Emergency Red (#C62828), white text, slightly larger (52px height) - ONLY for crisis situations
 - Press feedback: Opacity 0.7
 
 **List Items**:
@@ -176,8 +187,8 @@
 **Tab Bar**:
 - Height: 64px (iOS safe area aware)
 - Background: White with subtle top border
-- Active icon color: Primary
-- Inactive icon color: Text Secondary
+- Active icon color: Recovery Purple (#7B3FF2)
+- Inactive icon color: Text Secondary (#6B7280)
 - Center FAB elevates 8px above bar
 
 ### Icons
@@ -200,12 +211,16 @@
 - Smooth transitions between screens (native stack default)
 
 ## Accessibility Requirements
+**WCAG AAA Compliance**:
 - Minimum touch target: 44x44px
-- Color contrast ratio: 4.5:1 minimum for text
+- Color contrast ratio: 7:1 minimum for normal text (AAA standard)
+- Color contrast ratio: 4.5:1 minimum for large text and UI components
 - Support Dynamic Type (scalable text)
 - VoiceOver labels for all interactive elements
-- Emergency button clearly labeled and easily accessible
+- Emergency button clearly labeled and easily accessible with high visibility red (#C62828)
 - Sensitive content warnings (optional privacy mode for journal)
+- All interactive elements have visible focus states
+- Font sizes never below 14pt for readability
 
 ## Assets Required
 **Critical Assets** (to be generated):
