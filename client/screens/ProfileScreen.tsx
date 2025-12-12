@@ -11,6 +11,7 @@ import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollV
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useThemeContext, ThemeMode } from "@/contexts/ThemeContext";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -29,6 +30,40 @@ interface SettingsItemProps {
   onPress: () => void;
   showChevron?: boolean;
   danger?: boolean;
+}
+
+interface AppearanceOptionProps {
+  mode: ThemeMode;
+  label: string;
+  currentMode: ThemeMode;
+  onSelect: (mode: ThemeMode) => void;
+}
+
+function AppearanceOption({ mode, label, currentMode, onSelect }: AppearanceOptionProps) {
+  const { theme } = useTheme();
+  const isSelected = mode === currentMode;
+
+  return (
+    <Pressable
+      onPress={() => onSelect(mode)}
+      style={[
+        styles.appearanceOption,
+        {
+          backgroundColor: isSelected ? theme.primary : theme.backgroundSecondary,
+          borderColor: isSelected ? theme.primary : theme.border,
+        },
+      ]}
+    >
+      <ThemedText
+        style={[
+          styles.appearanceLabel,
+          { color: isSelected ? "#FFFFFF" : theme.text },
+        ]}
+      >
+        {label}
+      </ThemedText>
+    </Pressable>
+  );
 }
 
 function SettingsItem({ icon, label, onPress, showChevron = true, danger = false }: SettingsItemProps) {
@@ -70,6 +105,7 @@ export default function ProfileScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const { themeMode, setThemeMode } = useThemeContext();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [userName] = useState("Recovery Warrior");
@@ -195,6 +231,30 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
+        <ThemedText type="h4" style={styles.sectionTitle}>Appearance</ThemedText>
+        <View style={styles.appearanceRow}>
+          <AppearanceOption
+            mode="light"
+            label="Light"
+            currentMode={themeMode}
+            onSelect={setThemeMode}
+          />
+          <AppearanceOption
+            mode="dark"
+            label="Dark"
+            currentMode={themeMode}
+            onSelect={setThemeMode}
+          />
+          <AppearanceOption
+            mode="system"
+            label="System"
+            currentMode={themeMode}
+            onSelect={setThemeMode}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Settings</ThemedText>
         <SettingsItem
           icon="bell"
@@ -313,5 +373,21 @@ const styles = StyleSheet.create({
   version: {
     textAlign: "center",
     marginTop: Spacing.lg,
+  },
+  appearanceRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  appearanceOption: {
+    flex: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    alignItems: "center",
+  },
+  appearanceLabel: {
+    fontWeight: "600",
+    fontSize: 14,
   },
 });
