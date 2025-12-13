@@ -124,16 +124,30 @@
 
 ### Color Palette
 **Primary Theme**: Official Recovery Colors - WCAG AAA Compliant
+
+#### Light Mode
 - **Primary**: `#7B3FF2` (Recovery Purple) - For primary actions, active tabs, and app identity
 - **Secondary**: `#3A9BD9` (Healthcare Blue) - For trust indicators and secondary actions
 - **Accent**: `#06D6A0` (Growth Green) - For success states, milestones, and positive progress
 - **Highlight**: `#FB8500` (Engagement Orange) - For engagement elements and call-to-actions
-- **Background Root**: `#FAFAFA` (Light Gray) - Main app background
+- **Background Root**: `#F8F7FC` (Light Gray) - Main app background
 - **Background Default**: `#FFFFFF` (White) - Cards and elevated surfaces
-- **Text Primary**: `#1A1A1A` (Near Black) - High contrast for readability
-- **Text Secondary**: `#6B7280` (Gray) - Secondary information
+- **Text Primary**: `#1A1A2E` (Near Black) - High contrast for readability
+- **Text Secondary**: `#6B6B80` (Gray) - Secondary information
 - **Emergency**: `#C62828` (Emergency Red) - Reserved ONLY for crisis/emergency buttons
-- **Border**: `#E5E7EB` (Light Border) - Subtle card borders
+- **Border**: `#E5E4EB` (Light Border) - Subtle card borders
+
+#### Dark Mode (Enhanced Vibrancy)
+- **Primary**: `#A581FF` (Soft Luminous Purple) - Brighter for dark backgrounds
+- **Secondary**: `#57B8F0` (Vibrant Sky Blue) - Enhanced visibility
+- **Accent**: `#34F0C3` (Vivid Mint Green) - Clear success states
+- **Highlight**: `#FFB055` (Warm Amber) - Softer warning tone
+- **Background Root**: `#0F0F1A` (Deep Navy) - Dark app background
+- **Background Default**: `#1A1A2E` (Dark Purple-Gray) - Cards and surfaces
+- **Text Primary**: `#F5F5F7` (Near White) - High contrast readability
+- **Text Secondary**: `#A0A0B0` (Muted Gray) - Secondary information
+- **Emergency**: `#EF4A45` (Bright Coral Red) - Clear emergency visibility
+- **Border**: `#353555` (Dark Border) - Subtle card borders
 
 ### Typography
 **Font Families**:
