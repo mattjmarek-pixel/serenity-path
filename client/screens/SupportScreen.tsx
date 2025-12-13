@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Pressable, ScrollView, Linking, Platform, Alert, TextInput } from "react-native";
+import React, { useCallback } from "react";
+import { View, StyleSheet, Pressable, ScrollView, Linking, Platform, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -9,23 +9,25 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
-
-interface SponsorInfo {
-  name: string;
-  phone: string;
-}
 
 export default function SupportScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [sponsor, setSponsor] = useState<SponsorInfo | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [editPhone, setEditPhone] = useState("");
+  const { profile, loadProfile } = useProfile();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
+
+  const hasSponsor = profile.sponsorName && profile.sponsorPhone;
+  const hasEmergencyContact = profile.emergencyContact && profile.emergencyPhone;
 
   const makeCall = (number: string) => {
     const phoneUrl = `tel:${number}`;
@@ -57,17 +59,8 @@ export default function SupportScreen() {
       });
   };
 
-  const saveSponsor = () => {
-    if (editName.trim() && editPhone.trim()) {
-      setSponsor({ name: editName.trim(), phone: editPhone.trim() });
-      setIsEditing(false);
-    }
-  };
-
-  const startEditing = () => {
-    setEditName(sponsor?.name || "");
-    setEditPhone(sponsor?.phone || "");
-    setIsEditing(true);
+  const handleEditProfile = () => {
+    navigation.navigate("EditProfile");
   };
 
   return (
@@ -121,58 +114,20 @@ export default function SupportScreen() {
         <ThemedText type="h4">My Sponsor</ThemedText>
       </View>
 
-      {isEditing ? (
-        <Card style={styles.sponsorCard}>
-          <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text }]}
-            placeholder="Sponsor name"
-            placeholderTextColor={theme.textSecondary}
-            value={editName}
-            onChangeText={setEditName}
-          />
-          <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text }]}
-            placeholder="Phone number"
-            placeholderTextColor={theme.textSecondary}
-            value={editPhone}
-            onChangeText={setEditPhone}
-            keyboardType="phone-pad"
-          />
-          <View style={styles.editButtonsRow}>
-            <Pressable
-              onPress={() => setIsEditing(false)}
-              style={({ pressed }) => [
-                styles.cancelButton,
-                { backgroundColor: theme.backgroundSecondary, opacity: pressed ? 0.7 : 1 },
-              ]}
-            >
-              <ThemedText style={{ color: theme.text }}>Cancel</ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={saveSponsor}
-              style={({ pressed }) => [
-                styles.saveButton,
-                { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
-              ]}
-            >
-              <ThemedText style={styles.saveButtonText}>Save</ThemedText>
-            </Pressable>
-          </View>
-        </Card>
-      ) : sponsor ? (
+      {hasSponsor ? (
         <Card style={styles.sponsorCard}>
           <View style={styles.sponsorHeader}>
             <View style={[styles.sponsorAvatar, { backgroundColor: theme.accent + "30" }]}>
               <Feather name="user" size={24} color={theme.primary} />
             </View>
             <View style={styles.sponsorInfo}>
-              <ThemedText type="h4">{sponsor.name}</ThemedText>
-              <ThemedText style={{ color: theme.textSecondary }}>{sponsor.phone}</ThemedText>
+              <ThemedText type="h4">{profile.sponsorName}</ThemedText>
+              <ThemedText style={{ color: theme.textSecondary }}>{profile.sponsorPhone}</ThemedText>
             </View>
           </View>
           <View style={styles.sponsorActions}>
             <Pressable
-              onPress={() => makeCall(sponsor.phone)}
+              onPress={() => makeCall(profile.sponsorPhone)}
               style={({ pressed }) => [
                 styles.sponsorActionButton,
                 { backgroundColor: theme.secondary, opacity: pressed ? 0.8 : 1 },
@@ -182,7 +137,7 @@ export default function SupportScreen() {
               <ThemedText style={styles.sponsorActionText}>Call</ThemedText>
             </Pressable>
             <Pressable
-              onPress={() => sendText(sponsor.phone)}
+              onPress={() => sendText(profile.sponsorPhone)}
               style={({ pressed }) => [
                 styles.sponsorActionButton,
                 { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
@@ -193,7 +148,7 @@ export default function SupportScreen() {
             </Pressable>
           </View>
           <Pressable
-            onPress={startEditing}
+            onPress={handleEditProfile}
             style={({ pressed }) => [styles.editLink, { opacity: pressed ? 0.6 : 1 }]}
           >
             <ThemedText style={{ color: theme.primary }}>Edit sponsor info</ThemedText>
@@ -201,7 +156,7 @@ export default function SupportScreen() {
         </Card>
       ) : (
         <Pressable
-          onPress={startEditing}
+          onPress={handleEditProfile}
           style={({ pressed }) => [
             styles.addSponsorCard,
             { backgroundColor: theme.backgroundDefault, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
@@ -210,10 +165,51 @@ export default function SupportScreen() {
           <Feather name="user-plus" size={32} color={theme.primary} />
           <ThemedText type="h4" style={styles.addSponsorText}>Add Sponsor</ThemedText>
           <ThemedText style={[styles.addSponsorSubtext, { color: theme.textSecondary }]}>
-            Add your sponsor's contact for quick access
+            Add your sponsor's contact in your profile
           </ThemedText>
         </Pressable>
       )}
+
+      {hasEmergencyContact ? (
+        <>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="h4">Emergency Contact</ThemedText>
+          </View>
+          <Card style={styles.sponsorCard}>
+            <View style={styles.sponsorHeader}>
+              <View style={[styles.sponsorAvatar, { backgroundColor: theme.emergency + "30" }]}>
+                <Feather name="heart" size={24} color={theme.emergency} />
+              </View>
+              <View style={styles.sponsorInfo}>
+                <ThemedText type="h4">{profile.emergencyContact}</ThemedText>
+                <ThemedText style={{ color: theme.textSecondary }}>{profile.emergencyPhone}</ThemedText>
+              </View>
+            </View>
+            <View style={styles.sponsorActions}>
+              <Pressable
+                onPress={() => makeCall(profile.emergencyPhone)}
+                style={({ pressed }) => [
+                  styles.sponsorActionButton,
+                  { backgroundColor: theme.emergency, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <Feather name="phone" size={18} color="#FFFFFF" />
+                <ThemedText style={styles.sponsorActionText}>Call</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => sendText(profile.emergencyPhone)}
+                style={({ pressed }) => [
+                  styles.sponsorActionButton,
+                  { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <Feather name="message-circle" size={18} color="#FFFFFF" />
+                <ThemedText style={styles.sponsorActionText}>Text</ThemedText>
+              </Pressable>
+            </View>
+          </Card>
+        </>
+      ) : null}
 
       <View style={styles.sectionHeader}>
         <ThemedText type="h4">Additional Resources</ThemedText>
@@ -230,7 +226,10 @@ export default function SupportScreen() {
         </View>
       </Card>
 
-      <Card style={styles.resourceCard}>
+      <Card 
+        style={styles.resourceCard}
+        onPress={() => navigation.navigate("BigBook")}
+      >
         <View style={styles.resourceRow}>
           <Feather name="book" size={20} color={theme.primary} />
           <ThemedText style={styles.resourceText}>AA Literature & Big Book</ThemedText>
@@ -274,8 +273,8 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.xs,
   },
   emergencySubtext: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: 12,
   },
   hotlineCard: {
     flexDirection: "row",
@@ -291,19 +290,19 @@ const styles = StyleSheet.create({
   },
   hotlineNumber: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
+    marginVertical: Spacing.xs,
   },
   hotlineSubtext: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 12,
+    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: 11,
   },
   sectionHeader: {
     marginBottom: Spacing.md,
-    marginTop: Spacing.md,
   },
   sponsorCard: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   sponsorHeader: {
     flexDirection: "row",
@@ -311,9 +310,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   sponsorAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
   },
   sponsorActions: {
     flexDirection: "row",
-    gap: Spacing.md,
+    gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   sponsorActionButton: {
@@ -331,9 +330,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    gap: Spacing.xs,
   },
   sponsorActionText: {
     color: "#FFFFFF",
@@ -341,47 +340,23 @@ const styles = StyleSheet.create({
   },
   editLink: {
     alignItems: "center",
+    paddingVertical: Spacing.xs,
   },
   addSponsorCard: {
     alignItems: "center",
-    padding: Spacing["2xl"],
+    paddingVertical: Spacing["2xl"],
+    paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
     borderStyle: "dashed",
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   addSponsorText: {
     marginTop: Spacing.md,
+    marginBottom: Spacing.xs,
   },
   addSponsorSubtext: {
-    marginTop: Spacing.xs,
     textAlign: "center",
-  },
-  input: {
-    padding: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    marginBottom: Spacing.md,
-    fontSize: 16,
-  },
-  editButtonsRow: {
-    flexDirection: "row",
-    gap: Spacing.md,
-  },
-  cancelButton: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-  },
-  saveButton: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-  },
-  saveButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
   },
   resourceCard: {
     marginBottom: Spacing.sm,

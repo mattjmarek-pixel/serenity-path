@@ -1,31 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Image, Alert, Modal, TextInput } from "react-native";
+import React, { useMemo } from "react";
+import { View, StyleSheet, Pressable, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BlurView } from "expo-blur";
 
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { useThemeContext, ThemeMode } from "@/contexts/ThemeContext";
+import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
-const USER_NAME_KEY = "@serenity_path_user_name";
-
 const MILESTONES = [
-  { days: 1, label: "24h", achieved: true },
-  { days: 7, label: "1W", achieved: true },
-  { days: 30, label: "30D", achieved: true },
-  { days: 90, label: "90D", achieved: false },
-  { days: 180, label: "6M", achieved: false },
-  { days: 365, label: "1Y", achieved: false },
+  { days: 1, label: "24h" },
+  { days: 7, label: "1W" },
+  { days: 30, label: "30D" },
+  { days: 90, label: "90D" },
+  { days: 180, label: "6M" },
+  { days: 365, label: "1Y" },
 ];
 
 interface SettingsItemProps {
@@ -108,45 +105,37 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const { themeMode, setThemeMode } = useThemeContext();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { profile, loadProfile, getSobrietyDays } = useProfile();
 
-  const [userName, setUserName] = useState("Recovery Warrior");
-  const [sobrietyDate] = useState("October 23, 2025");
-  const [showEditNameModal, setShowEditNameModal] = useState(false);
-  const [editNameInput, setEditNameInput] = useState("");
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
-  useEffect(() => {
-    loadUserName();
-  }, []);
+  const sobrietyDays = getSobrietyDays();
+  
+  const milestoneStatus = useMemo(() => {
+    return MILESTONES.map(m => ({
+      ...m,
+      achieved: sobrietyDays !== null && sobrietyDays >= m.days,
+    }));
+  }, [sobrietyDays]);
 
-  const loadUserName = async () => {
-    try {
-      const storedName = await AsyncStorage.getItem(USER_NAME_KEY);
-      if (storedName) {
-        setUserName(storedName);
-      }
-    } catch (error) {
-      console.log("Error loading user name:", error);
-    }
-  };
+  const formattedSobrietyDate = useMemo(() => {
+    if (!profile.sobrietyDate) return "Not set";
+    return new Date(profile.sobrietyDate).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  }, [profile.sobrietyDate]);
 
   const handleEditProfile = () => {
-    setEditNameInput(userName);
-    setShowEditNameModal(true);
-  };
-
-  const handleSaveName = async () => {
-    if (editNameInput.trim()) {
-      try {
-        await AsyncStorage.setItem(USER_NAME_KEY, editNameInput.trim());
-        setUserName(editNameInput.trim());
-        setShowEditNameModal(false);
-      } catch (error) {
-        console.log("Error saving user name:", error);
-      }
-    }
+    navigation.navigate("EditProfile");
   };
 
   const handleLogout = () => {
@@ -198,7 +187,12 @@ export default function ProfileScreen() {
         <View style={[styles.avatar, { backgroundColor: theme.accent + "30" }]}>
           <Feather name="user" size={40} color={theme.primary} />
         </View>
-        <ThemedText type="h3" style={styles.userName}>{userName}</ThemedText>
+        <ThemedText type="h3" style={styles.userName}>{profile.name}</ThemedText>
+        {profile.pronouns ? (
+          <ThemedText type="small" style={{ color: theme.textSecondary }}>
+            {profile.pronouns}
+          </ThemedText>
+        ) : null}
         <Pressable 
           onPress={handleEditProfile}
           style={({ pressed }) => [styles.editButton, { opacity: pressed ? 0.6 : 1 }]}
@@ -211,9 +205,12 @@ export default function ProfileScreen() {
         <View style={styles.sobrietyRow}>
           <View>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Sobriety Date</ThemedText>
-            <ThemedText type="h4">{sobrietyDate}</ThemedText>
+            <ThemedText type="h4">{formattedSobrietyDate}</ThemedText>
           </View>
-          <Pressable style={({ pressed }) => [styles.editDateButton, { opacity: pressed ? 0.7 : 1 }]}>
+          <Pressable 
+            onPress={handleEditProfile}
+            style={({ pressed }) => [styles.editDateButton, { opacity: pressed ? 0.7 : 1 }]}
+          >
             <Feather name="edit-2" size={16} color={theme.primary} />
           </Pressable>
         </View>
@@ -222,7 +219,7 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Milestone Progress</ThemedText>
         <View style={styles.milestonesRow}>
-          {MILESTONES.map((milestone, index) => (
+          {milestoneStatus.map((milestone) => (
             <View key={milestone.days} style={styles.milestoneItem}>
               <View
                 style={[
@@ -251,6 +248,15 @@ export default function ProfileScreen() {
           ))}
         </View>
       </View>
+
+      {profile.personalMantra ? (
+        <Card style={styles.mantraCard}>
+          <ThemedText type="small" style={{ color: theme.textSecondary, marginBottom: Spacing.xs }}>
+            Your Mantra
+          </ThemedText>
+          <ThemedText style={styles.mantraText}>"{profile.personalMantra}"</ThemedText>
+        </Card>
+      ) : null}
 
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>My Recovery</ThemedText>
@@ -334,54 +340,6 @@ export default function ProfileScreen() {
       <ThemedText type="small" style={[styles.version, { color: theme.textSecondary }]}>
         Serenity Path v1.0.0
       </ThemedText>
-
-      <Modal visible={showEditNameModal} transparent animationType="fade">
-        <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { backgroundColor: theme.backgroundDefault }]}>
-            <ThemedText type="h3" style={styles.modalTitle}>Edit Your Name</ThemedText>
-            <ThemedText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
-              This name will be used in your daily greeting.
-            </ThemedText>
-            <TextInput
-              style={[
-                styles.nameInput,
-                { backgroundColor: theme.backgroundSecondary, color: theme.text },
-              ]}
-              placeholder="Enter your name"
-              placeholderTextColor={theme.textSecondary}
-              value={editNameInput}
-              onChangeText={setEditNameInput}
-              autoFocus
-            />
-            <View style={styles.modalButtons}>
-              <Pressable
-                onPress={() => setShowEditNameModal(false)}
-                style={({ pressed }) => [
-                  styles.modalButton,
-                  { backgroundColor: theme.backgroundSecondary, opacity: pressed ? 0.8 : 1 },
-                ]}
-              >
-                <ThemedText style={{ fontWeight: "600" }}>Cancel</ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveName}
-                disabled={!editNameInput.trim()}
-                style={({ pressed }) => [
-                  styles.modalButton,
-                  {
-                    backgroundColor: editNameInput.trim() ? theme.primary : theme.backgroundSecondary,
-                    opacity: pressed ? 0.8 : 1,
-                  },
-                ]}
-              >
-                <ThemedText style={[styles.saveButtonText, { color: editNameInput.trim() ? "#FFFFFF" : theme.textSecondary }]}>
-                  Save
-                </ThemedText>
-              </Pressable>
-            </View>
-          </View>
-        </BlurView>
-      </Modal>
     </KeyboardAwareScrollViewCompat>
   );
 }
@@ -403,10 +361,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   userName: {
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
   editButton: {
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
   },
   sobrietyCard: {
     marginBottom: Spacing.xl,
@@ -424,6 +382,15 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: Spacing.md,
+  },
+  mantraCard: {
+    marginBottom: Spacing.xl,
+    alignItems: "center",
+  },
+  mantraText: {
+    fontStyle: "italic",
+    textAlign: "center",
+    lineHeight: 22,
   },
   milestonesRow: {
     flexDirection: "row",
@@ -478,47 +445,5 @@ const styles = StyleSheet.create({
   appearanceLabel: {
     fontWeight: "600",
     fontSize: 14,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: Spacing.xl,
-  },
-  modalContainer: {
-    width: "100%",
-    maxWidth: 340,
-    borderRadius: BorderRadius["2xl"],
-    padding: Spacing["2xl"],
-  },
-  modalTitle: {
-    textAlign: "center",
-    marginBottom: Spacing.sm,
-  },
-  modalSubtitle: {
-    textAlign: "center",
-    marginBottom: Spacing.xl,
-  },
-  nameInput: {
-    width: "100%",
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    fontSize: 16,
-    marginBottom: Spacing.lg,
-    textAlign: "center",
-  },
-  modalButtons: {
-    flexDirection: "row",
-    gap: Spacing.md,
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    fontWeight: "600",
   },
 });

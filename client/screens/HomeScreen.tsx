@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useNavigation, CompositeNavigationProp } from "@react-navigation/native";
+import { useNavigation, CompositeNavigationProp, useFocusEffect } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
@@ -12,6 +12,7 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -65,28 +66,37 @@ export default function HomeScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const navigation = useNavigation<HomeNavigationProp>();
+  const { profile, loadProfile, getSobrietyTime } = useProfile();
 
-  const [sobrietyDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 47);
-    date.setHours(date.getHours() - 5);
-    return date;
-  });
+  const [timeElapsed, setTimeElapsed] = useState<TimeElapsed | null>(null);
 
-  const [timeElapsed, setTimeElapsed] = useState<TimeElapsed>(() => 
-    calculateTimeElapsed(sobrietyDate)
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
   );
 
+  const sobrietyDate = useMemo(() => {
+    if (!profile.sobrietyDate) return null;
+    return new Date(profile.sobrietyDate);
+  }, [profile.sobrietyDate]);
+
   useEffect(() => {
+    if (!sobrietyDate) {
+      setTimeElapsed(null);
+      return;
+    }
+    
+    setTimeElapsed(calculateTimeElapsed(sobrietyDate));
     const interval = setInterval(() => {
       setTimeElapsed(calculateTimeElapsed(sobrietyDate));
     }, 1000);
     return () => clearInterval(interval);
   }, [sobrietyDate]);
 
-  const nextMilestone = getNextMilestone(timeElapsed.days);
-  const achievedMilestones = getAchievedMilestones(timeElapsed.days);
-  const daysToNextMilestone = nextMilestone ? nextMilestone.days - timeElapsed.days : 0;
+  const nextMilestone = timeElapsed ? getNextMilestone(timeElapsed.days) : null;
+  const achievedMilestones = timeElapsed ? getAchievedMilestones(timeElapsed.days) : [];
+  const daysToNextMilestone = nextMilestone && timeElapsed ? nextMilestone.days - timeElapsed.days : 0;
 
   const handleReflectionPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -103,6 +113,11 @@ export default function HomeScreen() {
     navigation.navigate("MeetingFinder");
   }, [navigation]);
 
+  const handleSetSobrietyDate = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("EditProfile");
+  }, [navigation]);
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
@@ -113,41 +128,56 @@ export default function HomeScreen() {
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      <Card style={styles.heroCard} elevation={1}>
-        <ThemedText type="small" style={[styles.heroLabel, { color: theme.textSecondary }]}>
-          Clean & Sober
-        </ThemedText>
-        <View style={styles.counterRow}>
-          <View style={styles.counterItem}>
-            <ThemedText type="hero" style={[styles.counterNumber, { color: theme.primary }]}>
-              {timeElapsed.days}
-            </ThemedText>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Days</ThemedText>
+      {timeElapsed ? (
+        <Card style={styles.heroCard} elevation={1}>
+          <ThemedText type="small" style={[styles.heroLabel, { color: theme.textSecondary }]}>
+            Clean & Sober
+          </ThemedText>
+          <View style={styles.counterRow}>
+            <View style={styles.counterItem}>
+              <ThemedText type="hero" style={[styles.counterNumber, { color: theme.primary }]}>
+                {timeElapsed.days}
+              </ThemedText>
+              <ThemedText type="small" style={{ color: theme.textSecondary }}>Days</ThemedText>
+            </View>
+            <View style={styles.counterDivider} />
+            <View style={styles.counterItem}>
+              <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
+                {String(timeElapsed.hours).padStart(2, "0")}
+              </ThemedText>
+              <ThemedText type="small" style={{ color: theme.textSecondary }}>Hours</ThemedText>
+            </View>
+            <View style={styles.counterDivider} />
+            <View style={styles.counterItem}>
+              <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
+                {String(timeElapsed.minutes).padStart(2, "0")}
+              </ThemedText>
+              <ThemedText type="small" style={{ color: theme.textSecondary }}>Mins</ThemedText>
+            </View>
           </View>
-          <View style={styles.counterDivider} />
-          <View style={styles.counterItem}>
-            <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
-              {String(timeElapsed.hours).padStart(2, "0")}
-            </ThemedText>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Hours</ThemedText>
+          {nextMilestone ? (
+            <View style={[styles.milestonePreview, { backgroundColor: theme.accent + "30" }]}>
+              <Feather name="award" size={16} color={theme.primary} />
+              <ThemedText type="small" style={{ color: theme.primary }}>
+                {daysToNextMilestone} days until {nextMilestone.label}
+              </ThemedText>
+            </View>
+          ) : null}
+        </Card>
+      ) : (
+        <Card style={styles.heroCard} elevation={1} onPress={handleSetSobrietyDate}>
+          <View style={[styles.setupIcon, { backgroundColor: theme.accent + "20" }]}>
+            <Feather name="calendar" size={32} color={theme.primary} />
           </View>
-          <View style={styles.counterDivider} />
-          <View style={styles.counterItem}>
-            <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
-              {String(timeElapsed.minutes).padStart(2, "0")}
-            </ThemedText>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Mins</ThemedText>
+          <ThemedText type="h3" style={styles.setupTitle}>Start Your Journey</ThemedText>
+          <ThemedText style={[styles.setupSubtitle, { color: theme.textSecondary }]}>
+            Set your sobriety date to track your progress and celebrate milestones
+          </ThemedText>
+          <View style={[styles.setupButton, { backgroundColor: theme.primary }]}>
+            <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Set Sobriety Date</ThemedText>
           </View>
-        </View>
-        {nextMilestone ? (
-          <View style={[styles.milestonePreview, { backgroundColor: theme.accent + "30" }]}>
-            <Feather name="award" size={16} color={theme.primary} />
-            <ThemedText type="small" style={{ color: theme.primary }}>
-              {daysToNextMilestone} days until {nextMilestone.label}
-            </ThemedText>
-          </View>
-        ) : null}
-      </Card>
+        </Card>
+      )}
 
       {achievedMilestones.length > 0 ? (
         <View style={styles.section}>
@@ -165,6 +195,26 @@ export default function HomeScreen() {
           </View>
         </View>
       ) : null}
+
+      {profile.personalMantra ? (
+        <View style={styles.section}>
+          <ThemedText type="h4" style={styles.sectionTitle}>Your Mantra</ThemedText>
+          <Card style={styles.affirmationCard} elevation={1}>
+            <ThemedText type="body" style={styles.affirmationText}>
+              "{profile.personalMantra}"
+            </ThemedText>
+          </Card>
+        </View>
+      ) : (
+        <View style={styles.section}>
+          <ThemedText type="h4" style={styles.sectionTitle}>Daily Affirmation</ThemedText>
+          <Card style={styles.affirmationCard} elevation={1}>
+            <ThemedText type="body" style={styles.affirmationText}>
+              "Progress, not perfection."
+            </ThemedText>
+          </Card>
+        </View>
+      )}
 
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Today's Reflection</ThemedText>
@@ -197,15 +247,6 @@ export default function HomeScreen() {
             <ThemedText type="small" style={{ color: theme.textSecondary }}>Journal Entries</ThemedText>
           </Card>
         </View>
-      </View>
-
-      <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Daily Affirmation</ThemedText>
-        <Card style={styles.affirmationCard} elevation={1}>
-          <ThemedText type="body" style={styles.affirmationText}>
-            "Progress, not perfection."
-          </ThemedText>
-        </Card>
       </View>
 
       <View style={styles.section}>
@@ -276,6 +317,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.full,
     gap: Spacing.sm,
+  },
+  setupIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  setupTitle: {
+    marginBottom: Spacing.sm,
+    textAlign: "center",
+  },
+  setupSubtitle: {
+    textAlign: "center",
+    marginBottom: Spacing.lg,
+    lineHeight: 22,
+  },
+  setupButton: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: BorderRadius.md,
   },
   section: {
     marginBottom: Spacing.xl,

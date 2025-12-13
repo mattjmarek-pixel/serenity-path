@@ -16,6 +16,7 @@ import * as Location from "expo-location";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 interface Meeting {
@@ -71,14 +72,34 @@ const SAMPLE_MEETINGS: Meeting[] = [
   },
 ];
 
+const MEETING_TYPE_MAP: Record<string, string> = {
+  open: "Open Discussion",
+  closed: "Closed",
+  speaker: "Speaker Meeting",
+  discussion: "Open Discussion",
+  bigbook: "Big Book",
+  step: "Step Study",
+};
+
 export default function MeetingFinderScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { profile, isLoading: profileLoading } = useProfile();
   const [permission, requestPermission] = Location.useForegroundPermissions();
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [meetings, setMeetings] = useState<Meeting[]>(SAMPLE_MEETINGS);
+  const [selectedRadius, setSelectedRadius] = useState(10);
+
+  useEffect(() => {
+    if (!profileLoading) {
+      setSelectedRadius(profile.defaultRadius || 10);
+      if (profile.homeCity) {
+        setSearchQuery(profile.homeCity);
+      }
+    }
+  }, [profileLoading, profile.defaultRadius, profile.homeCity]);
 
   useEffect(() => {
     if (permission?.granted) {
@@ -113,12 +134,24 @@ export default function MeetingFinderScreen() {
     Linking.openURL("https://aa-intergroup.org/meetings/");
   };
 
-  const filteredMeetings = meetings.filter(
-    (meeting) =>
+  const preferredTypeNames = profile.preferredMeetingTypes.map(
+    (typeId) => MEETING_TYPE_MAP[typeId]?.toLowerCase() || typeId.toLowerCase()
+  );
+
+  const filteredMeetings = meetings.filter((meeting) => {
+    const matchesSearch =
       meeting.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       meeting.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      meeting.day.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      meeting.day.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (preferredTypeNames.length === 0) return true;
+
+    return preferredTypeNames.some((typeName) =>
+      meeting.type.toLowerCase().includes(typeName)
+    );
+  });
 
   const renderLocationRequest = () => (
     <Card style={styles.locationCard}>
