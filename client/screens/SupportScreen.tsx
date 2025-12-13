@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Pressable, ScrollView, Linking, Platform, Alert, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 interface SponsorInfo {
   name: string;
@@ -16,6 +19,7 @@ interface SponsorInfo {
 export default function SupportScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [sponsor, setSponsor] = useState<SponsorInfo | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
@@ -213,9 +217,12 @@ export default function SupportScreen() {
         <ThemedText type="h4">Additional Resources</ThemedText>
       </View>
 
-      <Card style={styles.resourceCard}>
+      <Card 
+        style={styles.resourceCard}
+        onPress={() => navigation.navigate("MeetingFinder")}
+      >
         <View style={styles.resourceRow}>
-          <Feather name="globe" size={20} color={theme.primary} />
+          <Feather name="map-pin" size={20} color={theme.primary} />
           <ThemedText style={styles.resourceText}>Find local AA meetings</ThemedText>
           <Feather name="chevron-right" size={20} color={theme.textSecondary} />
         </View>

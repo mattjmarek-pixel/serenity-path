@@ -4,6 +4,7 @@ import MainTabNavigator from "@/navigation/MainTabNavigator";
 import SupportScreen from "@/screens/SupportScreen";
 import JournalScreen from "@/screens/JournalScreen";
 import JournalEntryScreen from "@/screens/JournalEntryScreen";
+import MeetingFinderScreen from "@/screens/MeetingFinderScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -11,6 +12,7 @@ export type RootStackParamList = {
   Support: undefined;
   Journal: undefined;
   JournalEntry: { entryId?: string } | undefined;
+  MeetingFinder: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,6 +48,13 @@ export default function RootStackNavigator() {
         options={{
           presentation: "modal",
           headerTitle: "New Entry",
+        }}
+      />
+      <Stack.Screen
+        name="MeetingFinder"
+        component={MeetingFinderScreen}
+        options={{
+          headerTitle: "Find Meetings",
         }}
       />
     </Stack.Navigator>
