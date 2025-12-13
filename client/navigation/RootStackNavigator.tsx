@@ -5,6 +5,8 @@ import SupportScreen from "@/screens/SupportScreen";
 import JournalScreen from "@/screens/JournalScreen";
 import JournalEntryScreen from "@/screens/JournalEntryScreen";
 import MeetingFinderScreen from "@/screens/MeetingFinderScreen";
+import BigBookScreen from "@/screens/BigBookScreen";
+import BigBookChapterScreen from "@/screens/BigBookChapterScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -13,6 +15,8 @@ export type RootStackParamList = {
   Journal: undefined;
   JournalEntry: { entryId?: string } | undefined;
   MeetingFinder: undefined;
+  BigBook: undefined;
+  BigBookChapter: { chapterId: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -55,6 +59,20 @@ export default function RootStackNavigator() {
         component={MeetingFinderScreen}
         options={{
           headerTitle: "Find Meetings",
+        }}
+      />
+      <Stack.Screen
+        name="BigBook"
+        component={BigBookScreen}
+        options={{
+          headerTitle: "Big Book",
+        }}
+      />
+      <Stack.Screen
+        name="BigBookChapter"
+        component={BigBookChapterScreen}
+        options={{
+          headerTitle: "Chapter",
         }}
       />
     </Stack.Navigator>

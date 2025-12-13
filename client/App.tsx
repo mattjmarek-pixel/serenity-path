@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -25,8 +25,10 @@ import { queryClient } from "@/lib/query-client";
 import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { DailyGreeting } from "@/components/DailyGreeting";
 
 export default function App() {
+  const [showGreeting, setShowGreeting] = useState(true);
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -41,7 +43,7 @@ export default function App() {
   if (!fontsLoaded) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#7B3FF2" />
+        <ActivityIndicator size="large" color="#1F4E79" />
       </View>
     );
   }
@@ -56,6 +58,9 @@ export default function App() {
                 <NavigationContainer>
                   <RootStackNavigator />
                 </NavigationContainer>
+                {showGreeting ? (
+                  <DailyGreeting onDismiss={() => setShowGreeting(false)} />
+                ) : null}
                 <StatusBar style="auto" />
               </KeyboardProvider>
             </GestureHandlerRootView>

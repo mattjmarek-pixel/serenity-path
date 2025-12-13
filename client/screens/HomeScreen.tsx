@@ -3,8 +3,9 @@ import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, CompositeNavigationProp } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 
@@ -13,6 +14,12 @@ import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
+import { RootStackParamList } from "@/navigation/RootStackNavigator";
+
+type HomeNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, "HomeTab">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 const MILESTONES = [
   { days: 1, label: "24 Hours" },
@@ -57,7 +64,7 @@ export default function HomeScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const navigation = useNavigation<HomeNavigationProp>();
 
   const [sobrietyDate] = useState(() => {
     const date = new Date();
@@ -84,6 +91,16 @@ export default function HomeScreen() {
   const handleReflectionPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate("ReflectionsTab");
+  }, [navigation]);
+
+  const handleBigBookPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("BigBook");
+  }, [navigation]);
+
+  const handleMeetingFinderPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("MeetingFinder");
   }, [navigation]);
 
   return (
@@ -189,6 +206,30 @@ export default function HomeScreen() {
             "Progress, not perfection."
           </ThemedText>
         </Card>
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="h4" style={styles.sectionTitle}>Resources</ThemedText>
+        <View style={styles.resourcesGrid}>
+          <Card onPress={handleBigBookPress} style={styles.resourceCard} elevation={1}>
+            <View style={[styles.resourceIcon, { backgroundColor: theme.primary + "20" }]}>
+              <Feather name="book" size={24} color={theme.primary} />
+            </View>
+            <ThemedText type="h4" style={styles.resourceTitle}>Big Book</ThemedText>
+            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
+              Read chapter summaries
+            </ThemedText>
+          </Card>
+          <Card onPress={handleMeetingFinderPress} style={styles.resourceCard} elevation={1}>
+            <View style={[styles.resourceIcon, { backgroundColor: theme.accent + "20" }]}>
+              <Feather name="map-pin" size={24} color={theme.accent} />
+            </View>
+            <ThemedText type="h4" style={styles.resourceTitle}>Meetings</ThemedText>
+            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
+              Find nearby AA meetings
+            </ThemedText>
+          </Card>
+        </View>
       </View>
     </ScrollView>
   );
@@ -299,5 +340,29 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     textAlign: "center",
     lineHeight: 26,
+  },
+  resourcesGrid: {
+    flexDirection: "row",
+    gap: Spacing.md,
+  },
+  resourceCard: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: Spacing.lg,
+  },
+  resourceIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  resourceTitle: {
+    marginBottom: Spacing.xs,
+    textAlign: "center",
+  },
+  resourceDesc: {
+    textAlign: "center",
   },
 });
