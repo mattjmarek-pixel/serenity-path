@@ -32,9 +32,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#F8F9FA",
+          "backgroundColor": "#1F4E79",
           "dark": {
-            "backgroundColor": "#1A202C"
+            "backgroundColor": "#0D1520"
           }
         }
       ],
