@@ -10,6 +10,7 @@ import {
   TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
 
@@ -83,6 +84,7 @@ const MEETING_TYPE_MAP: Record<string, string> = {
 
 export default function MeetingFinderScreen() {
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const { profile, isLoading: profileLoading } = useProfile();
   const [permission, requestPermission] = Location.useForegroundPermissions();
@@ -241,7 +243,7 @@ export default function MeetingFinderScreen() {
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
       contentContainerStyle={{
-        paddingTop: Spacing.xl,
+        paddingTop: headerHeight + Spacing.md,
         paddingBottom: insets.bottom + Spacing.xl,
         paddingHorizontal: Spacing.lg,
       }}
