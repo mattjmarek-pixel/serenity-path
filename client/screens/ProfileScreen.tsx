@@ -318,6 +318,11 @@ export default function ProfileScreen() {
           label="Help & Support"
           onPress={() => {}}
         />
+        <SettingsItem
+          icon="heart"
+          label="Support Us"
+          onPress={() => navigation.navigate("SupportUs")}
+        />
       </View>
 
       <View style={styles.section}>

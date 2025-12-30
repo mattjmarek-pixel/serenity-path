@@ -8,11 +8,13 @@ import MeetingFinderScreen from "@/screens/MeetingFinderScreen";
 import BigBookScreen from "@/screens/BigBookScreen";
 import BigBookChapterScreen from "@/screens/BigBookChapterScreen";
 import EditProfileScreen from "@/screens/EditProfileScreen";
+import SupportUsScreen from "@/screens/SupportUsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
   Main: undefined;
   Support: undefined;
+  SupportUs: undefined;
   Journal: undefined;
   JournalEntry: { entryId?: string } | undefined;
   MeetingFinder: undefined;
@@ -82,6 +84,13 @@ export default function RootStackNavigator() {
         component={EditProfileScreen}
         options={{
           headerTitle: "Edit Profile",
+        }}
+      />
+      <Stack.Screen
+        name="SupportUs"
+        component={SupportUsScreen}
+        options={{
+          headerTitle: "Support Us",
         }}
       />
     </Stack.Navigator>
