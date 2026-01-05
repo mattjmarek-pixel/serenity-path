@@ -26,20 +26,25 @@ async function initStripe() {
 
   try {
     log('Initializing Stripe schema...');
-    await runMigrations({ 
-      databaseUrl,
-      schema: 'stripe'
-    });
+    await runMigrations({ databaseUrl });
     log('Stripe schema ready');
 
     const stripeSync = await getStripeSync();
 
     log('Setting up managed webhook...');
     const webhookBaseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
-    const { webhook } = await stripeSync.findOrCreateManagedWebhook(
-      `${webhookBaseUrl}/api/stripe/webhook`
-    );
-    log(`Webhook configured: ${webhook.url}`);
+    try {
+      const result = await stripeSync.findOrCreateManagedWebhook(
+        `${webhookBaseUrl}/api/stripe/webhook`
+      );
+      if (result?.webhook?.url) {
+        log(`Webhook configured: ${result.webhook.url}`);
+      } else {
+        log('Webhook setup completed (no URL returned)');
+      }
+    } catch (webhookError) {
+      log('Webhook setup skipped:', webhookError);
+    }
 
     log('Syncing Stripe data...');
     stripeSync.syncBackfill()

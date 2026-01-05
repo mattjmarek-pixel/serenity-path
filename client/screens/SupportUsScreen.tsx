@@ -1,29 +1,75 @@
-import React from "react";
-import { View, StyleSheet, Pressable, Linking } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
-import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import { apiRequest, getApiUrl } from "@/lib/query-client";
+
+interface StripePrice {
+  id: string;
+  unitAmount: number;
+  currency: string;
+  interval: string;
+  productId: string;
+  productName: string;
+}
 
 export default function SupportUsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-  const handleMonthlySupport = () => {
-    Linking.openURL("https://www.buymeacoffee.com");
-  };
+  const { data: pricesData, isLoading: pricesLoading } = useQuery<{ prices: StripePrice[] }>({
+    queryKey: ['/api/stripe/prices'],
+  });
 
-  const handleYearlySupport = () => {
-    Linking.openURL("https://www.buymeacoffee.com");
+  const checkoutMutation = useMutation({
+    mutationFn: async (priceId: string) => {
+      const response = await apiRequest('POST', '/api/stripe/create-checkout-session', { priceId });
+      return response.json();
+    },
+    onSuccess: async (data: { url: string }) => {
+      if (data.url) {
+        if (Platform.OS === 'web') {
+          window.location.href = data.url;
+        } else {
+          await WebBrowser.openBrowserAsync(data.url);
+        }
+      }
+      setLoadingPriceId(null);
+    },
+    onError: (error: Error) => {
+      setLoadingPriceId(null);
+      Alert.alert('Error', 'Failed to start checkout. Please try again.');
+    },
+  });
+
+  const handleSupport = (priceId: string) => {
+    setLoadingPriceId(priceId);
+    checkoutMutation.mutate(priceId);
   };
 
   const handleRestorePurchases = () => {
-    // Placeholder for restore purchases functionality
+    Alert.alert(
+      'Restore Purchases',
+      'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const monthlyPrice = pricesData?.prices?.find(p => p.interval === 'month');
+  const yearlyPrice = pricesData?.prices?.find(p => p.interval === 'year');
+
+  const formatPrice = (unitAmount: number, interval: string) => {
+    const amount = (unitAmount / 100).toFixed(2);
+    return `$${amount} / ${interval}`;
   };
 
   return (
@@ -53,23 +99,51 @@ export default function SupportUsScreen() {
           profile every month that you are a supporter.
         </ThemedText>
 
-        <Pressable
-          style={[styles.primaryButton, { backgroundColor: theme.primary }]}
-          onPress={handleMonthlySupport}
-        >
-          <ThemedText style={styles.buttonText}>$1.99 / month</ThemedText>
-        </Pressable>
+        {pricesLoading ? (
+          <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: Spacing.xl }} />
+        ) : (
+          <>
+            <Pressable
+              style={[
+                styles.primaryButton, 
+                { backgroundColor: theme.primary },
+                loadingPriceId === monthlyPrice?.id && styles.buttonDisabled
+              ]}
+              onPress={() => monthlyPrice && handleSupport(monthlyPrice.id)}
+              disabled={!monthlyPrice || loadingPriceId !== null}
+            >
+              {loadingPriceId === monthlyPrice?.id ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <ThemedText style={styles.buttonText}>
+                  {monthlyPrice ? formatPrice(monthlyPrice.unitAmount, 'month') : '$1.99 / month'}
+                </ThemedText>
+              )}
+            </Pressable>
 
-        <ThemedText style={[styles.orText, { color: theme.textSecondary }]}>
-          or
-        </ThemedText>
+            <ThemedText style={[styles.orText, { color: theme.textSecondary }]}>
+              or
+            </ThemedText>
 
-        <Pressable
-          style={[styles.primaryButton, { backgroundColor: theme.primary }]}
-          onPress={handleYearlySupport}
-        >
-          <ThemedText style={styles.buttonText}>$19.99 / year</ThemedText>
-        </Pressable>
+            <Pressable
+              style={[
+                styles.primaryButton, 
+                { backgroundColor: theme.primary },
+                loadingPriceId === yearlyPrice?.id && styles.buttonDisabled
+              ]}
+              onPress={() => yearlyPrice && handleSupport(yearlyPrice.id)}
+              disabled={!yearlyPrice || loadingPriceId !== null}
+            >
+              {loadingPriceId === yearlyPrice?.id ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <ThemedText style={styles.buttonText}>
+                  {yearlyPrice ? formatPrice(yearlyPrice.unitAmount, 'year') : '$19.99 / year'}
+                </ThemedText>
+              )}
+            </Pressable>
+          </>
+        )}
 
         <View style={styles.linksContainer}>
           <Pressable onPress={() => Linking.openURL("https://example.com/terms")}>
@@ -129,6 +203,11 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     alignItems: "center",
     marginBottom: Spacing.sm,
+    minHeight: 52,
+    justifyContent: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: "#FFFFFF",
