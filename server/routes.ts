@@ -58,6 +58,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const stripe = await getUncachableStripeClient();
       
+      const price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
+      const product = price.product as { name?: string; metadata?: Record<string, string> };
+      
+      if (!product || product.name !== 'Serenity Path Supporter') {
+        return res.status(400).json({ error: 'Invalid price selected' });
+      }
+
+      if (!price.active) {
+        return res.status(400).json({ error: 'Price is no longer available' });
+      }
+      
       const baseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
 
       const session = await stripe.checkout.sessions.create({
