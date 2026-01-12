@@ -3,6 +3,10 @@ import { createServer, type Server } from "node:http";
 import { sql } from "drizzle-orm";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
+function getBaseUrl(): string {
+  return process.env.APP_URL || `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/stripe/publishable-key', async (req, res) => {
     try {
@@ -69,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Price is no longer available' });
       }
       
-      const baseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
+      const baseUrl = getBaseUrl();
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -101,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const stripe = await getUncachableStripeClient();
-      const baseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
+      const baseUrl = getBaseUrl();
 
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,

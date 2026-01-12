@@ -8,7 +8,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 const app = express();
-const log = console.log;
+const isProduction = process.env.NODE_ENV === 'production';
+const log = isProduction ? () => {} : console.log;
 
 declare module "http" {
   interface IncomingMessage {
@@ -32,7 +33,7 @@ async function initStripe() {
     const stripeSync = await getStripeSync();
 
     log('Setting up managed webhook...');
-    const webhookBaseUrl = `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
+    const webhookBaseUrl = process.env.APP_URL || `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
     try {
       const result = await stripeSync.findOrCreateManagedWebhook(
         `${webhookBaseUrl}/api/stripe/webhook`
@@ -59,9 +60,26 @@ async function initStripe() {
   }
 }
 
+function setupSecurityHeaders(app: express.Application) {
+  app.use((req, res, next) => {
+    res.header("X-Content-Type-Options", "nosniff");
+    res.header("X-Frame-Options", "DENY");
+    res.header("X-XSS-Protection", "1; mode=block");
+    res.header("Referrer-Policy", "strict-origin-when-cross-origin");
+    if (isProduction) {
+      res.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
+    next();
+  });
+}
+
 function setupCors(app: express.Application) {
   app.use((req, res, next) => {
     const origins = new Set<string>();
+
+    if (process.env.APP_URL) {
+      origins.add(process.env.APP_URL);
+    }
 
     if (process.env.REPLIT_DEV_DOMAIN) {
       origins.add(`https://${process.env.REPLIT_DEV_DOMAIN}`);
@@ -177,8 +195,6 @@ function serveLandingPage({
   const baseUrl = `${protocol}://${host}`;
   const expsUrl = `${host}`;
 
-  log(`baseUrl`, baseUrl);
-  log(`expsUrl`, expsUrl);
 
   const html = landingPageTemplate
     .replace(/BASE_URL_PLACEHOLDER/g, baseUrl)
@@ -253,6 +269,7 @@ function setupErrorHandler(app: express.Application) {
 (async () => {
   await initStripe();
   
+  setupSecurityHeaders(app);
   setupCors(app);
 
   app.post(

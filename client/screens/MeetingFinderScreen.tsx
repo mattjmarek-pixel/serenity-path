@@ -122,7 +122,6 @@ export default function MeetingFinderScreen() {
       }));
       setMeetings(meetingsWithDistance);
     } catch (error) {
-      console.log("Error fetching location:", error);
     } finally {
       setIsLoading(false);
     }
@@ -191,7 +190,6 @@ export default function MeetingFinderScreen() {
             try {
               await Linking.openSettings();
             } catch (error) {
-              console.log("Cannot open settings");
             }
           }}
           style={({ pressed }) => [

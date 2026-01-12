@@ -12,7 +12,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius, Fonts } from "@/constants/theme";
+import { Spacing, BorderRadius } from "@/constants/theme";
 
 export type ErrorFallbackProps = {
   error: Error;
@@ -27,7 +27,6 @@ export function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
     try {
       await reloadAppAsync();
     } catch (restartError) {
-      console.error("Failed to restart app:", restartError);
       resetError();
     }
   };
@@ -126,7 +125,7 @@ export function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
                       styles.errorText,
                       {
                         color: theme.text,
-                        fontFamily: Fonts?.mono || "monospace",
+                        fontFamily: "monospace",
                       },
                     ]}
                     selectable

@@ -59,7 +59,6 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
         setShouldShow(true);
       }
     } catch (error) {
-      console.log("Error checking greeting:", error);
       onDismiss();
     }
   };
@@ -72,7 +71,6 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
         setUserName(nameInput.trim());
         setIsEditingName(false);
       } catch (error) {
-        console.log("Error saving name:", error);
       }
     }
   };

@@ -53,7 +53,6 @@ export function useProfile() {
         setProfile({ ...DEFAULT_PROFILE, name: legacyName });
       }
     } catch (error) {
-      console.log("Error loading profile:", error);
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +64,6 @@ export function useProfile() {
 
   const saveProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (isLoading) {
-      console.log("Cannot save profile while loading");
       return false;
     }
     try {
@@ -77,7 +75,6 @@ export function useProfile() {
       setProfile(newProfile);
       return true;
     } catch (error) {
-      console.log("Error saving profile:", error);
       return false;
     }
   }, [isLoading, profile]);
