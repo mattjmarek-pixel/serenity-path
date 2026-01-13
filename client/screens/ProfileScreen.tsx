@@ -345,6 +345,10 @@ export default function ProfileScreen() {
       <ThemedText type="small" style={[styles.version, { color: theme.textSecondary }]}>
         Serenity Path v1.0.0
       </ThemedText>
+
+      <ThemedText type="small" style={[styles.disclaimer, { color: theme.textSecondary }]}>
+        This app is not affiliated with Alcoholics Anonymous World Services, Inc. and does not replace professional medical advice.
+      </ThemedText>
     </KeyboardAwareScrollViewCompat>
   );
 }
@@ -434,6 +438,12 @@ const styles = StyleSheet.create({
   version: {
     textAlign: "center",
     marginTop: Spacing.lg,
+  },
+  disclaimer: {
+    textAlign: "center",
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    lineHeight: 18,
   },
   appearanceRow: {
     flexDirection: "row",
