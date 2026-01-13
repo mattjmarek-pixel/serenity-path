@@ -13,7 +13,7 @@ import { apiRequest, getApiUrl } from "@/lib/query-client";
 
 const PERSONAL_MESSAGE = `Friends,
 
-I began developing this app out of a simple need — one many of us share — to have easy access to the tools and resources that help us stay sober, grounded, and connected. In my own recovery, having quick access to readings, reflections, and guidance made a real difference, not only in maintaining sobriety but also in finding a sense of peace and purpose in daily life.
+I began developing this app out of a simple need, one many of us share, to have easy access to the tools and resources that help us stay sober, grounded, and connected. In my own recovery, having quick access to readings, reflections, and guidance made a real difference, not only in maintaining sobriety but also in finding a sense of peace and purpose in daily life.
 
 This app was created so that anyone, anywhere, can have recovery resources readily available, free from ads or distractions. My hope is that it serves as a quiet companion in moments of strength, struggle, and reflection.
 
