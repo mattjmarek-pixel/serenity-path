@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform } from "react-native";
+import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -10,6 +10,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { apiRequest, getApiUrl } from "@/lib/query-client";
+
+const PERSONAL_MESSAGE = `Friends,
+
+I began developing this app out of a simple need — one many of us share — to have easy access to the tools and resources that help us stay sober, grounded, and connected. In my own recovery, having quick access to readings, reflections, and guidance made a real difference, not only in maintaining sobriety but also in finding a sense of peace and purpose in daily life.
+
+This app was created so that anyone, anywhere, can have recovery resources readily available, free from ads or distractions. My hope is that it serves as a quiet companion in moments of strength, struggle, and reflection.
+
+If you find value in using the app and choose to support its continued maintenance and improvement, that support is appreciated and entirely voluntary. The app will always remain free to use, and there is no expectation or obligation to contribute.
+
+More than anything, I am grateful for the opportunity to share something that has been meaningful in my own recovery.
+
+With gratitude,
+Matt M.`;
 
 interface StripePrice {
   id: string;
@@ -73,32 +86,33 @@ export default function SupportUsScreen() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
+      contentContainerStyle={[
+        styles.scrollContent,
         {
-          backgroundColor: theme.backgroundRoot,
-          paddingTop: headerHeight + Spacing.xl,
+          paddingTop: headerHeight + Spacing.lg,
           paddingBottom: insets.bottom + Spacing.xl,
         },
       ]}
+      showsVerticalScrollIndicator={false}
     >
-      <View style={styles.content}>
-        <Feather
-          name="heart"
-          size={48}
-          color={theme.primary}
-          style={styles.icon}
-        />
+      <Feather
+        name="heart"
+        size={48}
+        color={theme.primary}
+        style={styles.icon}
+      />
 
-        <ThemedText style={styles.title}>Support Us</ThemedText>
+      <ThemedText style={styles.title}>Support Us</ThemedText>
 
-        <ThemedText style={[styles.description, { color: theme.textSecondary }]}>
-          Support the effort required to maintain the app with a recurring
-          contribution. Cancel anytime. A supporter badge will appear on your
-          profile every month that you are a supporter.
+      <View style={[styles.messageCard, { backgroundColor: theme.backgroundDefault }]}>
+        <ThemedText style={[styles.messageText, { color: theme.text }]}>
+          {PERSONAL_MESSAGE}
         </ThemedText>
+      </View>
 
+      <View style={styles.buttonsSection}>
         {pricesLoading ? (
           <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: Spacing.xl }} />
         ) : (
@@ -144,58 +158,64 @@ export default function SupportUsScreen() {
             </Pressable>
           </>
         )}
+      </View>
 
-        <View style={styles.linksContainer}>
-          <Pressable onPress={() => Linking.openURL("https://example.com/terms")}>
-            <ThemedText style={[styles.linkText, { color: theme.primary }]}>
-              Terms of Service
-            </ThemedText>
-          </Pressable>
-          <ThemedText style={[styles.linkSeparator, { color: theme.textSecondary }]}>
-            {" | "}
+      <View style={styles.linksContainer}>
+        <Pressable onPress={() => Linking.openURL("https://example.com/terms")}>
+          <ThemedText style={[styles.linkText, { color: theme.primary }]}>
+            Terms of Service
           </ThemedText>
-          <Pressable onPress={() => Linking.openURL("https://example.com/privacy")}>
-            <ThemedText style={[styles.linkText, { color: theme.primary }]}>
-              Privacy Policy
-            </ThemedText>
-          </Pressable>
-        </View>
-
-        <Pressable onPress={handleRestorePurchases} style={styles.restoreButton}>
-          <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
-            Restore Purchases
+        </Pressable>
+        <ThemedText style={[styles.linkSeparator, { color: theme.textSecondary }]}>
+          {" | "}
+        </ThemedText>
+        <Pressable onPress={() => Linking.openURL("https://example.com/privacy")}>
+          <ThemedText style={[styles.linkText, { color: theme.primary }]}>
+            Privacy Policy
           </ThemedText>
         </Pressable>
       </View>
-    </View>
+
+      <Pressable onPress={handleRestorePurchases} style={styles.restoreButton}>
+        <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
+          Restore Purchases
+        </ThemedText>
+      </Pressable>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: Spacing.lg,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    paddingHorizontal: Spacing.lg,
     alignItems: "center",
-    justifyContent: "center",
   },
   icon: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   title: {
     fontSize: 28,
     fontWeight: "700",
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
     textAlign: "center",
   },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
+  messageCard: {
+    width: "100%",
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.md,
+  },
+  messageText: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontStyle: "italic",
+  },
+  buttonsSection: {
+    width: "100%",
+    alignItems: "center",
   },
   primaryButton: {
     width: "100%",
