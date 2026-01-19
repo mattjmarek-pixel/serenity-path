@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "node:http";
 import { sql } from "drizzle-orm";
+import path from "node:path";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
 function getBaseUrl(): string {
@@ -8,6 +9,13 @@ function getBaseUrl(): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'server/pages/privacy-policy.html'));
+  });
+
+  app.get('/terms', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'server/pages/terms-of-service.html'));
+  });
   app.get('/api/stripe/publishable-key', async (req, res) => {
     try {
       const publishableKey = await getStripePublishableKey();

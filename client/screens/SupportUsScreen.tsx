@@ -161,7 +161,10 @@ export default function SupportUsScreen() {
       </View>
 
       <View style={styles.linksContainer}>
-        <Pressable onPress={() => Linking.openURL("https://example.com/terms")}>
+        <Pressable onPress={() => {
+          const baseUrl = getApiUrl().replace('/api', '');
+          Linking.openURL(`${baseUrl}/terms`);
+        }}>
           <ThemedText style={[styles.linkText, { color: theme.primary }]}>
             Terms of Service
           </ThemedText>
@@ -169,7 +172,10 @@ export default function SupportUsScreen() {
         <ThemedText style={[styles.linkSeparator, { color: theme.textSecondary }]}>
           {" | "}
         </ThemedText>
-        <Pressable onPress={() => Linking.openURL("https://example.com/privacy")}>
+        <Pressable onPress={() => {
+          const baseUrl = getApiUrl().replace('/api', '');
+          Linking.openURL(`${baseUrl}/privacy`);
+        }}>
           <ThemedText style={[styles.linkText, { color: theme.primary }]}>
             Privacy Policy
           </ThemedText>
