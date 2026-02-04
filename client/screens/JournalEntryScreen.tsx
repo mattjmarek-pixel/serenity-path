@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Pressable, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -8,6 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useJournal } from "@/hooks/useJournal";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -24,9 +25,24 @@ export default function JournalEntryScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, "JournalEntry">>();
+  const { saveEntry, updateEntry, getEntry, deleteEntry } = useJournal();
+
+  const entryId = route.params?.entryId;
+  const isEditing = Boolean(entryId);
 
   const [content, setContent] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (entryId) {
+      const existingEntry = getEntry(entryId);
+      if (existingEntry) {
+        setContent(existingEntry.content);
+        setSelectedMood(existingEntry.mood || null);
+      }
+    }
+  }, [entryId, getEntry]);
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -35,8 +51,56 @@ export default function JournalEntryScreen() {
     day: "numeric",
   });
 
-  const handleSave = () => {
-    navigation.goBack();
+  const handleSave = async () => {
+    if (!content.trim()) {
+      Alert.alert("Empty Entry", "Please write something before saving.");
+      return;
+    }
+
+    setIsSaving(true);
+    
+    const entryData = {
+      date: today,
+      content: content.trim(),
+      mood: selectedMood || "",
+    };
+
+    let success: boolean;
+    if (isEditing && entryId) {
+      success = await updateEntry(entryId, entryData);
+    } else {
+      success = await saveEntry(entryData);
+    }
+
+    setIsSaving(false);
+
+    if (success) {
+      navigation.goBack();
+    } else {
+      Alert.alert("Error", "Failed to save entry. Please try again.");
+    }
+  };
+
+  const handleDelete = () => {
+    if (!entryId) return;
+    
+    Alert.alert(
+      "Delete Entry",
+      "Are you sure you want to delete this journal entry?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const success = await deleteEntry(entryId);
+            if (success) {
+              navigation.goBack();
+            }
+          },
+        },
+      ]
+    );
   };
 
   React.useLayoutEffect(() => {
@@ -47,12 +111,25 @@ export default function JournalEntryScreen() {
         </Pressable>
       ),
       headerRight: () => (
-        <Pressable onPress={handleSave} style={styles.headerButton}>
-          <ThemedText style={{ color: theme.primary, fontWeight: "600" }}>Save</ThemedText>
-        </Pressable>
+        <View style={styles.headerRightContainer}>
+          {isEditing ? (
+            <Pressable onPress={handleDelete} style={styles.headerButton}>
+              <Feather name="trash-2" size={20} color={theme.emergency} />
+            </Pressable>
+          ) : null}
+          <Pressable 
+            onPress={handleSave} 
+            style={styles.headerButton}
+            disabled={isSaving}
+          >
+            <ThemedText style={{ color: theme.primary, fontWeight: "600", opacity: isSaving ? 0.5 : 1 }}>
+              {isSaving ? "Saving..." : "Save"}
+            </ThemedText>
+          </Pressable>
+        </View>
       ),
     });
-  }, [navigation, content, selectedMood, theme.primary]);
+  }, [navigation, content, selectedMood, theme.primary, theme.emergency, isSaving, isEditing]);
 
   return (
     <KeyboardAwareScrollViewCompat
@@ -150,6 +227,11 @@ const styles = StyleSheet.create({
   headerButton: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
+  },
+  headerRightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
   },
   date: {
     textAlign: "center",

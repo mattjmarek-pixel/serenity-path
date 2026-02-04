@@ -1,24 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet, Pressable, FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useJournal, JournalEntry } from "@/hooks/useJournal";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
-
-interface JournalEntry {
-  id: string;
-  date: string;
-  preview: string;
-  mood: string;
-  content: string;
-}
 
 const MOOD_ICONS: Record<string, string> = {
   grateful: "smile",
@@ -33,23 +26,27 @@ export default function JournalScreen() {
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { entries, loadEntries } = useJournal();
 
-  const [entries, setEntries] = useState<JournalEntry[]>([
-    {
-      id: "1",
-      date: "December 9, 2025",
-      preview: "Today I attended my morning meeting and felt a sense of peace I haven't felt in a long time...",
-      mood: "grateful",
-      content: "Today I attended my morning meeting and felt a sense of peace I haven't felt in a long time. Speaking with my sponsor helped me realize how far I've come.",
-    },
-    {
-      id: "2",
-      date: "December 8, 2025",
-      preview: "Had a challenging day at work but stayed focused on my recovery...",
-      mood: "strong",
-      content: "Had a challenging day at work but stayed focused on my recovery. Called my sponsor when I felt triggered and we talked through it together.",
-    },
-  ]);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadEntries();
+    }, [loadEntries])
+  );
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const getPreview = (content: string) => {
+    if (content.length <= 100) return content;
+    return content.substring(0, 100) + "...";
+  };
 
   const renderEntry = ({ item }: { item: JournalEntry }) => (
     <Card
@@ -58,18 +55,20 @@ export default function JournalScreen() {
     >
       <View style={styles.entryHeader}>
         <ThemedText type="small" style={{ color: theme.textSecondary }}>
-          {item.date}
+          {formatDate(item.createdAt)}
         </ThemedText>
-        <View style={[styles.moodBadge, { backgroundColor: theme.accent + "30" }]}>
-          <Feather
-            name={MOOD_ICONS[item.mood] as any || "circle"}
-            size={14}
-            color={theme.primary}
-          />
-        </View>
+        {item.mood ? (
+          <View style={[styles.moodBadge, { backgroundColor: theme.accent + "30" }]}>
+            <Feather
+              name={MOOD_ICONS[item.mood] as any || "circle"}
+              size={14}
+              color={theme.primary}
+            />
+          </View>
+        ) : null}
       </View>
       <ThemedText type="body" numberOfLines={2} style={styles.entryPreview}>
-        {item.preview}
+        {getPreview(item.content)}
       </ThemedText>
     </Card>
   );

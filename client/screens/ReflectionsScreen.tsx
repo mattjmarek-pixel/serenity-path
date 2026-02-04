@@ -8,6 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 const DAILY_REFLECTIONS = [
@@ -32,6 +33,34 @@ const DAILY_REFLECTIONS = [
     content: "We cannot recover alone. Connection with others who understand our struggles provides strength, hope, and accountability. Reach out to someone today - a sponsor, a fellow member, or a friend in recovery.",
     author: "Anonymous",
   },
+  {
+    id: "4",
+    date: "December 12",
+    title: "Accepting Imperfection",
+    content: "Progress, not perfection, is our goal. Recovery is not about becoming perfect; it's about becoming honest, humble, and willing to grow. Embrace your imperfections as opportunities for learning.",
+    author: "Anonymous",
+  },
+  {
+    id: "5",
+    date: "December 13",
+    title: "Living in the Present",
+    content: "Yesterday is history, tomorrow is a mystery, but today is a gift - that's why we call it the present. Stay focused on what you can do right now, in this moment, to support your recovery.",
+    author: "Anonymous",
+  },
+  {
+    id: "6",
+    date: "December 14",
+    title: "The Courage to Change",
+    content: "Change requires courage. It asks us to let go of familiar patterns, even when they no longer serve us. Today, find the courage to make one small positive change in your life.",
+    author: "Anonymous",
+  },
+  {
+    id: "7",
+    date: "December 15",
+    title: "Serenity Through Surrender",
+    content: "When we stop fighting against what we cannot control and surrender to a power greater than ourselves, we find peace. Surrender is not weakness - it is wisdom.",
+    author: "Anonymous",
+  },
 ];
 
 export default function ReflectionsScreen() {
@@ -40,21 +69,9 @@ export default function ReflectionsScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
+  const { bookmarked, toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentReflection = DAILY_REFLECTIONS[currentIndex];
-
-  const toggleBookmark = (id: string) => {
-    setBookmarked(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
 
   const goToPrevious = () => {
     if (currentIndex > 0) {
@@ -67,6 +84,12 @@ export default function ReflectionsScreen() {
       setCurrentIndex(currentIndex + 1);
     }
   };
+
+  const handleToggleBookmark = () => {
+    toggleBookmark(`reflection_${currentReflection.id}`);
+  };
+
+  const isCurrentBookmarked = isBookmarked(`reflection_${currentReflection.id}`);
 
   return (
     <ScrollView
@@ -115,11 +138,11 @@ export default function ReflectionsScreen() {
       </Card>
 
       <Pressable
-        onPress={() => toggleBookmark(currentReflection.id)}
+        onPress={handleToggleBookmark}
         style={({ pressed }) => [
           styles.bookmarkButton,
           { 
-            backgroundColor: bookmarked.has(currentReflection.id) 
+            backgroundColor: isCurrentBookmarked 
               ? theme.accent 
               : theme.backgroundDefault,
             opacity: pressed ? 0.8 : 1,
@@ -129,15 +152,15 @@ export default function ReflectionsScreen() {
         <Feather
           name="heart"
           size={20}
-          color={bookmarked.has(currentReflection.id) ? "#FFFFFF" : theme.primary}
+          color={isCurrentBookmarked ? "#FFFFFF" : theme.primary}
         />
         <ThemedText
           style={[
             styles.bookmarkText,
-            { color: bookmarked.has(currentReflection.id) ? "#FFFFFF" : theme.primary },
+            { color: isCurrentBookmarked ? "#FFFFFF" : theme.primary },
           ]}
         >
-          {bookmarked.has(currentReflection.id) ? "Saved" : "Save to Favorites"}
+          {isCurrentBookmarked ? "Saved" : "Save to Favorites"}
         </ThemedText>
       </Pressable>
     </ScrollView>
