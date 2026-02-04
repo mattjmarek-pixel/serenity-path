@@ -7,6 +7,7 @@ import * as WebBrowser from "expo-web-browser";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
+import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { apiRequest, getApiUrl } from "@/lib/query-client";
@@ -33,6 +34,8 @@ interface StripePrice {
   productName: string;
 }
 
+const isNativePlatform = Platform.OS === 'ios' || Platform.OS === 'android';
+
 export default function SupportUsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -41,6 +44,7 @@ export default function SupportUsScreen() {
 
   const { data: pricesData, isLoading: pricesLoading } = useQuery<{ prices: StripePrice[] }>({
     queryKey: ['/api/stripe/prices'],
+    enabled: !isNativePlatform,
   });
 
   const checkoutMutation = useMutation({
@@ -70,11 +74,23 @@ export default function SupportUsScreen() {
   };
 
   const handleRestorePurchases = () => {
-    Alert.alert(
-      'Restore Purchases',
-      'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
-      [{ text: 'OK' }]
-    );
+    if (isNativePlatform) {
+      Alert.alert(
+        'Coming Soon',
+        'In-app purchases will be available in a future update. Thank you for your interest in supporting the app!',
+        [{ text: 'OK' }]
+      );
+    } else {
+      Alert.alert(
+        'Restore Purchases',
+        'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handleContactSupport = () => {
+    Linking.openURL('mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support');
   };
 
   const monthlyPrice = pricesData?.prices?.find(p => p.interval === 'month');
@@ -84,6 +100,78 @@ export default function SupportUsScreen() {
     const amount = (unitAmount / 100).toFixed(2);
     return `$${amount} / ${interval}`;
   };
+
+  const renderNativePaymentSection = () => (
+    <View style={styles.buttonsSection}>
+      <Card style={[styles.comingSoonCard, { borderColor: theme.primary }]}>
+        <Feather name="smartphone" size={32} color={theme.primary} style={styles.comingSoonIcon} />
+        <ThemedText style={[styles.comingSoonTitle, { color: theme.text }]}>
+          In-App Purchases Coming Soon
+        </ThemedText>
+        <ThemedText style={[styles.comingSoonText, { color: theme.textSecondary }]}>
+          We're working on bringing native in-app purchases to this platform. In the meantime, you can support us through the web version of the app.
+        </ThemedText>
+        <Pressable
+          style={[styles.primaryButton, { backgroundColor: theme.primary, marginTop: Spacing.lg }]}
+          onPress={handleContactSupport}
+        >
+          <ThemedText style={styles.buttonText}>
+            Contact for Support Options
+          </ThemedText>
+        </Pressable>
+      </Card>
+    </View>
+  );
+
+  const renderWebPaymentSection = () => (
+    <View style={styles.buttonsSection}>
+      {pricesLoading ? (
+        <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: Spacing.xl }} />
+      ) : (
+        <>
+          <Pressable
+            style={[
+              styles.primaryButton, 
+              { backgroundColor: theme.primary },
+              loadingPriceId === monthlyPrice?.id && styles.buttonDisabled
+            ]}
+            onPress={() => monthlyPrice && handleSupport(monthlyPrice.id)}
+            disabled={!monthlyPrice || loadingPriceId !== null}
+          >
+            {loadingPriceId === monthlyPrice?.id ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <ThemedText style={styles.buttonText}>
+                {monthlyPrice ? formatPrice(monthlyPrice.unitAmount, 'month') : '$1.99 / month'}
+              </ThemedText>
+            )}
+          </Pressable>
+
+          <ThemedText style={[styles.orText, { color: theme.textSecondary }]}>
+            or
+          </ThemedText>
+
+          <Pressable
+            style={[
+              styles.primaryButton, 
+              { backgroundColor: theme.primary },
+              loadingPriceId === yearlyPrice?.id && styles.buttonDisabled
+            ]}
+            onPress={() => yearlyPrice && handleSupport(yearlyPrice.id)}
+            disabled={!yearlyPrice || loadingPriceId !== null}
+          >
+            {loadingPriceId === yearlyPrice?.id ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <ThemedText style={styles.buttonText}>
+                {yearlyPrice ? formatPrice(yearlyPrice.unitAmount, 'year') : '$19.99 / year'}
+              </ThemedText>
+            )}
+          </Pressable>
+        </>
+      )}
+    </View>
+  );
 
   return (
     <ScrollView
@@ -112,53 +200,7 @@ export default function SupportUsScreen() {
         </ThemedText>
       </View>
 
-      <View style={styles.buttonsSection}>
-        {pricesLoading ? (
-          <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: Spacing.xl }} />
-        ) : (
-          <>
-            <Pressable
-              style={[
-                styles.primaryButton, 
-                { backgroundColor: theme.primary },
-                loadingPriceId === monthlyPrice?.id && styles.buttonDisabled
-              ]}
-              onPress={() => monthlyPrice && handleSupport(monthlyPrice.id)}
-              disabled={!monthlyPrice || loadingPriceId !== null}
-            >
-              {loadingPriceId === monthlyPrice?.id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <ThemedText style={styles.buttonText}>
-                  {monthlyPrice ? formatPrice(monthlyPrice.unitAmount, 'month') : '$1.99 / month'}
-                </ThemedText>
-              )}
-            </Pressable>
-
-            <ThemedText style={[styles.orText, { color: theme.textSecondary }]}>
-              or
-            </ThemedText>
-
-            <Pressable
-              style={[
-                styles.primaryButton, 
-                { backgroundColor: theme.primary },
-                loadingPriceId === yearlyPrice?.id && styles.buttonDisabled
-              ]}
-              onPress={() => yearlyPrice && handleSupport(yearlyPrice.id)}
-              disabled={!yearlyPrice || loadingPriceId !== null}
-            >
-              {loadingPriceId === yearlyPrice?.id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <ThemedText style={styles.buttonText}>
-                  {yearlyPrice ? formatPrice(yearlyPrice.unitAmount, 'year') : '$19.99 / year'}
-                </ThemedText>
-              )}
-            </Pressable>
-          </>
-        )}
-      </View>
+      {isNativePlatform ? renderNativePaymentSection() : renderWebPaymentSection()}
 
       <View style={styles.linksContainer}>
         <Pressable onPress={() => {
@@ -222,6 +264,27 @@ const styles = StyleSheet.create({
   buttonsSection: {
     width: "100%",
     alignItems: "center",
+  },
+  comingSoonCard: {
+    width: "100%",
+    padding: Spacing.xl,
+    alignItems: "center",
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  comingSoonIcon: {
+    marginBottom: Spacing.md,
+  },
+  comingSoonTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: Spacing.sm,
+    textAlign: "center",
+  },
+  comingSoonText: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: "center",
   },
   primaryButton: {
     width: "100%",
