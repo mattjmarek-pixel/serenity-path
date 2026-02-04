@@ -7,7 +7,6 @@ import * as WebBrowser from "expo-web-browser";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
-import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { apiRequest, getApiUrl } from "@/lib/query-client";
@@ -103,7 +102,7 @@ export default function SupportUsScreen() {
 
   const renderNativePaymentSection = () => (
     <View style={styles.buttonsSection}>
-      <Card style={[styles.comingSoonCard, { borderColor: theme.primary }]}>
+      <View style={[styles.comingSoonCard, { borderColor: theme.primary, backgroundColor: theme.backgroundDefault }]}>
         <Feather name="smartphone" size={32} color={theme.primary} style={styles.comingSoonIcon} />
         <ThemedText style={[styles.comingSoonTitle, { color: theme.text }]}>
           In-App Purchases Coming Soon
@@ -119,7 +118,7 @@ export default function SupportUsScreen() {
             Contact for Support Options
           </ThemedText>
         </Pressable>
-      </Card>
+      </View>
     </View>
   );
 

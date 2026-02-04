@@ -61,12 +61,32 @@ shared/           # Shared code between client/server
 - Post-login onboarding flow for sobriety date setup
 - Account management with logout confirmation and delete with double confirmation
 
+### Data Persistence
+- **Journal Entries**: Stored locally via AsyncStorage (`@serenity_path_journal_entries`)
+- **Reflection Bookmarks**: Stored locally via AsyncStorage (`@serenity_path_bookmarks`)
+- **Profile Data**: Persisted via AsyncStorage for offline-first experience
+- **User Preferences**: Theme, sobriety date stored locally
+
+### Payment System
+- **Web**: Stripe integration for subscription payments ($1.99/month or $19.99/year)
+- **iOS/Android**: Platform detection shows "Coming Soon" message; native in-app purchases (StoreKit/Play Billing) required for store compliance
+- **Stripe Routes**: 
+  - `GET /api/stripe/prices` - Fetch subscription prices
+  - `POST /api/stripe/create-checkout-session` - Create checkout session
+
+### Legal Compliance
+- **Privacy Policy**: Available at `/privacy`
+- **Terms of Service**: Available at `/terms`
+- **AA Disclaimer**: Displayed in Profile screen footer
+- **Support Contact**: Mattjmarek@gmail.com
+
 ### Key Features
 1. **Sobriety Counter**: Real-time days/hours/minutes tracking with milestone indicators
-2. **Daily Reflections**: Date-based meditation content with bookmarking
+2. **Daily Reflections**: Date-based meditation content with bookmarking (persisted)
 3. **12 Steps & Traditions**: Expandable reference library with reflection tracking
-4. **Journal**: Mood-tagged personal entries
+4. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
 5. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
+6. **Support Us**: Platform-aware donation page (Stripe for web, placeholder for native)
 
 ## External Dependencies
 
