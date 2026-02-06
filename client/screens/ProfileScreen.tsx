@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, StyleSheet, Pressable, Alert, Linking } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, StyleSheet, Pressable, Alert, Linking, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -110,6 +110,7 @@ export default function ProfileScreen() {
   const { themeMode, setThemeMode } = useThemeContext();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -307,13 +308,7 @@ export default function ProfileScreen() {
         <SettingsItem
           icon="bell"
           label="Notifications"
-          onPress={() => {
-            Alert.alert(
-              "Notifications",
-              "Notification settings will be available in a future update. Stay tuned!",
-              [{ text: "OK" }]
-            );
-          }}
+          onPress={() => setShowNotificationsModal(true)}
         />
         <SettingsItem
           icon="lock"
@@ -361,6 +356,37 @@ export default function ProfileScreen() {
       <ThemedText type="small" style={[styles.disclaimer, { color: theme.textSecondary }]}>
         This app is not affiliated with Alcoholics Anonymous World Services, Inc. and does not replace professional medical advice.
       </ThemedText>
+
+      <Modal
+        visible={showNotificationsModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowNotificationsModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowNotificationsModal(false)}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.backgroundDefault }]}>
+            <Feather name="bell" size={32} color={theme.primary} style={{ marginBottom: Spacing.md }} />
+            <ThemedText type="h4" style={{ marginBottom: Spacing.sm, textAlign: "center" }}>
+              Notifications
+            </ThemedText>
+            <ThemedText style={{ color: theme.textSecondary, textAlign: "center", lineHeight: 22, marginBottom: Spacing.lg }}>
+              Notification settings will be available in a future update. Stay tuned!
+            </ThemedText>
+            <Pressable
+              onPress={() => setShowNotificationsModal(false)}
+              style={({ pressed }) => [
+                styles.modalButton,
+                { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+              ]}
+            >
+              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>OK</ThemedText>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
     </KeyboardAwareScrollViewCompat>
   );
 }
@@ -472,5 +498,25 @@ const styles = StyleSheet.create({
   appearanceLabel: {
     fontWeight: "600",
     fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: Spacing.xl,
+  },
+  modalContent: {
+    width: "100%",
+    maxWidth: 320,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.xl,
+    alignItems: "center",
+  },
+  modalButton: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing["2xl"],
+    borderRadius: BorderRadius.md,
+    alignItems: "center",
   },
 });
