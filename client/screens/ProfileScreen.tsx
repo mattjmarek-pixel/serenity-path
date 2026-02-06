@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet, Pressable, Alert } from "react-native";
+import { View, StyleSheet, Pressable, Alert, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -15,6 +15,7 @@ import { useThemeContext, ThemeMode } from "@/contexts/ThemeContext";
 import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { getApiUrl } from "@/lib/query-client";
 
 const MILESTONES = [
   { days: 1, label: "24h" },
@@ -268,12 +269,12 @@ export default function ProfileScreen() {
         <SettingsItem
           icon="heart"
           label="Saved Reflections"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("SavedReflections")}
         />
         <SettingsItem
-          icon="calendar"
-          label="Meeting History"
-          onPress={() => {}}
+          icon="map-pin"
+          label="Find Meetings"
+          onPress={() => navigation.navigate("MeetingFinder")}
         />
       </View>
 
@@ -306,17 +307,28 @@ export default function ProfileScreen() {
         <SettingsItem
           icon="bell"
           label="Notifications"
-          onPress={() => {}}
+          onPress={() => {
+            Alert.alert(
+              "Notifications",
+              "Notification settings will be available in a future update. Stay tuned!",
+              [{ text: "OK" }]
+            );
+          }}
         />
         <SettingsItem
           icon="lock"
-          label="Privacy"
-          onPress={() => {}}
+          label="Privacy Policy"
+          onPress={() => {
+            const baseUrl = getApiUrl().replace('/api', '');
+            Linking.openURL(`${baseUrl}/privacy`);
+          }}
         />
         <SettingsItem
           icon="help-circle"
           label="Help & Support"
-          onPress={() => {}}
+          onPress={() => {
+            Linking.openURL('mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20-%20Help%20%26%20Support');
+          }}
         />
         <SettingsItem
           icon="heart"

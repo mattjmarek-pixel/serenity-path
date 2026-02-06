@@ -9,12 +9,14 @@ import BigBookScreen from "@/screens/BigBookScreen";
 import BigBookChapterScreen from "@/screens/BigBookChapterScreen";
 import EditProfileScreen from "@/screens/EditProfileScreen";
 import SupportUsScreen from "@/screens/SupportUsScreen";
+import SavedReflectionsScreen from "@/screens/SavedReflectionsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
   Main: undefined;
   Support: undefined;
   SupportUs: undefined;
+  SavedReflections: undefined;
   Journal: undefined;
   JournalEntry: { entryId?: string } | undefined;
   MeetingFinder: undefined;
@@ -91,6 +93,13 @@ export default function RootStackNavigator() {
         component={SupportUsScreen}
         options={{
           headerTitle: "Support Us",
+        }}
+      />
+      <Stack.Screen
+        name="SavedReflections"
+        component={SavedReflectionsScreen}
+        options={{
+          headerTitle: "Saved Reflections",
         }}
       />
     </Stack.Navigator>
