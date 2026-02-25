@@ -118,6 +118,11 @@ export default function HomeScreen() {
     navigation.navigate("EditProfile");
   }, [navigation]);
 
+  const handleChipsPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("SobrietyChips");
+  }, [navigation]);
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
@@ -181,18 +186,25 @@ export default function HomeScreen() {
 
       {achievedMilestones.length > 0 ? (
         <View style={styles.section}>
-          <ThemedText type="h4" style={styles.sectionTitle}>Milestones Achieved</ThemedText>
-          <View style={styles.milestonesGrid}>
-            {achievedMilestones.map((milestone) => (
-              <View
-                key={milestone.days}
-                style={[styles.milestoneBadge, { backgroundColor: theme.accent }]}
-              >
-                <Feather name="award" size={16} color="#FFFFFF" />
-                <ThemedText style={styles.milestoneBadgeText}>{milestone.label}</ThemedText>
-              </View>
-            ))}
+          <View style={styles.sectionHeader}>
+            <ThemedText type="h4">Milestones Achieved</ThemedText>
+            <Pressable onPress={handleChipsPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
+              <ThemedText type="small" style={{ color: theme.primary }}>View All Chips</ThemedText>
+            </Pressable>
           </View>
+          <Card onPress={handleChipsPress} elevation={1}>
+            <View style={styles.milestonesGrid}>
+              {achievedMilestones.map((milestone) => (
+                <View
+                  key={milestone.days}
+                  style={[styles.milestoneBadge, { backgroundColor: theme.accent }]}
+                >
+                  <Feather name="award" size={16} color="#FFFFFF" />
+                  <ThemedText style={styles.milestoneBadgeText}>{milestone.label}</ThemedText>
+                </View>
+              ))}
+            </View>
+          </Card>
         </View>
       ) : null}
 
@@ -342,6 +354,12 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: Spacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: Spacing.md,
   },
   sectionTitle: {
     marginBottom: Spacing.md,

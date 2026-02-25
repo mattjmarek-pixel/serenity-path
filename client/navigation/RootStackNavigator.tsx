@@ -10,6 +10,7 @@ import BigBookChapterScreen from "@/screens/BigBookChapterScreen";
 import EditProfileScreen from "@/screens/EditProfileScreen";
 import SupportUsScreen from "@/screens/SupportUsScreen";
 import SavedReflectionsScreen from "@/screens/SavedReflectionsScreen";
+import SobrietyChipsScreen from "@/screens/SobrietyChipsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -23,6 +24,7 @@ export type RootStackParamList = {
   BigBook: undefined;
   BigBookChapter: { chapterId: number };
   EditProfile: undefined;
+  SobrietyChips: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -100,6 +102,13 @@ export default function RootStackNavigator() {
         component={SavedReflectionsScreen}
         options={{
           headerTitle: "Saved Reflections",
+        }}
+      />
+      <Stack.Screen
+        name="SobrietyChips"
+        component={SobrietyChipsScreen}
+        options={{
+          headerTitle: "Sobriety Chips",
         }}
       />
     </Stack.Navigator>

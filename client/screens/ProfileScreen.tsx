@@ -268,6 +268,11 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate("Journal")}
         />
         <SettingsItem
+          icon="award"
+          label="Sobriety Chips"
+          onPress={() => navigation.navigate("SobrietyChips")}
+        />
+        <SettingsItem
           icon="heart"
           label="Saved Reflections"
           onPress={() => navigation.navigate("SavedReflections")}

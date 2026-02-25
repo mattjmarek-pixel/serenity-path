@@ -82,6 +82,7 @@ shared/           # Shared code between client/server
 
 ### Key Features
 1. **Sobriety Counter**: Real-time days/hours/minutes tracking with milestone indicators
+7. **Sobriety Chips**: Traditional AA chip system with 15 milestone levels (24h through 25 years), progress tracking, animated entrance, and earned/locked states
 2. **Daily Reflections**: Date-based meditation content with bookmarking (persisted)
 3. **12 Steps & Traditions**: Expandable reference library with reflection tracking
 4. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
