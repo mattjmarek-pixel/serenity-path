@@ -2,14 +2,20 @@ import React, { useState } from "react";
 import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useStepWork } from "@/hooks/useStepWork";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
+const STEP_QUESTION_COUNTS: { [step: number]: number } = {
+  1: 5, 2: 5, 3: 5, 4: 6, 5: 5, 6: 5, 7: 5, 8: 5, 9: 5, 10: 5, 11: 5, 12: 5,
+};
+
 const TWELVE_STEPS = [
-  { id: "1", number: 1, title: "Honesty", content: "We admitted we were powerless over alcohol—that our lives had become unmanageable." },
+  { id: "1", number: 1, title: "Honesty", content: "We admitted we were powerless over alcohol\u2014that our lives had become unmanageable." },
   { id: "2", number: 2, title: "Hope", content: "Came to believe that a Power greater than ourselves could restore us to sanity." },
   { id: "3", number: 3, title: "Faith", content: "Made a decision to turn our will and our lives over to the care of God as we understood Him." },
   { id: "4", number: 4, title: "Courage", content: "Made a searching and fearless moral inventory of ourselves." },
@@ -25,10 +31,10 @@ const TWELVE_STEPS = [
 
 const TWELVE_TRADITIONS = [
   { id: "t1", number: 1, title: "Unity", content: "Our common welfare should come first; personal recovery depends upon A.A. unity." },
-  { id: "t2", number: 2, title: "Leadership", content: "For our group purpose there is but one ultimate authority—a loving God as He may express Himself in our group conscience. Our leaders are but trusted servants; they do not govern." },
+  { id: "t2", number: 2, title: "Leadership", content: "For our group purpose there is but one ultimate authority\u2014a loving God as He may express Himself in our group conscience. Our leaders are but trusted servants; they do not govern." },
   { id: "t3", number: 3, title: "Membership", content: "The only requirement for A.A. membership is a desire to stop drinking." },
   { id: "t4", number: 4, title: "Autonomy", content: "Each group should be autonomous except in matters affecting other groups or A.A. as a whole." },
-  { id: "t5", number: 5, title: "Purpose", content: "Each group has but one primary purpose—to carry its message to the alcoholic who still suffers." },
+  { id: "t5", number: 5, title: "Purpose", content: "Each group has but one primary purpose\u2014to carry its message to the alcoholic who still suffers." },
   { id: "t6", number: 6, title: "Non-Endorsement", content: "An A.A. group ought never endorse, finance, or lend the A.A. name to any related facility or outside enterprise, lest problems of money, property, and prestige divert us from our primary purpose." },
   { id: "t7", number: 7, title: "Self-Supporting", content: "Every A.A. group ought to be fully self-supporting, declining outside contributions." },
   { id: "t8", number: 8, title: "Non-Professional", content: "Alcoholics Anonymous should remain forever non-professional, but our service centers may employ special workers." },
@@ -43,7 +49,9 @@ type Tab = "steps" | "traditions";
 export default function StepsScreen() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
+  const navigation = useNavigation<any>();
   const { theme } = useTheme();
+  const { getStepProgress, isStepStarted, isStepComplete } = useStepWork();
   const [activeTab, setActiveTab] = useState<Tab>("steps");
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [reflectedItems, setReflectedItems] = useState<Set<string>>(new Set());
@@ -72,6 +80,25 @@ export default function StepsScreen() {
       }
       return newSet;
     });
+  };
+
+  const getProgressLabel = (stepNumber: number) => {
+    const totalQ = STEP_QUESTION_COUNTS[stepNumber] || 5;
+    const complete = isStepComplete(stepNumber, totalQ);
+    const started = isStepStarted(stepNumber);
+    if (complete) return "Complete";
+    if (started) {
+      const progress = getStepProgress(stepNumber, totalQ);
+      return progress.answered + "/" + progress.total;
+    }
+    return "Not started";
+  };
+
+  const getProgressColor = (stepNumber: number) => {
+    const totalQ = STEP_QUESTION_COUNTS[stepNumber] || 5;
+    if (isStepComplete(stepNumber, totalQ)) return theme.success;
+    if (isStepStarted(stepNumber)) return theme.warning;
+    return theme.textSecondary;
   };
 
   return (
@@ -119,54 +146,80 @@ export default function StepsScreen() {
         </Pressable>
       </View>
 
-      {data.map((item) => (
-        <View key={item.id} style={[styles.itemCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Pressable
-            onPress={() => toggleExpand(item.id)}
-            style={({ pressed }) => [styles.itemHeader, { opacity: pressed ? 0.7 : 1 }]}
-          >
-            <View style={styles.itemHeaderLeft}>
-              <View style={[styles.numberBadge, { backgroundColor: theme.primary }]}>
-                <ThemedText style={styles.numberText}>{item.number}</ThemedText>
+      {data.map((item) => {
+        const isStep = activeTab === "steps";
+        return (
+          <View key={item.id} style={[styles.itemCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+            <Pressable
+              onPress={() => toggleExpand(item.id)}
+              style={({ pressed }) => [styles.itemHeader, { opacity: pressed ? 0.7 : 1 }]}
+            >
+              <View style={styles.itemHeaderLeft}>
+                <View style={[styles.numberBadge, { backgroundColor: theme.primary }]}>
+                  <ThemedText style={styles.numberText}>{item.number}</ThemedText>
+                </View>
+                <View style={styles.titleContainer}>
+                  <ThemedText type="h4" style={styles.itemTitle}>{item.title}</ThemedText>
+                  {isStep ? (
+                    <ThemedText style={[styles.progressLabel, { color: getProgressColor(item.number) }]}>
+                      {getProgressLabel(item.number)}
+                    </ThemedText>
+                  ) : null}
+                </View>
               </View>
-              <ThemedText type="h4" style={styles.itemTitle}>{item.title}</ThemedText>
-            </View>
-            <Feather
-              name={expandedItems.has(item.id) ? "chevron-up" : "chevron-down"}
-              size={20}
-              color={theme.textSecondary}
-            />
-          </Pressable>
-          {expandedItems.has(item.id) ? (
-            <View style={styles.itemContent}>
-              <ThemedText type="body" style={styles.itemContentText}>
-                {item.content}
-              </ThemedText>
-              <Pressable
-                onPress={() => toggleReflected(item.id)}
-                style={({ pressed }) => [
-                  styles.reflectedButton,
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
-              >
-                <Feather
-                  name={reflectedItems.has(item.id) ? "check-square" : "square"}
-                  size={20}
-                  color={reflectedItems.has(item.id) ? theme.accent : theme.textSecondary}
-                />
-                <ThemedText
-                  style={[
-                    styles.reflectedText,
-                    { color: reflectedItems.has(item.id) ? theme.accent : theme.textSecondary },
-                  ]}
-                >
-                  Reflected upon
+              <Feather
+                name={expandedItems.has(item.id) ? "chevron-up" : "chevron-down"}
+                size={20}
+                color={theme.textSecondary}
+              />
+            </Pressable>
+            {expandedItems.has(item.id) ? (
+              <View style={styles.itemContent}>
+                <ThemedText type="body" style={styles.itemContentText}>
+                  {item.content}
                 </ThemedText>
-              </Pressable>
-            </View>
-          ) : null}
-        </View>
-      ))}
+                <View style={styles.actionRow}>
+                  <Pressable
+                    onPress={() => toggleReflected(item.id)}
+                    style={({ pressed }) => [
+                      styles.reflectedButton,
+                      { opacity: pressed ? 0.7 : 1 },
+                    ]}
+                  >
+                    <Feather
+                      name={reflectedItems.has(item.id) ? "check-square" : "square"}
+                      size={20}
+                      color={reflectedItems.has(item.id) ? theme.accent : theme.textSecondary}
+                    />
+                    <ThemedText
+                      style={[
+                        styles.reflectedText,
+                        { color: reflectedItems.has(item.id) ? theme.accent : theme.textSecondary },
+                      ]}
+                    >
+                      Reflected upon
+                    </ThemedText>
+                  </Pressable>
+                  {isStep ? (
+                    <Pressable
+                      onPress={() => navigation.navigate("StepWork", { stepNumber: item.number })}
+                      style={({ pressed }) => [
+                        styles.stepWorkButton,
+                        { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                      ]}
+                    >
+                      <Feather name="edit-3" size={16} color="#FFFFFF" />
+                      <ThemedText style={styles.stepWorkButtonText}>
+                        Work on Step
+                      </ThemedText>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            ) : null}
+          </View>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -214,6 +267,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
   },
+  titleContainer: {
+    flex: 1,
+  },
   numberBadge: {
     width: 32,
     height: 32,
@@ -230,6 +286,11 @@ const styles = StyleSheet.create({
   itemTitle: {
     flex: 1,
   },
+  progressLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 2,
+  },
   itemContent: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.lg,
@@ -239,6 +300,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginBottom: Spacing.md,
   },
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   reflectedButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -246,5 +312,18 @@ const styles = StyleSheet.create({
   },
   reflectedText: {
     fontSize: 14,
+  },
+  stepWorkButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xs,
+  },
+  stepWorkButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 13,
   },
 });

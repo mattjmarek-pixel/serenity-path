@@ -82,12 +82,19 @@ shared/           # Shared code between client/server
 
 ### Key Features
 1. **Sobriety Counter**: Real-time days/hours/minutes tracking with milestone indicators
-7. **Sobriety Chips**: Traditional AA chip system with 15 milestone levels (24h through 25 years), progress tracking, animated entrance, and earned/locked states
-2. **Daily Reflections**: Date-based meditation content with bookmarking (persisted)
-3. **12 Steps & Traditions**: Expandable reference library with reflection tracking
-4. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
-5. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
-6. **Support Us**: Platform-aware donation page (Stripe for web, placeholder for native)
+2. **Sobriety Chips**: Traditional AA chip system with 15 milestone levels (24h through 25 years), progress tracking, animated entrance, and earned/locked states
+3. **Daily Check-In**: "How are you feeling?" mood check-in (5 levels: Crisis to Great) with optional notes, persisted via AsyncStorage (`@serenity_path_checkins`)
+4. **Mood History**: Visual bar chart showing mood trends over 7/30/90 days with average mood and trend indicators
+5. **"I'm Struggling" Panic Button**: Crisis support screen with one-tap sponsor/crisis calls, animated guided breathing exercise (inhale/hold/exhale), grounding exercises (5-4-3-2-1 senses, body scan, safe place visualization)
+6. **Daily Gratitude**: "3 things I'm grateful for" daily practice with history, persisted via AsyncStorage (`@serenity_path_gratitude`)
+7. **Promises & Prayers**: Expandable cards with Serenity Prayer, AA Promises, Third Step Prayer, Seventh Step Prayer, St. Francis Prayer
+8. **Step Work Companion**: Guided reflection questions (4-6 per step) for all 12 Steps with persisted answers via AsyncStorage (`@serenity_path_stepwork`)
+9. **Accountability Streaks**: Consecutive-day tracking for check-ins, journal entries, and gratitude with current/longest streak stats
+10. **Daily Reflections**: Date-based meditation content with bookmarking (persisted)
+11. **12 Steps & Traditions**: Expandable reference library with reflection tracking and step work progress
+12. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
+13. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
+14. **Support Us**: Platform-aware donation page (Stripe for web, placeholder for native)
 
 ## External Dependencies
 

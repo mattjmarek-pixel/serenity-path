@@ -278,9 +278,24 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate("SavedReflections")}
         />
         <SettingsItem
+          icon="sun"
+          label="Gratitude"
+          onPress={() => navigation.navigate("Gratitude")}
+        />
+        <SettingsItem
+          icon="zap"
+          label="Streaks"
+          onPress={() => navigation.navigate("Streaks")}
+        />
+        <SettingsItem
           icon="map-pin"
           label="Find Meetings"
           onPress={() => navigation.navigate("MeetingFinder")}
+        />
+        <SettingsItem
+          icon="book-open"
+          label="Promises & Prayers"
+          onPress={() => navigation.navigate("Prayers")}
         />
       </View>
 

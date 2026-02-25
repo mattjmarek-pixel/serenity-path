@@ -11,6 +11,13 @@ import EditProfileScreen from "@/screens/EditProfileScreen";
 import SupportUsScreen from "@/screens/SupportUsScreen";
 import SavedReflectionsScreen from "@/screens/SavedReflectionsScreen";
 import SobrietyChipsScreen from "@/screens/SobrietyChipsScreen";
+import PrayersScreen from "@/screens/PrayersScreen";
+import GratitudeScreen from "@/screens/GratitudeScreen";
+import PanicScreen from "@/screens/PanicScreen";
+import CheckInScreen from "@/screens/CheckInScreen";
+import MoodHistoryScreen from "@/screens/MoodHistoryScreen";
+import StepWorkScreen from "@/screens/StepWorkScreen";
+import StreaksScreen from "@/screens/StreaksScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
@@ -25,6 +32,13 @@ export type RootStackParamList = {
   BigBookChapter: { chapterId: number };
   EditProfile: undefined;
   SobrietyChips: undefined;
+  Prayers: undefined;
+  Gratitude: undefined;
+  Panic: undefined;
+  CheckIn: undefined;
+  MoodHistory: undefined;
+  StepWork: { stepNumber: number };
+  Streaks: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -109,6 +123,55 @@ export default function RootStackNavigator() {
         component={SobrietyChipsScreen}
         options={{
           headerTitle: "Sobriety Chips",
+        }}
+      />
+      <Stack.Screen
+        name="Prayers"
+        component={PrayersScreen}
+        options={{
+          headerTitle: "Promises & Prayers",
+        }}
+      />
+      <Stack.Screen
+        name="Gratitude"
+        component={GratitudeScreen}
+        options={{
+          headerTitle: "Gratitude",
+        }}
+      />
+      <Stack.Screen
+        name="Panic"
+        component={PanicScreen}
+        options={{
+          headerTitle: "I'm Struggling",
+        }}
+      />
+      <Stack.Screen
+        name="CheckIn"
+        component={CheckInScreen}
+        options={{
+          headerTitle: "Daily Check-In",
+        }}
+      />
+      <Stack.Screen
+        name="MoodHistory"
+        component={MoodHistoryScreen}
+        options={{
+          headerTitle: "Mood History",
+        }}
+      />
+      <Stack.Screen
+        name="StepWork"
+        component={StepWorkScreen}
+        options={{
+          headerTitle: "Step Work",
+        }}
+      />
+      <Stack.Screen
+        name="Streaks"
+        component={StreaksScreen}
+        options={{
+          headerTitle: "Streaks",
         }}
       />
     </Stack.Navigator>
