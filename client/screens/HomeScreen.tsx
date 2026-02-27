@@ -46,21 +46,17 @@ interface TimeElapsed {
 function calculateTimeElapsed(startDate: Date): TimeElapsed {
   const now = new Date();
   const diff = now.getTime() - startDate.getTime();
-  
+
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  
+
   return { days, hours, minutes, seconds };
 }
 
 function getNextMilestone(days: number) {
   return MILESTONES.find(m => m.days > days);
-}
-
-function getAchievedMilestones(days: number) {
-  return MILESTONES.filter(m => days >= m.days);
 }
 
 export default function HomeScreen() {
@@ -69,10 +65,10 @@ export default function HomeScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const navigation = useNavigation<HomeNavigationProp>();
-  const { profile, loadProfile, getSobrietyTime } = useProfile();
+  const { profile, loadProfile } = useProfile();
   const { getTodayEntry: getTodayGratitude, loadEntries: loadGratitude } = useGratitude();
   const { getTodayCheckIn, loadCheckIns } = useCheckIn();
-  const { checkInStreak, journalStreak, gratitudeStreak, loadStreaks, totalActiveStreaks, bestCurrentStreak } = useStreaks();
+  const { checkInStreak, journalStreak, gratitudeStreak, loadStreaks } = useStreaks();
 
   const [timeElapsed, setTimeElapsed] = useState<TimeElapsed | null>(null);
 
@@ -95,7 +91,7 @@ export default function HomeScreen() {
       setTimeElapsed(null);
       return;
     }
-    
+
     setTimeElapsed(calculateTimeElapsed(sobrietyDate));
     const interval = setInterval(() => {
       setTimeElapsed(calculateTimeElapsed(sobrietyDate));
@@ -104,80 +100,29 @@ export default function HomeScreen() {
   }, [sobrietyDate]);
 
   const nextMilestone = timeElapsed ? getNextMilestone(timeElapsed.days) : null;
-  const achievedMilestones = timeElapsed ? getAchievedMilestones(timeElapsed.days) : [];
   const daysToNextMilestone = nextMilestone && timeElapsed ? nextMilestone.days - timeElapsed.days : 0;
-
-  const handleReflectionPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("ReflectionsTab");
-  }, [navigation]);
-
-  const handleBigBookPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("BigBook");
-  }, [navigation]);
-
-  const handleMeetingFinderPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("MeetingFinder");
-  }, [navigation]);
-
-  const handleSetSobrietyDate = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("EditProfile");
-  }, [navigation]);
-
-  const handleChipsPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("SobrietyChips");
-  }, [navigation]);
-
-  const handlePanicPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    navigation.navigate("Panic");
-  }, [navigation]);
-
-  const handlePrayersPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("Prayers");
-  }, [navigation]);
-
-  const handleGratitudePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("Gratitude");
-  }, [navigation]);
-
-  const handleCheckInPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("CheckIn");
-  }, [navigation]);
-
-  const handleMoodHistoryPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("MoodHistory");
-  }, [navigation]);
-
-  const handleStreaksPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("Streaks");
-  }, [navigation]);
 
   const todayGratitude = getTodayGratitude();
   const todayCheckIn = getTodayCheckIn();
   const todayMoodOption = todayCheckIn ? MOOD_OPTIONS.find((o) => o.value === todayCheckIn.mood) : null;
+
+  const nav = useCallback((screen: keyof RootStackParamList, heavy?: boolean) => {
+    Haptics.impactAsync(heavy ? Haptics.ImpactFeedbackStyle.Heavy : Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate(screen as any);
+  }, [navigation]);
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
       contentContainerStyle={{
         paddingTop: headerHeight + Spacing.xl,
-        paddingBottom: tabBarHeight + Spacing.xl,
+        paddingBottom: tabBarHeight + Spacing["3xl"],
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       {timeElapsed ? (
-        <Card style={styles.heroCard} elevation={1}>
+        <Card style={styles.heroCard} elevation={1} onPress={() => nav("SobrietyChips")}>
           <ThemedText type="small" style={[styles.heroLabel, { color: theme.textSecondary }]}>
             Clean & Sober
           </ThemedText>
@@ -188,14 +133,14 @@ export default function HomeScreen() {
               </ThemedText>
               <ThemedText type="small" style={{ color: theme.textSecondary }}>Days</ThemedText>
             </View>
-            <View style={styles.counterDivider} />
+            <View style={[styles.counterDivider, { backgroundColor: theme.border }]} />
             <View style={styles.counterItem}>
               <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
                 {String(timeElapsed.hours).padStart(2, "0")}
               </ThemedText>
               <ThemedText type="small" style={{ color: theme.textSecondary }}>Hours</ThemedText>
             </View>
-            <View style={styles.counterDivider} />
+            <View style={[styles.counterDivider, { backgroundColor: theme.border }]} />
             <View style={styles.counterItem}>
               <ThemedText type="h2" style={[styles.smallCounter, { color: theme.primary }]}>
                 {String(timeElapsed.minutes).padStart(2, "0")}
@@ -204,16 +149,16 @@ export default function HomeScreen() {
             </View>
           </View>
           {nextMilestone ? (
-            <View style={[styles.milestonePreview, { backgroundColor: theme.accent + "30" }]}>
-              <Feather name="award" size={16} color={theme.primary} />
-              <ThemedText type="small" style={{ color: theme.primary }}>
+            <View style={[styles.milestonePreview, { backgroundColor: theme.accent + "20" }]}>
+              <Feather name="award" size={14} color={theme.accent} />
+              <ThemedText type="small" style={{ color: theme.accent }}>
                 {daysToNextMilestone} days until {nextMilestone.label}
               </ThemedText>
             </View>
           ) : null}
         </Card>
       ) : (
-        <Card style={styles.heroCard} elevation={1} onPress={handleSetSobrietyDate}>
+        <Card style={styles.heroCard} elevation={1} onPress={() => nav("EditProfile")}>
           <View style={[styles.setupIcon, { backgroundColor: theme.accent + "20" }]}>
             <Feather name="calendar" size={32} color={theme.primary} />
           </View>
@@ -228,84 +173,103 @@ export default function HomeScreen() {
       )}
 
       <Pressable
-        onPress={handlePanicPress}
+        onPress={() => nav("Panic", true)}
         style={({ pressed }) => [
           styles.panicButton,
           { backgroundColor: theme.emergency, opacity: pressed ? 0.9 : 1 },
         ]}
       >
-        <Feather name="alert-circle" size={22} color="#FFFFFF" />
+        <Feather name="alert-circle" size={20} color="#FFFFFF" />
         <ThemedText style={styles.panicButtonText}>I'm Struggling</ThemedText>
-        <Feather name="chevron-right" size={18} color="rgba(255,255,255,0.7)" />
+        <Feather name="chevron-right" size={16} color="rgba(255,255,255,0.6)" />
       </Pressable>
 
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <ThemedText type="h4">Daily Check-In</ThemedText>
-          {todayCheckIn ? (
-            <Pressable onPress={handleMoodHistoryPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-              <ThemedText type="small" style={{ color: theme.primary }}>View History</ThemedText>
-            </Pressable>
-          ) : null}
-        </View>
-        <Card onPress={handleCheckInPress} elevation={1}>
-          {todayCheckIn && todayMoodOption ? (
-            <View style={styles.checkInContent}>
-              <View style={[styles.checkInMoodDot, { backgroundColor: todayMoodOption.color }]}>
-                <Feather name={todayMoodOption.icon} size={20} color="#FFFFFF" />
-              </View>
-              <View style={styles.checkInInfo}>
-                <ThemedText type="h4">Feeling {todayMoodOption.label}</ThemedText>
-                <ThemedText type="small" style={{ color: theme.textSecondary }}>
-                  Tap to update your check-in
-                </ThemedText>
-              </View>
-              <Feather name="chevron-right" size={18} color={theme.textSecondary} />
-            </View>
-          ) : (
-            <View style={styles.checkInContent}>
-              <View style={[styles.checkInMoodDot, { backgroundColor: theme.primary + "20" }]}>
-                <Feather name="smile" size={20} color={theme.primary} />
-              </View>
-              <View style={styles.checkInInfo}>
-                <ThemedText type="h4">Check In Today</ThemedText>
-                <ThemedText type="small" style={{ color: theme.textSecondary }}>
-                  How are you feeling right now?
-                </ThemedText>
-              </View>
-              <Feather name="chevron-right" size={18} color={theme.textSecondary} />
-            </View>
-          )}
-        </Card>
-      </View>
-
-      {achievedMilestones.length > 0 ? (
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <ThemedText type="h4">Milestones Achieved</ThemedText>
-            <Pressable onPress={handleChipsPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-              <ThemedText type="small" style={{ color: theme.primary }}>View All Chips</ThemedText>
-            </Pressable>
-          </View>
-          <Card onPress={handleChipsPress} elevation={1}>
-            <View style={styles.milestonesGrid}>
-              {achievedMilestones.map((milestone) => (
-                <View
-                  key={milestone.days}
-                  style={[styles.milestoneBadge, { backgroundColor: theme.accent }]}
-                >
-                  <Feather name="award" size={16} color="#FFFFFF" />
-                  <ThemedText style={styles.milestoneBadgeText}>{milestone.label}</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>Today</ThemedText>
+        <View style={styles.todayRow}>
+          <Card style={styles.todayCard} elevation={1} onPress={() => nav("CheckIn")}>
+            {todayCheckIn && todayMoodOption ? (
+              <>
+                <View style={[styles.todayIconDot, { backgroundColor: todayMoodOption.color }]}>
+                  <Feather name={todayMoodOption.icon} size={18} color="#FFFFFF" />
                 </View>
-              ))}
+                <ThemedText type="small" style={{ fontWeight: "600" }} numberOfLines={1}>
+                  {todayMoodOption.label}
+                </ThemedText>
+                <Feather name="check-circle" size={12} color={theme.success} />
+              </>
+            ) : (
+              <>
+                <View style={[styles.todayIconDot, { backgroundColor: theme.primary + "20" }]}>
+                  <Feather name="smile" size={18} color={theme.primary} />
+                </View>
+                <ThemedText type="small" style={{ fontWeight: "600", color: theme.primary }}>
+                  Check In
+                </ThemedText>
+              </>
+            )}
+            {checkInStreak.current > 0 ? (
+              <View style={[styles.streakBadge, { backgroundColor: theme.primary + "15" }]}>
+                <Feather name="zap" size={10} color={theme.primary} />
+                <ThemedText style={[styles.streakBadgeText, { color: theme.primary }]}>
+                  {checkInStreak.current}
+                </ThemedText>
+              </View>
+            ) : null}
+          </Card>
+
+          <Card style={styles.todayCard} elevation={1} onPress={() => nav("Gratitude")}>
+            {todayGratitude ? (
+              <>
+                <View style={[styles.todayIconDot, { backgroundColor: theme.accent }]}>
+                  <Feather name="sun" size={18} color="#FFFFFF" />
+                </View>
+                <ThemedText type="small" style={{ fontWeight: "600" }} numberOfLines={1}>
+                  Grateful
+                </ThemedText>
+                <Feather name="check-circle" size={12} color={theme.success} />
+              </>
+            ) : (
+              <>
+                <View style={[styles.todayIconDot, { backgroundColor: theme.accent + "20" }]}>
+                  <Feather name="sun" size={18} color={theme.accent} />
+                </View>
+                <ThemedText type="small" style={{ fontWeight: "600", color: theme.accent }}>
+                  Gratitude
+                </ThemedText>
+              </>
+            )}
+            {gratitudeStreak.current > 0 ? (
+              <View style={[styles.streakBadge, { backgroundColor: theme.accent + "15" }]}>
+                <Feather name="zap" size={10} color={theme.accent} />
+                <ThemedText style={[styles.streakBadgeText, { color: theme.accent }]}>
+                  {gratitudeStreak.current}
+                </ThemedText>
+              </View>
+            ) : null}
+          </Card>
+
+          <Card style={styles.todayCard} elevation={1} onPress={() => nav("Journal")}>
+            <View style={[styles.todayIconDot, { backgroundColor: theme.success + "20" }]}>
+              <Feather name="edit-3" size={18} color={theme.success} />
             </View>
+            <ThemedText type="small" style={{ fontWeight: "600", color: theme.success }}>
+              Journal
+            </ThemedText>
+            {journalStreak.current > 0 ? (
+              <View style={[styles.streakBadge, { backgroundColor: theme.success + "15" }]}>
+                <Feather name="zap" size={10} color={theme.success} />
+                <ThemedText style={[styles.streakBadgeText, { color: theme.success }]}>
+                  {journalStreak.current}
+                </ThemedText>
+              </View>
+            ) : null}
           </Card>
         </View>
-      ) : null}
+      </View>
 
       {profile.personalMantra ? (
         <View style={styles.section}>
-          <ThemedText type="h4" style={styles.sectionTitle}>Your Mantra</ThemedText>
           <Card style={styles.affirmationCard} elevation={1}>
             <ThemedText type="body" style={styles.affirmationText}>
               "{profile.personalMantra}"
@@ -314,7 +278,6 @@ export default function HomeScreen() {
         </View>
       ) : (
         <View style={styles.section}>
-          <ThemedText type="h4" style={styles.sectionTitle}>Daily Affirmation</ThemedText>
           <Card style={styles.affirmationCard} elevation={1}>
             <ThemedText type="body" style={styles.affirmationText}>
               "Progress, not perfection."
@@ -324,166 +287,61 @@ export default function HomeScreen() {
       )}
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Gratitude</ThemedText>
-        <Card onPress={handleGratitudePress} elevation={1}>
-          {todayGratitude ? (
-            <View style={styles.gratitudeContent}>
-              <View style={styles.gratitudeHeader}>
-                <Feather name="sun" size={20} color={theme.accent} />
-                <ThemedText type="h4" style={{ flex: 1 }}>Today's Gratitude</ThemedText>
-                <Feather name="check-circle" size={16} color={theme.success} />
-              </View>
-              {todayGratitude.items.filter((i) => i.length > 0).map((item, index) => (
-                <View key={index} style={styles.gratitudeItemRow}>
-                  <Feather name="heart" size={12} color={theme.accent} />
-                  <ThemedText type="small" numberOfLines={1} style={{ flex: 1 }}>
-                    {item}
-                  </ThemedText>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <View style={styles.gratitudeContent}>
-              <View style={styles.gratitudeHeader}>
-                <Feather name="sun" size={20} color={theme.accent} />
-                <ThemedText type="h4" style={{ flex: 1 }}>Write Your Gratitude</ThemedText>
-              </View>
-              <ThemedText type="small" style={{ color: theme.textSecondary, lineHeight: 20 }}>
-                Take a moment to reflect on 3 things you're grateful for today.
-              </ThemedText>
-              <View style={styles.gratitudeFooter}>
-                <ThemedText type="small" style={{ color: theme.accent }}>Get started</ThemedText>
-                <Feather name="chevron-right" size={16} color={theme.accent} />
-              </View>
-            </View>
-          )}
-        </Card>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <ThemedText type="h4">Streaks</ThemedText>
-          <Pressable onPress={handleStreaksPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-            <ThemedText type="small" style={{ color: theme.primary }}>View All</ThemedText>
-          </Pressable>
-        </View>
-        <Card onPress={handleStreaksPress} elevation={1}>
-          <View style={styles.streaksContent}>
-            <View style={styles.streaksRow}>
-              <View style={styles.streakItem}>
-                <Feather name="zap" size={16} color={checkInStreak.current > 0 ? theme.primary : theme.textSecondary} />
-                <ThemedText type="h4" style={{ color: checkInStreak.current > 0 ? theme.primary : theme.textSecondary }}>
-                  {checkInStreak.current}
-                </ThemedText>
-                <ThemedText type="small" style={{ color: theme.textSecondary }}>Check-In</ThemedText>
-              </View>
-              <View style={[styles.streakItemDivider, { backgroundColor: theme.border }]} />
-              <View style={styles.streakItem}>
-                <Feather name="zap" size={16} color={journalStreak.current > 0 ? theme.success : theme.textSecondary} />
-                <ThemedText type="h4" style={{ color: journalStreak.current > 0 ? theme.success : theme.textSecondary }}>
-                  {journalStreak.current}
-                </ThemedText>
-                <ThemedText type="small" style={{ color: theme.textSecondary }}>Journal</ThemedText>
-              </View>
-              <View style={[styles.streakItemDivider, { backgroundColor: theme.border }]} />
-              <View style={styles.streakItem}>
-                <Feather name="zap" size={16} color={gratitudeStreak.current > 0 ? theme.accent : theme.textSecondary} />
-                <ThemedText type="h4" style={{ color: gratitudeStreak.current > 0 ? theme.accent : theme.textSecondary }}>
-                  {gratitudeStreak.current}
-                </ThemedText>
-                <ThemedText type="small" style={{ color: theme.textSecondary }}>Gratitude</ThemedText>
-              </View>
-            </View>
-            {totalActiveStreaks > 0 ? (
-              <View style={[styles.streaksBadge, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="zap" size={14} color={theme.accent} />
-                <ThemedText type="small" style={{ color: theme.accent, fontWeight: "600" }}>
-                  {totalActiveStreaks} active streak{totalActiveStreaks !== 1 ? "s" : ""}
-                </ThemedText>
-              </View>
-            ) : (
-              <ThemedText type="small" style={{ color: theme.textSecondary, textAlign: "center" }}>
-                Complete daily activities to build streaks
-              </ThemedText>
-            )}
-          </View>
-        </Card>
-      </View>
-
-      <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Today's Reflection</ThemedText>
-        <Card onPress={handleReflectionPress} style={styles.reflectionPreview}>
+        <Card onPress={() => nav("ReflectionsTab" as any)}>
           <View style={styles.reflectionHeader}>
-            <Feather name="book-open" size={20} color={theme.primary} />
-            <ThemedText type="h4" style={styles.reflectionTitle}>Step By Step</ThemedText>
+            <Feather name="book-open" size={18} color={theme.primary} />
+            <ThemedText type="h4" style={{ flex: 1 }}>Step By Step</ThemedText>
+            <Feather name="chevron-right" size={16} color={theme.textSecondary} />
           </View>
-          <ThemedText type="body" numberOfLines={2} style={styles.reflectionSnippet}>
+          <ThemedText type="small" numberOfLines={2} style={[styles.reflectionSnippet, { color: theme.textSecondary }]}>
             We learn to walk before we can run. In recovery, we take things one day at a time...
           </ThemedText>
-          <View style={styles.reflectionFooter}>
-            <ThemedText type="small" style={{ color: theme.primary }}>Read more</ThemedText>
-            <Feather name="chevron-right" size={16} color={theme.primary} />
-          </View>
         </Card>
       </View>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Quick Stats</ThemedText>
-        <View style={styles.statsRow}>
-          <Card style={styles.statCard} elevation={1}>
-            <Feather name="users" size={24} color={theme.secondary} />
-            <ThemedText type="h3" style={styles.statNumber}>12</ThemedText>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Meetings</ThemedText>
-          </Card>
-          <Card style={styles.statCard} elevation={1}>
-            <Feather name="edit-3" size={24} color={theme.accent} />
-            <ThemedText type="h3" style={styles.statNumber}>8</ThemedText>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Journal Entries</ThemedText>
-          </Card>
-        </View>
-      </View>
+        <ThemedText type="h4" style={styles.sectionTitle}>Quick Access</ThemedText>
+        <View style={styles.quickAccessRow}>
+          <Pressable
+            onPress={() => nav("Prayers")}
+            style={({ pressed }) => [styles.quickAccessItem, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <View style={[styles.quickAccessIcon, { backgroundColor: theme.secondary + "20" }]}>
+              <Feather name="book-open" size={22} color={theme.secondary} />
+            </View>
+            <ThemedText type="small" style={styles.quickAccessLabel}>Prayers</ThemedText>
+          </Pressable>
 
-      <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Resources</ThemedText>
-        <View style={styles.resourcesGrid}>
-          <Card onPress={handleBigBookPress} style={styles.resourceCard} elevation={1}>
-            <View style={[styles.resourceIcon, { backgroundColor: theme.primary + "20" }]}>
-              <Feather name="book" size={24} color={theme.primary} />
+          <Pressable
+            onPress={() => nav("BigBook")}
+            style={({ pressed }) => [styles.quickAccessItem, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <View style={[styles.quickAccessIcon, { backgroundColor: theme.primary + "20" }]}>
+              <Feather name="book" size={22} color={theme.primary} />
             </View>
-            <ThemedText type="h4" style={styles.resourceTitle}>Big Book</ThemedText>
-            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
-              Read chapter summaries
-            </ThemedText>
-          </Card>
-          <Card onPress={handleMeetingFinderPress} style={styles.resourceCard} elevation={1}>
-            <View style={[styles.resourceIcon, { backgroundColor: theme.accent + "20" }]}>
-              <Feather name="map-pin" size={24} color={theme.accent} />
+            <ThemedText type="small" style={styles.quickAccessLabel}>Big Book</ThemedText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => nav("MeetingFinder")}
+            style={({ pressed }) => [styles.quickAccessItem, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <View style={[styles.quickAccessIcon, { backgroundColor: theme.accent + "20" }]}>
+              <Feather name="map-pin" size={22} color={theme.accent} />
             </View>
-            <ThemedText type="h4" style={styles.resourceTitle}>Meetings</ThemedText>
-            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
-              Find nearby AA meetings
-            </ThemedText>
-          </Card>
-        </View>
-        <View style={[styles.resourcesGrid, { marginTop: Spacing.md }]}>
-          <Card onPress={handlePrayersPress} style={styles.resourceCard} elevation={1}>
-            <View style={[styles.resourceIcon, { backgroundColor: theme.secondary + "20" }]}>
-              <Feather name="book-open" size={24} color={theme.secondary} />
+            <ThemedText type="small" style={styles.quickAccessLabel}>Meetings</ThemedText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => nav("MoodHistory")}
+            style={({ pressed }) => [styles.quickAccessItem, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <View style={[styles.quickAccessIcon, { backgroundColor: theme.success + "20" }]}>
+              <Feather name="trending-up" size={22} color={theme.success} />
             </View>
-            <ThemedText type="h4" style={styles.resourceTitle}>Prayers</ThemedText>
-            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
-              Promises & daily prayers
-            </ThemedText>
-          </Card>
-          <Card onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); navigation.navigate("Journal"); }} style={styles.resourceCard} elevation={1}>
-            <View style={[styles.resourceIcon, { backgroundColor: theme.success + "20" }]}>
-              <Feather name="edit-3" size={24} color={theme.success} />
-            </View>
-            <ThemedText type="h4" style={styles.resourceTitle}>Journal</ThemedText>
-            <ThemedText type="small" style={[styles.resourceDesc, { color: theme.textSecondary }]}>
-              Write your thoughts
-            </ThemedText>
-          </Card>
+            <ThemedText type="small" style={styles.quickAccessLabel}>Mood</ThemedText>
+          </Pressable>
         </View>
       </View>
     </ScrollView>
@@ -494,26 +352,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  panicButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.lg,
-    marginBottom: Spacing.xl,
-    gap: Spacing.sm,
-  },
-  panicButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-    flex: 1,
-    textAlign: "center",
-  },
   heroCard: {
     alignItems: "center",
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   heroLabel: {
     marginBottom: Spacing.md,
@@ -538,16 +379,15 @@ const styles = StyleSheet.create({
   },
   counterDivider: {
     width: 1,
-    height: 40,
-    backgroundColor: "#E2E8F0",
+    height: 36,
   },
   milestonePreview: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.full,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   setupIcon: {
     width: 64,
@@ -571,159 +411,98 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.md,
   },
-  section: {
-    marginBottom: Spacing.xl,
-  },
-  sectionHeader: {
+  panicButton: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Spacing.md,
+    justifyContent: "center",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing["2xl"],
+    gap: Spacing.sm,
+  },
+  panicButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+    flex: 1,
+    textAlign: "center",
+  },
+  section: {
+    marginBottom: Spacing["2xl"],
   },
   sectionTitle: {
     marginBottom: Spacing.md,
   },
-  milestonesGrid: {
+  todayRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: Spacing.sm,
   },
-  milestoneBadge: {
+  todayCard: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  todayIconDot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.xs,
+  },
+  streakBadge: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: 2,
+    paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.full,
-    gap: Spacing.xs,
+    gap: 2,
+    marginTop: Spacing.xs,
   },
-  milestoneBadgeText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    fontSize: 12,
-  },
-  reflectionPreview: {
-    gap: Spacing.sm,
-  },
-  reflectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
-  reflectionTitle: {
-    flex: 1,
-  },
-  reflectionSnippet: {
-    lineHeight: 22,
-  },
-  reflectionFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.xs,
-    marginTop: Spacing.sm,
-  },
-  statsRow: {
-    flexDirection: "row",
-    gap: Spacing.md,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: "center",
-  },
-  statNumber: {
-    marginVertical: Spacing.sm,
+  streakBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
   },
   affirmationCard: {
     alignItems: "center",
-    paddingVertical: Spacing["2xl"],
+    paddingVertical: Spacing.xl,
   },
   affirmationText: {
     fontStyle: "italic",
     textAlign: "center",
     lineHeight: 26,
   },
-  resourcesGrid: {
+  reflectionHeader: {
     flexDirection: "row",
-    gap: Spacing.md,
-  },
-  resourceCard: {
-    flex: 1,
     alignItems: "center",
-    paddingVertical: Spacing.lg,
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
-  resourceIcon: {
+  reflectionSnippet: {
+    lineHeight: 20,
+  },
+  quickAccessRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  quickAccessItem: {
+    alignItems: "center",
+    gap: Spacing.sm,
+    flex: 1,
+  },
+  quickAccessIcon: {
     width: 52,
     height: 52,
     borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: Spacing.md,
   },
-  resourceTitle: {
-    marginBottom: Spacing.xs,
+  quickAccessLabel: {
+    fontSize: 12,
+    fontWeight: "600",
     textAlign: "center",
-  },
-  resourceDesc: {
-    textAlign: "center",
-  },
-  checkInContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.md,
-  },
-  checkInMoodDot: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkInInfo: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  gratitudeContent: {
-    gap: Spacing.sm,
-  },
-  gratitudeHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
-  gratitudeItemRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-    paddingLeft: Spacing.xs,
-  },
-  gratitudeFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.xs,
-    marginTop: Spacing.xs,
-  },
-  streaksContent: {
-    gap: Spacing.md,
-  },
-  streaksRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  streakItem: {
-    flex: 1,
-    alignItems: "center",
-    gap: Spacing.xs,
-  },
-  streakItemDivider: {
-    width: 1,
-    height: 36,
-  },
-  streaksBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.full,
-    gap: Spacing.sm,
   },
 });
