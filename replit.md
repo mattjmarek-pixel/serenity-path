@@ -44,7 +44,7 @@ client/           # React Native app code
   ├── screens/    # Screen components
   ├── navigation/ # Navigation configuration
   ├── hooks/      # Custom React hooks
-  ├── constants/  # Theme, colors, spacing
+  ├── constants/  # Theme, colors, spacing, daily reflections data
   └── lib/        # API client, query configuration
 
 server/           # Express backend
@@ -90,7 +90,7 @@ shared/           # Shared code between client/server
 7. **Promises & Prayers**: Expandable cards with Serenity Prayer, AA Promises, Third Step Prayer, Seventh Step Prayer, St. Francis Prayer
 8. **Step Work Companion**: Guided reflection questions (4-6 per step) for all 12 Steps with persisted answers via AsyncStorage (`@serenity_path_stepwork`)
 9. **Accountability Streaks**: Consecutive-day tracking for check-ins, journal entries, and gratitude with current/longest streak stats
-10. **Daily Reflections**: Date-based meditation content with bookmarking (persisted)
+10. **Daily Reflections**: 366 date-based meditation reflections (one per day of year including Feb 29), auto-opens to today's date, with bookmarking (persisted). Data in `client/constants/reflections.ts`
 11. **12 Steps & Traditions**: Expandable reference library with reflection tracking and step work progress
 12. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
 13. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines

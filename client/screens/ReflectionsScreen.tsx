@@ -10,65 +10,14 @@ import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { Spacing, BorderRadius } from "@/constants/theme";
-
-const DAILY_REFLECTIONS = [
-  {
-    id: "1",
-    date: "December 9",
-    title: "Step By Step",
-    content: "We learn to walk before we can run. In recovery, we take things one day at a time, trusting that each small step leads us toward a healthier, more fulfilling life. Today, focus on the next right thing. The journey of a thousand miles begins with a single step.",
-    author: "Anonymous",
-  },
-  {
-    id: "2",
-    date: "December 10",
-    title: "Gratitude in Action",
-    content: "Gratitude is not just a feeling, but a practice. When we actively seek out things to be thankful for, we shift our perspective from what we lack to what we have. Today, let gratitude guide your actions and words.",
-    author: "Anonymous",
-  },
-  {
-    id: "3",
-    date: "December 11",
-    title: "The Power of Connection",
-    content: "We cannot recover alone. Connection with others who understand our struggles provides strength, hope, and accountability. Reach out to someone today - a sponsor, a fellow member, or a friend in recovery.",
-    author: "Anonymous",
-  },
-  {
-    id: "4",
-    date: "December 12",
-    title: "Accepting Imperfection",
-    content: "Progress, not perfection, is our goal. Recovery is not about becoming perfect; it's about becoming honest, humble, and willing to grow. Embrace your imperfections as opportunities for learning.",
-    author: "Anonymous",
-  },
-  {
-    id: "5",
-    date: "December 13",
-    title: "Living in the Present",
-    content: "Yesterday is history, tomorrow is a mystery, but today is a gift - that's why we call it the present. Stay focused on what you can do right now, in this moment, to support your recovery.",
-    author: "Anonymous",
-  },
-  {
-    id: "6",
-    date: "December 14",
-    title: "The Courage to Change",
-    content: "Change requires courage. It asks us to let go of familiar patterns, even when they no longer serve us. Today, find the courage to make one small positive change in your life.",
-    author: "Anonymous",
-  },
-  {
-    id: "7",
-    date: "December 15",
-    title: "Serenity Through Surrender",
-    content: "When we stop fighting against what we cannot control and surrender to a power greater than ourselves, we find peace. Surrender is not weakness - it is wisdom.",
-    author: "Anonymous",
-  },
-];
+import { DAILY_REFLECTIONS, getTodayIndex } from "@/constants/reflections";
 
 export default function ReflectionsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(getTodayIndex);
   const { bookmarked, toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentReflection = DAILY_REFLECTIONS[currentIndex];

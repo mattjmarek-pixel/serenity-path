@@ -17,6 +17,7 @@ import { useGratitude } from "@/hooks/useGratitude";
 import { useCheckIn, MOOD_OPTIONS } from "@/hooks/useCheckIn";
 import { useStreaks } from "@/hooks/useStreaks";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import { getTodayReflection } from "@/constants/reflections";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -291,11 +292,11 @@ export default function HomeScreen() {
         <Card onPress={() => nav("ReflectionsTab" as any)}>
           <View style={styles.reflectionHeader}>
             <Feather name="book-open" size={18} color={theme.primary} />
-            <ThemedText type="h4" style={{ flex: 1 }}>Step By Step</ThemedText>
+            <ThemedText type="h4" style={{ flex: 1 }}>{getTodayReflection().title}</ThemedText>
             <Feather name="chevron-right" size={16} color={theme.textSecondary} />
           </View>
           <ThemedText type="small" numberOfLines={2} style={[styles.reflectionSnippet, { color: theme.textSecondary }]}>
-            We learn to walk before we can run. In recovery, we take things one day at a time...
+            {getTodayReflection().content}
           </ThemedText>
         </Card>
       </View>

@@ -111,8 +111,8 @@ export default function MoodHistoryScreen() {
                 size={28}
                 color={
                   rangeData[rangeData.length - 1].mood >= rangeData[0].mood
-                    ? "#2E7D4A"
-                    : "#C62828"
+                    ? theme.success
+                    : theme.emergency
                 }
               />
             ) : (
