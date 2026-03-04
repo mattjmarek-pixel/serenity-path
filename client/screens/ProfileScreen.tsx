@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { View, StyleSheet, Pressable, Alert, Linking, Modal } from "react-native";
+import React, { useMemo } from "react";
+import { View, StyleSheet, Pressable, Alert, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -13,6 +13,7 @@ import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { useThemeContext, ThemeMode } from "@/contexts/ThemeContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useAuth } from "@/hooks/useAuth";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { getApiUrl } from "@/lib/query-client";
@@ -110,7 +111,7 @@ export default function ProfileScreen() {
   const { themeMode, setThemeMode } = useThemeContext();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
-  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const { user, isGuest, logout, deleteAccount } = useAuth();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -143,10 +144,10 @@ export default function ProfileScreen() {
   const handleLogout = () => {
     Alert.alert(
       "Log Out",
-      "Are you sure you want to log out?",
+      "Are you sure you want to log out? Your local data will be preserved.",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Log Out", style: "destructive", onPress: () => {} },
+        { text: "Log Out", style: "destructive", onPress: () => { logout(); } },
       ]
     );
   };
@@ -166,7 +167,7 @@ export default function ProfileScreen() {
               "This will permanently delete all your sobriety data, journal entries, and account information.",
               [
                 { text: "Cancel", style: "cancel" },
-                { text: "Delete Forever", style: "destructive", onPress: () => {} },
+                { text: "Delete Forever", style: "destructive", onPress: () => { deleteAccount(); } },
               ]
             );
           },
@@ -328,7 +329,7 @@ export default function ProfileScreen() {
         <SettingsItem
           icon="bell"
           label="Notifications"
-          onPress={() => setShowNotificationsModal(true)}
+          onPress={() => navigation.navigate("NotificationSettings")}
         />
         <SettingsItem
           icon="lock"
@@ -377,36 +378,14 @@ export default function ProfileScreen() {
         This app is not affiliated with Alcoholics Anonymous World Services, Inc. and does not replace professional medical advice.
       </ThemedText>
 
-      <Modal
-        visible={showNotificationsModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowNotificationsModal(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowNotificationsModal(false)}
-        >
-          <View style={[styles.modalContent, { backgroundColor: theme.backgroundDefault }]}>
-            <Feather name="bell" size={32} color={theme.primary} style={{ marginBottom: Spacing.md }} />
-            <ThemedText type="h4" style={{ marginBottom: Spacing.sm, textAlign: "center" }}>
-              Notifications
-            </ThemedText>
-            <ThemedText style={{ color: theme.textSecondary, textAlign: "center", lineHeight: 22, marginBottom: Spacing.lg }}>
-              Notification settings will be available in a future update. Stay tuned!
-            </ThemedText>
-            <Pressable
-              onPress={() => setShowNotificationsModal(false)}
-              style={({ pressed }) => [
-                styles.modalButton,
-                { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
-              ]}
-            >
-              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>OK</ThemedText>
-            </Pressable>
-          </View>
-        </Pressable>
-      </Modal>
+      {user ? (
+        <View style={[styles.accountInfo, { borderColor: theme.border }]}>
+          <Feather name={user.provider === "apple" ? "smartphone" : "mail"} size={14} color={theme.textSecondary} />
+          <ThemedText type="small" style={{ color: theme.textSecondary }}>
+            Signed in{user.provider !== "guest" ? ` with ${user.provider === "apple" ? "Apple" : "Google"}` : " as guest"}
+          </ThemedText>
+        </View>
+      ) : null}
     </KeyboardAwareScrollViewCompat>
   );
 }
@@ -519,24 +498,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  accountInfo: {
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
-    padding: Spacing.xl,
-  },
-  modalContent: {
-    width: "100%",
-    maxWidth: 320,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
-    alignItems: "center",
-  },
-  modalButton: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing["2xl"],
-    borderRadius: BorderRadius.md,
-    alignItems: "center",
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
   },
 });

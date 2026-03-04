@@ -56,20 +56,33 @@ shared/           # Shared code between client/server
   └── schema.ts   # Drizzle database schema
 ```
 
-### Authentication Strategy (Planned)
-- SSO implementation with Apple Sign-In (required for iOS) and Google Sign-In
-- Post-login onboarding flow for sobriety date setup
-- Account management with logout confirmation and delete with double confirmation
+### Authentication
+- **Apple Sign-In**: Native iOS via `expo-apple-authentication` (iOS only)
+- **Google Sign-In**: Cross-platform via `expo-auth-session`
+- **Guest Mode**: "Continue without an account" option — all features available
+- **Auth Hook**: `client/hooks/useAuth.ts` manages auth state via AsyncStorage (`@serenity_path_auth`)
+- **Welcome Screen**: `client/screens/WelcomeScreen.tsx` shows on first launch
+- **Account Management**: Logout (preserves local data), Delete Account (clears all AsyncStorage keys)
+- All data remains local (AsyncStorage) — auth is opt-in identity for future cloud backup
 
 ### Data Persistence
 - **Journal Entries**: Stored locally via AsyncStorage (`@serenity_path_journal_entries`)
 - **Reflection Bookmarks**: Stored locally via AsyncStorage (`@serenity_path_bookmarks`)
 - **Profile Data**: Persisted via AsyncStorage for offline-first experience
 - **User Preferences**: Theme, sobriety date stored locally
+- **Notification Preferences**: Persisted via AsyncStorage (`@serenity_path_notifications`)
+
+### Notifications
+- **Local Push Notifications**: Via `expo-notifications` (mobile only, graceful web fallback)
+- **Daily Reflection Reminder**: Configurable time (default 8:00 AM)
+- **Daily Check-In Reminder**: Configurable time (default 8:00 PM)
+- **Gratitude Practice Reminder**: Configurable time (default 9:00 PM)
+- **Settings Screen**: `client/screens/NotificationSettingsScreen.tsx` with toggle switches and time pickers
+- **Hook**: `client/hooks/useNotifications.ts` manages scheduling, permissions, and preferences
 
 ### Payment System
 - **Web**: Stripe integration for subscription payments ($1.99/month or $19.99/year)
-- **iOS/Android**: Platform detection shows "Coming Soon" message; native in-app purchases (StoreKit/Play Billing) required for store compliance
+- **iOS/Android**: Shows "Always Free" messaging with option to share the app; no misleading IAP references
 - **Stripe Routes**: 
   - `GET /api/stripe/prices` - Fetch subscription prices
   - `POST /api/stripe/create-checkout-session` - Create checkout session
@@ -94,7 +107,9 @@ shared/           # Shared code between client/server
 11. **12 Steps & Traditions**: Expandable reference library with reflection tracking and step work progress
 12. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
 13. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
-14. **Support Us**: Platform-aware donation page (Stripe for web, placeholder for native)
+14. **Support Us**: Platform-aware donation page (Stripe for web, "Always Free" + Share on native)
+15. **Meeting Finder**: Resource hub linking to AA Meeting Guide, Online Intergroup, and InTheRooms with meeting tips for newcomers
+16. **Push Notifications**: Configurable daily reminders for reflections, check-ins, and gratitude (mobile only)
 
 ## External Dependencies
 
@@ -109,6 +124,9 @@ shared/           # Shared code between client/server
 - **react-native-gesture-handler**: Touch gesture handling
 - **react-native-reanimated**: Smooth animations
 - **react-native-keyboard-controller**: Keyboard-aware scroll views
+- **expo-notifications**: Local push notifications for daily reminders
+- **expo-apple-authentication**: Apple Sign-In on iOS
+- **expo-auth-session**: Google Sign-In (cross-platform)
 - **zod**: Runtime type validation for API requests/responses
 
 ### Development Tools

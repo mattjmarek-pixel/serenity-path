@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -6,8 +6,6 @@ import {
   ScrollView,
   Linking,
   Platform,
-  ActivityIndicator,
-  TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -17,225 +15,206 @@ import * as Location from "expo-location";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
-interface Meeting {
-  id: string;
-  name: string;
-  time: string;
-  day: string;
-  address: string;
-  type: string;
-  distance?: string;
-}
-
-const SAMPLE_MEETINGS: Meeting[] = [
+const MEETING_RESOURCES = [
   {
-    id: "1",
-    name: "Serenity Group",
-    time: "7:00 PM",
-    day: "Monday",
-    address: "123 Hope Street, Community Center",
-    type: "Open Discussion",
+    id: "aa-guide",
+    title: "AA Meeting Guide",
+    description: "Official AA app to find in-person meetings worldwide",
+    url: "https://www.aa.org/find-aa",
+    icon: "compass" as const,
   },
   {
-    id: "2",
-    name: "New Beginnings",
-    time: "12:00 PM",
-    day: "Daily",
-    address: "456 Recovery Ave, Church Basement",
-    type: "Speaker Meeting",
+    id: "intergroup",
+    title: "Online Intergroup",
+    description: "Directory of virtual AA meetings available 24/7",
+    url: "https://aa-intergroup.org/meetings/",
+    icon: "video" as const,
   },
   {
-    id: "3",
-    name: "Steps to Freedom",
-    time: "6:30 PM",
-    day: "Wednesday",
-    address: "789 Unity Blvd, Hospital Conference Room",
-    type: "Step Study",
-  },
-  {
-    id: "4",
-    name: "Early Birds",
-    time: "6:00 AM",
-    day: "Daily",
-    address: "321 Sunrise Dr, Coffee Shop",
-    type: "Open Discussion",
-  },
-  {
-    id: "5",
-    name: "Women in Recovery",
-    time: "5:30 PM",
-    day: "Thursday",
-    address: "555 Courage Lane, Library Meeting Room",
-    type: "Women Only",
+    id: "intherooms",
+    title: "In The Rooms",
+    description: "Online recovery community with live meetings",
+    url: "https://www.intherooms.com",
+    icon: "users" as const,
   },
 ];
 
-const MEETING_TYPE_MAP: Record<string, string> = {
-  open: "Open Discussion",
-  closed: "Closed",
-  speaker: "Speaker Meeting",
-  discussion: "Open Discussion",
-  bigbook: "Big Book",
-  step: "Step Study",
-};
+const MEETING_TIPS = [
+  {
+    title: "Types of Meetings",
+    content:
+      "Open meetings welcome anyone interested in AA. Closed meetings are for those who have a desire to stop drinking. Speaker meetings feature a member sharing their story, while discussion meetings are more interactive.",
+  },
+  {
+    title: "What to Expect",
+    content:
+      "Meetings typically last about an hour. You don't have to speak if you don't want to. Everything shared in the meeting stays in the meeting. Just showing up is all you need to do.",
+  },
+  {
+    title: "Your First Meeting",
+    content:
+      "Arrive a few minutes early if possible. You can introduce yourself by your first name only. Many people find it helpful to listen at their first few meetings. Consider trying several different meetings to find the right fit.",
+  },
+  {
+    title: "Common Formats",
+    content:
+      "Big Book studies read and discuss sections of the AA Big Book. Step studies work through the 12 Steps together. Some meetings focus on specific topics each week. All formats aim to support recovery.",
+  },
+];
 
 export default function MeetingFinderScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const { profile, isLoading: profileLoading } = useProfile();
   const [permission, requestPermission] = Location.useForegroundPermissions();
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [meetings, setMeetings] = useState<Meeting[]>(SAMPLE_MEETINGS);
-  const [selectedRadius, setSelectedRadius] = useState(10);
 
-  useEffect(() => {
-    if (!profileLoading) {
-      setSelectedRadius(profile.defaultRadius || 10);
-      if (profile.homeCity) {
-        setSearchQuery(profile.homeCity);
-      }
-    }
-  }, [profileLoading, profile.defaultRadius, profile.homeCity]);
-
-  useEffect(() => {
-    if (permission?.granted) {
-      fetchLocation();
-    }
-  }, [permission?.granted]);
-
-  const fetchLocation = async () => {
-    setIsLoading(true);
-    try {
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      setLocation(currentLocation);
-      const meetingsWithDistance = SAMPLE_MEETINGS.map((meeting, index) => ({
-        ...meeting,
-        distance: `${(0.5 + index * 0.8).toFixed(1)} mi`,
-      }));
-      setMeetings(meetingsWithDistance);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
+  const openUrl = (url: string) => {
+    Linking.openURL(url);
   };
 
-  const openMeetingGuide = () => {
-    Linking.openURL("https://www.aa.org/find-aa");
-  };
-
-  const openOnlineIntergroup = () => {
-    Linking.openURL("https://aa-intergroup.org/meetings/");
-  };
-
-  const preferredTypeNames = profile.preferredMeetingTypes.map(
-    (typeId) => MEETING_TYPE_MAP[typeId]?.toLowerCase() || typeId.toLowerCase()
-  );
-
-  const filteredMeetings = meetings.filter((meeting) => {
-    const matchesSearch =
-      meeting.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      meeting.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      meeting.day.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (!matchesSearch) return false;
-
-    if (preferredTypeNames.length === 0) return true;
-
-    return preferredTypeNames.some((typeName) =>
-      meeting.type.toLowerCase().includes(typeName)
-    );
-  });
-
-  const renderLocationRequest = () => (
-    <Card style={styles.locationCard}>
-      <Feather name="map-pin" size={40} color={theme.primary} />
-      <ThemedText type="h4" style={styles.locationTitle}>
-        Find Nearby Meetings
-      </ThemedText>
-      <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-        Enable location to find AA meetings near you
-      </ThemedText>
+  const renderResourceCard = (resource: (typeof MEETING_RESOURCES)[number]) => (
+    <Card key={resource.id} style={styles.resourceCard}>
       <Pressable
-        onPress={requestPermission}
+        onPress={() => openUrl(resource.url)}
         style={({ pressed }) => [
-          styles.enableButton,
-          { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+          styles.resourcePressable,
+          { opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <ThemedText style={styles.enableButtonText}>Enable Location</ThemedText>
+        <View
+          style={[
+            styles.resourceIconContainer,
+            { backgroundColor: theme.primary + "15" },
+          ]}
+        >
+          <Feather name={resource.icon} size={24} color={theme.primary} />
+        </View>
+        <View style={styles.resourceTextContainer}>
+          <ThemedText type="h4">{resource.title}</ThemedText>
+          <ThemedText
+            style={[styles.resourceDescription, { color: theme.textSecondary }]}
+          >
+            {resource.description}
+          </ThemedText>
+        </View>
+        <Feather name="external-link" size={18} color={theme.textSecondary} />
       </Pressable>
     </Card>
   );
 
-  const renderDeniedPermission = () => (
-    <Card style={styles.locationCard}>
-      <Feather name="map-pin" size={40} color={theme.textSecondary} />
-      <ThemedText type="h4" style={styles.locationTitle}>
-        Location Access Needed
-      </ThemedText>
-      <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-        To find meetings near you, please enable location access in your device settings.
-      </ThemedText>
-      {Platform.OS !== "web" && (
+  const renderLocationSection = () => {
+    if (!permission) return null;
+
+    if (!permission.granted) {
+      if (permission.status === "denied" && !permission.canAskAgain) {
+        return (
+          <Card style={styles.locationCard}>
+            <Feather name="map-pin" size={32} color={theme.primary} />
+            <ThemedText type="h4" style={styles.locationTitle}>
+              Find Nearby Meetings
+            </ThemedText>
+            <ThemedText
+              style={[styles.locationText, { color: theme.textSecondary }]}
+            >
+              For nearby meetings, use the AA Meeting Guide app. Enable location
+              in your device settings for the best experience.
+            </ThemedText>
+            <View style={styles.locationButtons}>
+              <Pressable
+                onPress={() => openUrl("https://www.aa.org/find-aa")}
+                style={({ pressed }) => [
+                  styles.locationButton,
+                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <Feather name="compass" size={16} color="#FFFFFF" />
+                <ThemedText style={styles.locationButtonText}>
+                  AA Meeting Guide
+                </ThemedText>
+              </Pressable>
+              {Platform.OS !== "web" ? (
+                <Pressable
+                  onPress={async () => {
+                    try {
+                      await Linking.openSettings();
+                    } catch (error) {}
+                  }}
+                  style={({ pressed }) => [
+                    styles.locationButton,
+                    {
+                      backgroundColor: theme.backgroundTertiary,
+                      opacity: pressed ? 0.8 : 1,
+                    },
+                  ]}
+                >
+                  <Feather name="settings" size={16} color={theme.text} />
+                  <ThemedText style={[styles.locationButtonText, { color: theme.text }]}>
+                    Open Settings
+                  </ThemedText>
+                </Pressable>
+              ) : null}
+            </View>
+          </Card>
+        );
+      }
+
+      return (
+        <Card style={styles.locationCard}>
+          <Feather name="map-pin" size={32} color={theme.primary} />
+          <ThemedText type="h4" style={styles.locationTitle}>
+            Find Nearby Meetings
+          </ThemedText>
+          <ThemedText
+            style={[styles.locationText, { color: theme.textSecondary }]}
+          >
+            Enable location to get directed to nearby meetings through the AA
+            Meeting Guide
+          </ThemedText>
+          <Pressable
+            onPress={requestPermission}
+            style={({ pressed }) => [
+              styles.locationButton,
+              { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+            ]}
+          >
+            <Feather name="map-pin" size={16} color="#FFFFFF" />
+            <ThemedText style={styles.locationButtonText}>
+              Enable Location
+            </ThemedText>
+          </Pressable>
+        </Card>
+      );
+    }
+
+    return (
+      <Card style={styles.locationCard}>
+        <Feather name="map-pin" size={32} color={theme.success} />
+        <ThemedText type="h4" style={styles.locationTitle}>
+          Find Nearby Meetings
+        </ThemedText>
+        <ThemedText
+          style={[styles.locationText, { color: theme.textSecondary }]}
+        >
+          For nearby in-person meetings, use the AA Meeting Guide app. It has
+          the most comprehensive and up-to-date listing of meetings.
+        </ThemedText>
         <Pressable
-          onPress={async () => {
-            try {
-              await Linking.openSettings();
-            } catch (error) {
-            }
-          }}
+          onPress={() => openUrl("https://www.aa.org/find-aa")}
           style={({ pressed }) => [
-            styles.enableButton,
+            styles.locationButton,
             { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          <ThemedText style={styles.enableButtonText}>Open Settings</ThemedText>
-        </Pressable>
-      )}
-    </Card>
-  );
-
-  const renderMeetingCard = (meeting: Meeting) => (
-    <Card key={meeting.id} style={styles.meetingCard}>
-      <View style={styles.meetingHeader}>
-        <View style={styles.meetingInfo}>
-          <ThemedText type="h4">{meeting.name}</ThemedText>
-          <View style={styles.meetingMeta}>
-            <View style={[styles.typeBadge, { backgroundColor: theme.primary + "20" }]}>
-              <ThemedText style={[styles.typeText, { color: theme.primary }]}>
-                {meeting.type}
-              </ThemedText>
-            </View>
-            {meeting.distance ? (
-              <ThemedText style={[styles.distance, { color: theme.accent }]}>
-                {meeting.distance}
-              </ThemedText>
-            ) : null}
-          </View>
-        </View>
-      </View>
-      <View style={styles.meetingDetails}>
-        <View style={styles.detailRow}>
-          <Feather name="clock" size={16} color={theme.textSecondary} />
-          <ThemedText style={{ color: theme.textSecondary }}>
-            {meeting.day} at {meeting.time}
+          <Feather name="compass" size={16} color="#FFFFFF" />
+          <ThemedText style={styles.locationButtonText}>
+            Open AA Meeting Guide
           </ThemedText>
-        </View>
-        <View style={styles.detailRow}>
-          <Feather name="map-pin" size={16} color={theme.textSecondary} />
-          <ThemedText style={{ color: theme.textSecondary }}>{meeting.address}</ThemedText>
-        </View>
-      </View>
-    </Card>
-  );
+        </Pressable>
+      </Card>
+    );
+  };
 
   return (
     <ScrollView
@@ -245,84 +224,54 @@ export default function MeetingFinderScreen() {
         paddingBottom: insets.bottom + Spacing.xl,
         paddingHorizontal: Spacing.lg,
       }}
+      scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      <View style={styles.searchContainer}>
-        <View style={[styles.searchBar, { backgroundColor: theme.backgroundSecondary }]}>
-          <Feather name="search" size={20} color={theme.textSecondary} />
-          <TextInput
-            style={[styles.searchInput, { color: theme.text }]}
-            placeholder="Search by name, type, or day..."
-            placeholderTextColor={theme.textSecondary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery ? (
-            <Pressable onPress={() => setSearchQuery("")}>
-              <Feather name="x" size={20} color={theme.textSecondary} />
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
+      {renderLocationSection()}
 
-      <View style={styles.quickLinks}>
-        <Pressable
-          onPress={openMeetingGuide}
-          style={({ pressed }) => [
-            styles.quickLinkButton,
-            { backgroundColor: theme.secondary, opacity: pressed ? 0.8 : 1 },
-          ]}
-        >
-          <Feather name="globe" size={18} color="#FFFFFF" />
-          <ThemedText style={styles.quickLinkText}>AA Meeting Guide</ThemedText>
-        </Pressable>
-        <Pressable
-          onPress={openOnlineIntergroup}
-          style={({ pressed }) => [
-            styles.quickLinkButton,
-            { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
-          ]}
-        >
-          <Feather name="video" size={18} color="#FFFFFF" />
-          <ThemedText style={styles.quickLinkText}>Online Meetings</ThemedText>
-        </Pressable>
-      </View>
+      <ThemedText type="h3" style={styles.sectionTitle}>
+        Meeting Resources
+      </ThemedText>
+      <ThemedText
+        style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
+      >
+        Find in-person and online meetings through these trusted resources
+      </ThemedText>
+      {MEETING_RESOURCES.map(renderResourceCard)}
 
-      {!permission ? (
-        <ActivityIndicator size="large" color={theme.primary} />
-      ) : !permission.granted ? (
-        permission.status === "denied" && !permission.canAskAgain ? (
-          renderDeniedPermission()
-        ) : (
-          renderLocationRequest()
-        )
-      ) : isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.primary} />
-          <ThemedText style={[styles.loadingText, { color: theme.textSecondary }]}>
-            Finding meetings near you...
-          </ThemedText>
-        </View>
-      ) : (
-        <View style={styles.meetingsSection}>
-          <View style={styles.sectionHeader}>
-            <ThemedText type="h4">
-              {location ? "Meetings Near You" : "Available Meetings"}
-            </ThemedText>
-            <ThemedText style={{ color: theme.textSecondary }}>
-              {filteredMeetings.length} found
+      <ThemedText type="h3" style={[styles.sectionTitle, { marginTop: Spacing["2xl"] }]}>
+        Meeting Tips
+      </ThemedText>
+      <ThemedText
+        style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
+      >
+        Helpful information for finding the right meeting
+      </ThemedText>
+      {MEETING_TIPS.map((tip, index) => (
+        <Card key={index} style={styles.tipCard}>
+          <View style={styles.tipHeader}>
+            <View
+              style={[
+                styles.tipNumber,
+                { backgroundColor: theme.primary + "15" },
+              ]}
+            >
+              <ThemedText
+                style={[styles.tipNumberText, { color: theme.primary }]}
+              >
+                {index + 1}
+              </ThemedText>
+            </View>
+            <ThemedText type="h4" style={styles.tipTitle}>
+              {tip.title}
             </ThemedText>
           </View>
-          {filteredMeetings.map(renderMeetingCard)}
-        </View>
-      )}
-
-      <Card style={styles.disclaimerCard}>
-        <Feather name="info" size={20} color={theme.textSecondary} />
-        <ThemedText style={[styles.disclaimerText, { color: theme.textSecondary }]}>
-          Meeting information shown is for demonstration purposes. For accurate, up-to-date
-          meeting information, please visit aa.org or use the AA Meeting Guide app.
-        </ThemedText>
-      </Card>
+          <ThemedText
+            style={[styles.tipContent, { color: theme.textSecondary }]}
+          >
+            {tip.content}
+          </ThemedText>
+        </Card>
+      ))}
     </ScrollView>
   );
 }
@@ -331,44 +280,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  searchContainer: {
+  sectionTitle: {
+    marginTop: Spacing.xl,
+    marginBottom: Spacing.xs,
+  },
+  sectionSubtitle: {
     marginBottom: Spacing.lg,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    gap: Spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    paddingVertical: Spacing.xs,
-  },
-  quickLinks: {
-    flexDirection: "row",
-    gap: Spacing.md,
-    marginBottom: Spacing.xl,
-  },
-  quickLinkButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
-  },
-  quickLinkText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
     fontSize: 14,
+    lineHeight: 20,
   },
   locationCard: {
     alignItems: "center",
     padding: Spacing["2xl"],
+    marginBottom: Spacing.md,
   },
   locationTitle: {
     marginTop: Spacing.md,
@@ -378,80 +302,74 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: Spacing.sm,
     marginBottom: Spacing.lg,
+    lineHeight: 22,
   },
-  enableButton: {
+  locationButtons: {
+    flexDirection: "row",
+    gap: Spacing.md,
+  },
+  locationButton: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.sm,
+    gap: Spacing.sm,
   },
-  enableButtonText: {
+  locationButtonText: {
     color: "#FFFFFF",
     fontWeight: "600",
   },
-  loadingContainer: {
-    alignItems: "center",
-    padding: Spacing["3xl"],
+  resourceCard: {
+    marginBottom: Spacing.md,
+    padding: 0,
   },
-  loadingText: {
-    marginTop: Spacing.md,
-  },
-  meetingsSection: {
-    marginBottom: Spacing.lg,
-  },
-  sectionHeader: {
+  resourcePressable: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Spacing.md,
+    padding: Spacing.xl,
+    gap: Spacing.lg,
   },
-  meetingCard: {
-    marginBottom: Spacing.md,
+  resourceIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: BorderRadius.sm,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  meetingHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: Spacing.md,
-  },
-  meetingInfo: {
+  resourceTextContainer: {
     flex: 1,
   },
-  meetingMeta: {
+  resourceDescription: {
+    fontSize: 14,
+    marginTop: Spacing.xs,
+    lineHeight: 20,
+  },
+  tipCard: {
+    marginBottom: Spacing.md,
+  },
+  tipHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
+    gap: Spacing.md,
+    marginBottom: Spacing.sm,
   },
-  typeBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.xs,
+  tipNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  typeText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  distance: {
-    fontWeight: "600",
+  tipNumberText: {
+    fontWeight: "700",
     fontSize: 14,
   },
-  meetingDetails: {
-    gap: Spacing.sm,
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
-  disclaimerCard: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: Spacing.md,
-    marginTop: Spacing.lg,
-  },
-  disclaimerText: {
+  tipTitle: {
     flex: 1,
-    fontSize: 13,
-    lineHeight: 20,
+  },
+  tipContent: {
+    lineHeight: 22,
+    paddingLeft: 44,
   },
 });

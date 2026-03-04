@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform, ScrollView } from "react-native";
+import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform, ScrollView, Share } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -73,23 +73,28 @@ export default function SupportUsScreen() {
   };
 
   const handleRestorePurchases = () => {
-    if (isNativePlatform) {
-      Alert.alert(
-        'Coming Soon',
-        'In-app purchases will be available in a future update. Thank you for your interest in supporting the app!',
-        [{ text: 'OK' }]
-      );
-    } else {
-      Alert.alert(
-        'Restore Purchases',
-        'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
-        [{ text: 'OK' }]
-      );
-    }
+    Alert.alert(
+      'Restore Purchases',
+      'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
+      [{ text: 'OK' }]
+    );
   };
 
   const handleContactSupport = () => {
     Linking.openURL('mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support');
+  };
+
+  const handleShareApp = async () => {
+    try {
+      await Share.share({
+        message: Platform.OS === 'ios'
+          ? 'Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more.'
+          : 'Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more. https://serenitypath.app',
+        url: 'https://serenitypath.app',
+        title: 'Serenity Path',
+      });
+    } catch {
+    }
   };
 
   const monthlyPrice = pricesData?.prices?.find(p => p.interval === 'month');
@@ -102,20 +107,50 @@ export default function SupportUsScreen() {
 
   const renderNativePaymentSection = () => (
     <View style={styles.buttonsSection}>
-      <View style={[styles.comingSoonCard, { borderColor: theme.primary, backgroundColor: theme.backgroundDefault }]}>
-        <Feather name="smartphone" size={32} color={theme.primary} style={styles.comingSoonIcon} />
-        <ThemedText style={[styles.comingSoonTitle, { color: theme.text }]}>
-          In-App Purchases Coming Soon
+      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg }]}>
+        <Feather name="heart" size={28} color={theme.success} style={styles.nativeCardIcon} />
+        <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
+          Always Free
         </ThemedText>
-        <ThemedText style={[styles.comingSoonText, { color: theme.textSecondary }]}>
-          We're working on bringing native in-app purchases to this platform. In the meantime, you can support us through the web version of the app.
+        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
+          Serenity Path is completely free and always will be. Every feature is available to everyone, with no paywalls or premium tiers.
+        </ThemedText>
+      </View>
+
+      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg, marginTop: Spacing.md }]}>
+        <Feather name="globe" size={28} color={theme.primary} style={styles.nativeCardIcon} />
+        <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
+          Want to Contribute?
+        </ThemedText>
+        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
+          Voluntary donations to help cover maintenance costs are available through the web version of the app. Your support is appreciated but never expected.
         </ThemedText>
         <Pressable
           style={[styles.primaryButton, { backgroundColor: theme.primary, marginTop: Spacing.lg }]}
           onPress={handleContactSupport}
         >
+          <Feather name="mail" size={18} color="#FFFFFF" style={{ marginRight: Spacing.sm }} />
           <ThemedText style={styles.buttonText}>
-            Contact for Support Options
+            Contact Us
+          </ThemedText>
+        </Pressable>
+      </View>
+
+      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg, marginTop: Spacing.md }]}>
+        <Feather name="share-2" size={28} color={theme.accent} style={styles.nativeCardIcon} />
+        <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
+          Spread the Word
+        </ThemedText>
+        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
+          The best way to support Serenity Path is to share it with someone who might benefit. Recovery is stronger together.
+        </ThemedText>
+        <Pressable
+          style={[styles.shareButton, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.lg }]}
+          onPress={handleShareApp}
+        >
+          <Feather name="share" size={18} color={theme.primary} style={{ marginRight: Spacing.sm }} />
+          <ThemedText style={[styles.shareButtonText, { color: theme.primary }]}>
+            Share the App
           </ThemedText>
         </Pressable>
       </View>
@@ -223,11 +258,13 @@ export default function SupportUsScreen() {
         </Pressable>
       </View>
 
-      <Pressable onPress={handleRestorePurchases} style={styles.restoreButton}>
-        <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
-          Restore Purchases
-        </ThemedText>
-      </Pressable>
+      {!isNativePlatform ? (
+        <Pressable onPress={handleRestorePurchases} style={styles.restoreButton}>
+          <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
+            Restore Purchases
+          </ThemedText>
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }
@@ -264,26 +301,37 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  comingSoonCard: {
+  nativeCard: {
     width: "100%",
     padding: Spacing.xl,
     alignItems: "center",
-    borderWidth: 1,
-    borderStyle: "dashed",
   },
-  comingSoonIcon: {
+  nativeCardIcon: {
     marginBottom: Spacing.md,
   },
-  comingSoonTitle: {
+  nativeCardTitle: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: Spacing.sm,
     textAlign: "center",
   },
-  comingSoonText: {
+  nativeCardText: {
     fontSize: 14,
     lineHeight: 22,
     textAlign: "center",
+  },
+  shareButton: {
+    width: "100%",
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    minHeight: 52,
+  },
+  shareButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   primaryButton: {
     width: "100%",
@@ -293,6 +341,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     minHeight: 52,
     justifyContent: "center",
+    flexDirection: "row",
   },
   buttonDisabled: {
     opacity: 0.7,

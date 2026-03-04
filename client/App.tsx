@@ -25,6 +25,7 @@ import { queryClient } from "@/lib/query-client";
 import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { DailyGreeting } from "@/components/DailyGreeting";
 
 export default function App() {
@@ -52,19 +53,21 @@ export default function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <SafeAreaProvider>
-            <GestureHandlerRootView style={styles.root}>
-              <KeyboardProvider>
-                <NavigationContainer>
-                  <RootStackNavigator />
-                </NavigationContainer>
+          <AuthProvider>
+            <SafeAreaProvider>
+              <GestureHandlerRootView style={styles.root}>
+                <KeyboardProvider>
+                  <NavigationContainer>
+                    <RootStackNavigator />
+                  </NavigationContainer>
                 {showGreeting ? (
                   <DailyGreeting onDismiss={() => setShowGreeting(false)} />
                 ) : null}
                 <StatusBar style="auto" />
-              </KeyboardProvider>
-            </GestureHandlerRootView>
-          </SafeAreaProvider>
+                </KeyboardProvider>
+              </GestureHandlerRootView>
+            </SafeAreaProvider>
+          </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>
