@@ -1,5 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Pressable, ScrollView, Linking } from "react-native";
+import { View, StyleSheet, Pressable, ScrollView, Platform, Linking } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
@@ -40,8 +41,14 @@ function AudioCard({
   colors,
   iconSide,
 }: (typeof AUDIO_RESOURCES)[0]) {
-  const handlePress = () => {
-    Linking.openURL(url);
+  const handlePress = async () => {
+    try {
+      if (Platform.OS === "web") {
+        Linking.openURL(url);
+      } else {
+        await WebBrowser.openBrowserAsync(url);
+      }
+    } catch {}
   };
 
   return (
@@ -96,7 +103,7 @@ export default function AudioResourcesScreen() {
       <View style={[styles.headerNote, { backgroundColor: theme.backgroundSecondary }]}>
         <Feather name="info" size={16} color={theme.textSecondary} />
         <ThemedText type="small" style={{ color: theme.textSecondary, flex: 1, lineHeight: 20 }}>
-          These links open official AA and community audio resources in your browser. Audio content is hosted by the respective organizations.
+          These links open official AA and community audio resources inside the app. Audio content is hosted by the respective organizations.
         </ThemedText>
       </View>
 
