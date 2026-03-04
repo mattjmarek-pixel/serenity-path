@@ -20,6 +20,7 @@ import MoodHistoryScreen from "@/screens/MoodHistoryScreen";
 import StepWorkScreen from "@/screens/StepWorkScreen";
 import StreaksScreen from "@/screens/StreaksScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
+import AudioResourcesScreen from "@/screens/AudioResourcesScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -44,6 +45,7 @@ export type RootStackParamList = {
   StepWork: { stepNumber: number };
   Streaks: undefined;
   NotificationSettings: undefined;
+  AudioResources: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -197,6 +199,13 @@ export default function RootStackNavigator() {
             component={NotificationSettingsScreen}
             options={{
               headerTitle: "Notifications",
+            }}
+          />
+          <Stack.Screen
+            name="AudioResources"
+            component={AudioResourcesScreen}
+            options={{
+              headerTitle: "Audio Resources",
             }}
           />
         </>

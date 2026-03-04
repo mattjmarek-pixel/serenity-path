@@ -289,6 +289,11 @@ export default function ProfileScreen() {
           onPress={() => navigation.navigate("Streaks")}
         />
         <SettingsItem
+          icon="headphones"
+          label="Audio Resources"
+          onPress={() => navigation.navigate("AudioResources")}
+        />
+        <SettingsItem
           icon="map-pin"
           label="Find Meetings"
           onPress={() => navigation.navigate("MeetingFinder")}

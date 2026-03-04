@@ -335,13 +335,13 @@ export default function HomeScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => nav("MoodHistory")}
+            onPress={() => nav("AudioResources")}
             style={({ pressed }) => [styles.quickAccessItem, { opacity: pressed ? 0.6 : 1 }]}
           >
-            <View style={[styles.quickAccessIcon, { backgroundColor: theme.success + "20" }]}>
-              <Feather name="trending-up" size={22} color={theme.success} />
+            <View style={[styles.quickAccessIcon, { backgroundColor: theme.secondary + "20" }]}>
+              <Feather name="headphones" size={22} color={theme.secondary} />
             </View>
-            <ThemedText type="small" style={styles.quickAccessLabel}>Mood</ThemedText>
+            <ThemedText type="small" style={styles.quickAccessLabel}>Audio</ThemedText>
           </Pressable>
         </View>
       </View>
