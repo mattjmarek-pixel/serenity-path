@@ -1,12 +1,14 @@
 import React from "react";
-import { View, StyleSheet, Pressable, ScrollView, Platform, Linking } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 const AUDIO_RESOURCES = [
   {
@@ -41,14 +43,13 @@ function AudioCard({
   colors,
   iconSide,
 }: (typeof AUDIO_RESOURCES)[0]) {
-  const handlePress = async () => {
-    try {
-      if (Platform.OS === "web") {
-        Linking.openURL(url);
-      } else {
-        await WebBrowser.openBrowserAsync(url);
-      }
-    } catch {}
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handlePress = () => {
+    navigation.navigate("WebViewScreen", {
+      url,
+      title: title.replace(/\n/g, " "),
+    });
   };
 
   return (
@@ -103,7 +104,7 @@ export default function AudioResourcesScreen() {
       <View style={[styles.headerNote, { backgroundColor: theme.backgroundSecondary }]}>
         <Feather name="info" size={16} color={theme.textSecondary} />
         <ThemedText type="small" style={{ color: theme.textSecondary, flex: 1, lineHeight: 20 }}>
-          These links open official AA and community audio resources inside the app. Audio content is hosted by the respective organizations.
+          Tap any card to browse official AA and community audio resources right here in the app. Use the back arrow to return.
         </ThemedText>
       </View>
 
