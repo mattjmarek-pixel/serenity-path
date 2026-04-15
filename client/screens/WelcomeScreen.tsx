@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet, Pressable, Platform, Image } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Pressable, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
@@ -12,8 +12,41 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { signInWithApple, signInWithGoogle, continueAsGuest } = useAuth();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [loadingApple, setLoadingApple] = useState(false);
 
   const isIOS = Platform.OS === "ios";
+
+  const handleSignInWithApple = async () => {
+    setErrorMessage(null);
+    setLoadingApple(true);
+    try {
+      const success = await signInWithApple();
+      if (!success) {
+        setErrorMessage("Apple Sign-In is only available on iOS devices with a signed-in Apple ID.");
+      }
+    } catch {
+      setErrorMessage("Apple Sign-In is not available right now. Please try continuing without an account.");
+    } finally {
+      setLoadingApple(false);
+    }
+  };
+
+  const handleSignInWithGoogle = async () => {
+    setErrorMessage(null);
+    setLoadingGoogle(true);
+    try {
+      const success = await signInWithGoogle();
+      if (!success) {
+        setErrorMessage("Google Sign-In isn't fully set up yet. Please continue without an account for now — all features are available either way.");
+      }
+    } catch {
+      setErrorMessage("Google Sign-In is not available right now. Please continue without an account.");
+    } finally {
+      setLoadingGoogle(false);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
@@ -29,55 +62,52 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.featuresSection}>
-          <FeatureItem
-            icon="sunrise"
-            text="Daily reflections and gratitude practice"
-            theme={theme}
-          />
-          <FeatureItem
-            icon="award"
-            text="Track sobriety milestones and streaks"
-            theme={theme}
-          />
-          <FeatureItem
-            icon="book-open"
-            text="Step work companion and journal"
-            theme={theme}
-          />
-          <FeatureItem
-            icon="phone"
-            text="Crisis support when you need it most"
-            theme={theme}
-          />
+          <FeatureItem icon="sunrise" text="Daily reflections and gratitude practice" theme={theme} />
+          <FeatureItem icon="award" text="Track sobriety milestones and streaks" theme={theme} />
+          <FeatureItem icon="book-open" text="Step work companion and journal" theme={theme} />
+          <FeatureItem icon="phone" text="Crisis support when you need it most" theme={theme} />
         </View>
 
         <View style={styles.buttonsSection}>
           {isIOS ? (
             <Pressable
-              onPress={signInWithApple}
+              onPress={handleSignInWithApple}
+              disabled={loadingApple}
               style={({ pressed }) => [
                 styles.authButton,
                 styles.appleButton,
-                { opacity: pressed ? 0.8 : 1 },
+                { opacity: pressed || loadingApple ? 0.7 : 1 },
               ]}
             >
               <Feather name="smartphone" size={20} color="#FFFFFF" />
-              <ThemedText style={styles.authButtonText}>Sign in with Apple</ThemedText>
+              <ThemedText style={styles.authButtonText}>
+                {loadingApple ? "Signing in..." : "Sign in with Apple"}
+              </ThemedText>
             </Pressable>
           ) : null}
 
           <Pressable
-            onPress={signInWithGoogle}
+            onPress={handleSignInWithGoogle}
+            disabled={loadingGoogle}
             style={({ pressed }) => [
               styles.authButton,
-              { backgroundColor: theme.backgroundDefault, borderColor: theme.border, borderWidth: 1, opacity: pressed ? 0.8 : 1 },
+              { backgroundColor: theme.backgroundDefault, borderColor: theme.border, borderWidth: 1, opacity: pressed || loadingGoogle ? 0.7 : 1 },
             ]}
           >
             <Feather name="mail" size={20} color={theme.text} />
             <ThemedText style={[styles.authButtonText, { color: theme.text }]}>
-              Sign in with Google
+              {loadingGoogle ? "Signing in..." : "Sign in with Google"}
             </ThemedText>
           </Pressable>
+
+          {errorMessage ? (
+            <View style={[styles.errorBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+              <Feather name="info" size={15} color={theme.textSecondary} />
+              <ThemedText type="small" style={{ color: theme.textSecondary, flex: 1, lineHeight: 18 }}>
+                {errorMessage}
+              </ThemedText>
+            </View>
+          ) : null}
 
           <View style={styles.divider}>
             <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
@@ -87,10 +117,7 @@ export default function WelcomeScreen() {
 
           <Pressable
             onPress={continueAsGuest}
-            style={({ pressed }) => [
-              styles.guestButton,
-              { opacity: pressed ? 0.6 : 1 },
-            ]}
+            style={({ pressed }) => [styles.guestButton, { opacity: pressed ? 0.6 : 1 }]}
           >
             <ThemedText style={[styles.guestText, { color: theme.primary }]}>
               Continue without an account
@@ -185,6 +212,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+  },
+  errorBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    width: "100%",
   },
   divider: {
     flexDirection: "row",
