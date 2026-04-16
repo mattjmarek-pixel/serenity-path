@@ -94,6 +94,8 @@ async function fetchMeetings(
   lng: number,
   distance: number
 ): Promise<NormalizedMeeting[]> {
+  let atLeastOneSourceSucceeded = false;
+
   for (const source of REGIONAL_TSML_SOURCES) {
     try {
       const url = source.url(lat, lng, distance);
@@ -104,25 +106,44 @@ async function fetchMeetings(
         headers: { Accept: "application/json", "User-Agent": "SerenityPath/1.0" },
       });
       clearTimeout(timer);
-      if (!resp.ok) continue;
+
+      if (!resp.ok) {
+        console.warn(`[meetings] ${source.label} returned HTTP ${resp.status}`);
+        continue;
+      }
+
       const ct = resp.headers.get("content-type") ?? "";
-      if (!ct.includes("application/json")) continue;
+      if (!ct.includes("application/json")) {
+        console.warn(`[meetings] ${source.label} returned non-JSON content-type: ${ct}`);
+        continue;
+      }
+
       const raw = await resp.json();
       const list: TSMLMeeting[] = Array.isArray(raw)
         ? raw
         : Array.isArray(raw?.meetings)
         ? raw.meetings
         : [];
+
+      atLeastOneSourceSucceeded = true;
+
       if (list.length === 0) continue;
       const normalized = list
         .map(normalizeTSML)
         .filter((m): m is NormalizedMeeting => m !== null)
         .slice(0, 40);
       if (normalized.length > 0) return normalized;
-    } catch {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[meetings] ${source.label} error: ${msg}`);
       continue;
     }
   }
+
+  if (!atLeastOneSourceSucceeded) {
+    throw new Error("All meeting directory sources are currently unavailable");
+  }
+
   return [];
 }
 
@@ -147,8 +168,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const meetings = await fetchMeetings(lat, lng, distance);
       res.json({ meetings, count: meetings.length });
     } catch (error: unknown) {
-      console.error('Error fetching meetings:', error);
-      res.status(500).json({ error: 'Failed to fetch nearby meetings', meetings: [] });
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn('[meetings] Directory fetch failed:', msg);
+      res.status(503).json({ error: 'Meeting directory temporarily unavailable', meetings: [] });
     }
   });
 
