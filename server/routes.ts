@@ -46,8 +46,15 @@ function normalizeTSML(raw: TSMLMeeting): NormalizedMeeting | null {
   if (!name) return null;
   const day = parseInt(String(raw.day ?? "0"), 10);
   if (isNaN(day) || day < 0 || day > 6) return null;
-  const time = String(raw.time ?? "").replace(/^(\d{1,2}):(\d{2}).*$/, "$1:$2");
-  if (!time) return null;
+  const rawTime = String(raw.time ?? "");
+  const timeMatch = rawTime.match(/^(\d{1,2}):(\d{2})/);
+  if (!timeMatch) return null;
+  const hour = parseInt(timeMatch[1], 10);
+  const minute = parseInt(timeMatch[2], 10);
+  if (isNaN(hour) || hour < 0 || hour > 23 || isNaN(minute) || minute < 0 || minute > 59) {
+    return null;
+  }
+  const time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
   const addrParts: string[] = [];
   if (raw.address) addrParts.push(raw.address.trim());

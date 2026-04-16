@@ -311,7 +311,9 @@ export default function MeetingFinderScreen() {
           region = geocode[0].region ?? "";
           postalCode = geocode[0].postalCode ?? "";
         }
-      } catch {}
+      } catch (e) {
+        console.warn("[MeetingFinder] Reverse geocode failed:", e);
+      }
 
       setDetectedLocation({ lat, lng, city, region, postalCode });
 
@@ -321,7 +323,8 @@ export default function MeetingFinderScreen() {
       } else {
         setMeetings(result.meetings);
       }
-    } catch {
+    } catch (e) {
+      console.warn("[MeetingFinder] Location fetch failed:", e);
       setApiError(true);
     } finally {
       setIsSearching(false);
