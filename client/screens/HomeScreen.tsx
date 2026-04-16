@@ -124,7 +124,13 @@ function getDailyQuote() {
 
 function DailyQuoteCard() {
   const { theme } = useTheme();
-  const quote = useMemo(() => getDailyQuote(), []);
+  const [quote, setQuote] = useState(() => getDailyQuote());
+
+  useFocusEffect(
+    useCallback(() => {
+      setQuote(getDailyQuote());
+    }, [])
+  );
 
   return (
     <Card elevation={1} style={styles.quoteCard}>
@@ -453,15 +459,13 @@ export default function HomeScreen() {
       </View>
 
       {/* Personal Mantra / Affirmation */}
-      {profile.personalMantra ? (
-        <View style={styles.section}>
-          <Card style={styles.affirmationCard} elevation={1}>
-            <ThemedText type="body" style={styles.affirmationText}>
-              "{profile.personalMantra}"
-            </ThemedText>
-          </Card>
-        </View>
-      ) : null}
+      <View style={styles.section}>
+        <Card style={styles.affirmationCard} elevation={1}>
+          <ThemedText type="body" style={styles.affirmationText}>
+            "{profile.personalMantra ? profile.personalMantra : "Progress, not perfection."}"
+          </ThemedText>
+        </Card>
+      </View>
 
       {/* Today's Reflection */}
       <View style={styles.section}>
