@@ -8,6 +8,7 @@ import {
   Platform,
   Modal,
   Linking,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -33,6 +34,23 @@ const MEETING_TYPES = [
   { id: "step", label: "Step Study" },
 ];
 
+const AA_HELPLINE = "18004574673";
+
+function makeCall(number: string) {
+  const phoneUrl = `tel:${number}`;
+  Linking.canOpenURL(phoneUrl)
+    .then((supported) => {
+      if (supported) {
+        Linking.openURL(phoneUrl);
+      } else {
+        Alert.alert("Unable to make call", "Phone calling is not supported on this device.");
+      }
+    })
+    .catch(() => {
+      Alert.alert("Error", "Could not initiate phone call.");
+    });
+}
+
 interface FormInputProps {
   label: string;
   value: string;
@@ -44,7 +62,7 @@ interface FormInputProps {
 
 function FormInput({ label, value, onChangeText, placeholder, keyboardType = "default", multiline = false }: FormInputProps) {
   const { theme } = useTheme();
-  
+
   return (
     <View style={styles.inputGroup}>
       <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
@@ -54,8 +72,8 @@ function FormInput({ label, value, onChangeText, placeholder, keyboardType = "de
         style={[
           styles.textInput,
           multiline && styles.multilineInput,
-          { 
-            backgroundColor: theme.backgroundSecondary, 
+          {
+            backgroundColor: theme.backgroundSecondary,
             color: theme.text,
             borderColor: theme.border,
           },
@@ -80,7 +98,7 @@ interface ChipProps {
 
 function Chip({ label, selected, onPress }: ChipProps) {
   const { theme } = useTheme();
-  
+
   return (
     <Pressable
       onPress={onPress}
@@ -125,45 +143,45 @@ function CompassionModal({
   const insets = useSafeAreaInsets();
 
   const handleCallSponsor = () => {
-    if (sponsorPhone.trim()) {
-      const phoneNumber = sponsorPhone.replace(/\D/g, "");
-      Linking.openURL(`tel:${phoneNumber}`).catch(() => {});
-    } else {
-      Linking.openURL("tel:18004473237").catch(() => {});
-    }
+    const cleanPhone = sponsorPhone.replace(/\D/g, "");
+    makeCall(cleanPhone.length > 0 ? cleanPhone : AA_HELPLINE);
   };
 
-  const sponsorLabel = sponsorName.trim() ? sponsorName : "My Sponsor";
   const hasSponsor = sponsorPhone.trim().length > 0;
+  const callLabel = hasSponsor
+    ? `Call ${sponsorName.trim() || "My Sponsor"}`
+    : "Call AA Helpline";
 
   return (
     <Modal
       visible={visible}
       animationType="fade"
-      transparent
+      transparent={false}
       statusBarTranslucent
     >
-      <View style={[styles.modalOverlay, { backgroundColor: "rgba(0,0,0,0.72)" }]}>
+      <View
+        style={[
+          styles.modalOverlay,
+          { backgroundColor: theme.backgroundDefault },
+        ]}
+      >
         <View
           style={[
-            styles.modalCard,
+            styles.modalContent,
             {
-              backgroundColor: theme.backgroundDefault,
+              paddingTop: insets.top + Spacing["3xl"],
               paddingBottom: insets.bottom + Spacing.xl,
             },
           ]}
         >
-          {/* Heart icon */}
           <View style={[styles.modalIconCircle, { backgroundColor: theme.primary + "18" }]}>
             <Feather name="heart" size={32} color={theme.primary} />
           </View>
 
-          {/* Heading */}
           <ThemedText type="h3" style={[styles.modalHeading, { color: theme.text }]}>
             You came back.
           </ThemedText>
 
-          {/* Body copy — warm, no shame */}
           <ThemedText style={[styles.modalBody, { color: theme.textSecondary }]}>
             Coming back is the most courageous thing you can do. Relapse is part of many people's
             recovery journey — it does not erase the strength you've already shown. You are still here,
@@ -174,7 +192,6 @@ function CompassionModal({
             Whatever you need right now, this community and your tools are here for you.
           </ThemedText>
 
-          {/* Action buttons */}
           <View style={styles.modalActions}>
             <Pressable
               onPress={handleCallSponsor}
@@ -184,16 +201,19 @@ function CompassionModal({
               ]}
             >
               <Feather name="phone" size={18} color="#FFFFFF" />
-              <ThemedText style={styles.modalActionText}>
-                {hasSponsor ? `Call ${sponsorLabel}` : "Call AA Helpline"}
-              </ThemedText>
+              <ThemedText style={styles.modalActionText}>{callLabel}</ThemedText>
             </Pressable>
 
             <Pressable
               onPress={onFindMeeting}
               style={({ pressed }) => [
                 styles.modalActionButton,
-                { backgroundColor: theme.accent + "18", borderWidth: 1, borderColor: theme.accent, opacity: pressed ? 0.8 : 1 },
+                {
+                  backgroundColor: theme.accent + "18",
+                  borderWidth: 1,
+                  borderColor: theme.accent,
+                  opacity: pressed ? 0.8 : 1,
+                },
               ]}
             >
               <Feather name="map-pin" size={18} color={theme.accent} />
@@ -206,7 +226,12 @@ function CompassionModal({
               onPress={onReadPromises}
               style={({ pressed }) => [
                 styles.modalActionButton,
-                { backgroundColor: theme.secondary + "18", borderWidth: 1, borderColor: theme.secondary, opacity: pressed ? 0.8 : 1 },
+                {
+                  backgroundColor: theme.secondary + "18",
+                  borderWidth: 1,
+                  borderColor: theme.secondary,
+                  opacity: pressed ? 0.8 : 1,
+                },
               ]}
             >
               <Feather name="book-open" size={18} color={theme.secondary} />
@@ -279,21 +304,19 @@ export default function EditProfileScreen() {
 
   const isRelapse = (oldDate: string | null, newDate: string | null): boolean => {
     if (!oldDate || !newDate) return false;
-    const oldTs = new Date(oldDate).getTime();
-    const newTs = new Date(newDate).getTime();
-    return newTs > oldTs;
+    return new Date(newDate).getTime() > new Date(oldDate).getTime();
   };
 
   const handleSave = async () => {
     if (!formData.name.trim()) return;
-    
+
     const previousDate = profile.sobrietyDate;
     const newDate = formData.sobrietyDate;
-    
+
     setIsSaving(true);
     const success = await saveProfile(formData);
     setIsSaving(false);
-    
+
     if (success) {
       if (isRelapse(previousDate, newDate)) {
         setShowCompassionModal(true);
@@ -712,19 +735,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-
-  // Compassion Modal styles
   modalOverlay: {
     flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "stretch",
   },
-  modalCard: {
-    borderTopLeftRadius: BorderRadius.lg,
-    borderTopRightRadius: BorderRadius.lg,
-    paddingTop: Spacing["3xl"],
+  modalContent: {
+    flex: 1,
     paddingHorizontal: Spacing.xl,
     alignItems: "center",
+    justifyContent: "center",
   },
   modalIconCircle: {
     width: 72,
