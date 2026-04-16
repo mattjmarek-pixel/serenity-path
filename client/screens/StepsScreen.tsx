@@ -201,18 +201,34 @@ export default function StepsScreen() {
                     </ThemedText>
                   </Pressable>
                   {isStep ? (
-                    <Pressable
-                      onPress={() => navigation.navigate("StepWork", { stepNumber: item.number })}
-                      style={({ pressed }) => [
-                        styles.stepWorkButton,
-                        { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
-                      ]}
-                    >
-                      <Feather name="edit-3" size={16} color="#FFFFFF" />
-                      <ThemedText style={styles.stepWorkButtonText}>
-                        Work on Step
-                      </ThemedText>
-                    </Pressable>
+                    <View style={styles.stepButtons}>
+                      {item.number === 4 ? (
+                        <Pressable
+                          onPress={() => navigation.navigate("FourthStep")}
+                          style={({ pressed }) => [
+                            styles.stepWorkButton,
+                            { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
+                          ]}
+                        >
+                          <Feather name="list" size={16} color="#FFFFFF" />
+                          <ThemedText style={styles.stepWorkButtonText}>
+                            Inventory
+                          </ThemedText>
+                        </Pressable>
+                      ) : null}
+                      <Pressable
+                        onPress={() => navigation.navigate("StepWork", { stepNumber: item.number })}
+                        style={({ pressed }) => [
+                          styles.stepWorkButton,
+                          { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                        ]}
+                      >
+                        <Feather name="edit-3" size={16} color="#FFFFFF" />
+                        <ThemedText style={styles.stepWorkButtonText}>
+                          Work on Step
+                        </ThemedText>
+                      </Pressable>
+                    </View>
                   ) : null}
                 </View>
               </View>
@@ -325,5 +341,9 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "600",
     fontSize: 13,
+  },
+  stepButtons: {
+    flexDirection: "row",
+    gap: Spacing.sm,
   },
 });

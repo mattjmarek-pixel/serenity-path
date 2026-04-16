@@ -22,6 +22,7 @@ import StreaksScreen from "@/screens/StreaksScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import AudioResourcesScreen from "@/screens/AudioResourcesScreen";
 import WebViewScreen from "@/screens/WebViewScreen";
+import FourthStepScreen from "@/screens/FourthStepScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -48,6 +49,7 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   AudioResources: undefined;
   WebViewScreen: { url: string; title: string };
+  FourthStep: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -216,6 +218,13 @@ export default function RootStackNavigator() {
             options={({ route }) => ({
               headerTitle: route.params.title,
             })}
+          />
+          <Stack.Screen
+            name="FourthStep"
+            component={FourthStepScreen}
+            options={{
+              headerTitle: "4th Step Inventory",
+            }}
           />
         </>
       )}

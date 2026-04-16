@@ -71,6 +71,7 @@ shared/           # Shared code between client/server
 - **Profile Data**: Persisted via AsyncStorage for offline-first experience
 - **User Preferences**: Theme, sobriety date stored locally
 - **Notification Preferences**: Persisted via AsyncStorage (`@serenity_path_notifications`)
+- **4th Step Inventory**: Persisted via AsyncStorage (`@serenity_path_fourth_step`)
 
 ### Notifications
 - **Local Push Notifications**: Via `expo-notifications` (mobile only, graceful web fallback)
@@ -111,6 +112,7 @@ shared/           # Shared code between client/server
 15. **Meeting Finder**: Resource hub linking to AA Meeting Guide, Online Intergroup, and InTheRooms with meeting tips for newcomers
 16. **Push Notifications**: Configurable daily reminders for reflections, check-ins, and gratitude (mobile only)
 17. **Audio Resources**: Colorful resource hub linking to Big Book audio, 12 Steps & 12 Traditions audio, Joe and Charlie Big Book Study, and Living Sober audio on official AA and community sites
+18. **4th Step Inventory Worksheet**: Private, locally-persisted inventory with three sections: Resentments (who/what, cause, affected instincts), Fears (fear + life effect), and Harms Done (whom, what, how). Accessible from Profile > My Recovery and Steps tab Step 4 expanded view
 
 ## External Dependencies
 

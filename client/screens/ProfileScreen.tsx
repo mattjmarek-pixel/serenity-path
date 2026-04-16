@@ -303,6 +303,11 @@ export default function ProfileScreen() {
           label="Promises & Prayers"
           onPress={() => navigation.navigate("Prayers")}
         />
+        <SettingsItem
+          icon="list"
+          label="4th Step Inventory"
+          onPress={() => navigation.navigate("FourthStep")}
+        />
       </View>
 
       <View style={styles.section}>
