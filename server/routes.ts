@@ -26,12 +26,15 @@ interface TSMLMeeting {
   notes?: string;
 }
 
+type MeetingModality = "In-Person" | "Online" | "Hybrid";
+
 interface NormalizedMeeting {
   name: string;
   formatted_address: string;
   day: number;
   time: string;
   types: string[];
+  modality: MeetingModality;
   distance: number | null;
   url: string;
   lat: number | null;
@@ -70,7 +73,17 @@ function normalizeTSML(raw: TSMLMeeting): NormalizedMeeting | null {
     raw.location_url?.trim() ||
     (raw.slug ? `https://www.aa.org/meetings/${raw.slug}` : "");
 
-  return { name, formatted_address, day, time, types, distance, url, lat, lng };
+  const ONLINE_CODES = new Set(["ONL", "VM"]);
+  const HYBRID_CODES = new Set(["H", "HYB", "HYBR", "TC"]);
+  const typesUpper = types.map((t) => t.toUpperCase());
+  let modality: MeetingModality = "In-Person";
+  if (typesUpper.some((t) => HYBRID_CODES.has(t))) {
+    modality = "Hybrid";
+  } else if (typesUpper.some((t) => ONLINE_CODES.has(t))) {
+    modality = "Online";
+  }
+
+  return { name, formatted_address, day, time, types, modality, distance, url, lat, lng };
 }
 
 const REGIONAL_TSML_SOURCES: Array<{
@@ -155,7 +168,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/meetings', async (req, res) => {
     const lat = parseFloat(String(req.query.lat ?? ""));
     const lng = parseFloat(String(req.query.lng ?? ""));
-    const distance = parseFloat(String(req.query.distance ?? "25")) || 25;
+    const rawDistance = parseFloat(String(req.query.distance ?? "25")) || 25;
+    const distance = Math.min(Math.max(rawDistance, 1), 100);
 
     if (isNaN(lat) || isNaN(lng)) {
       return res.status(400).json({ error: 'lat and lng are required numeric query parameters' });

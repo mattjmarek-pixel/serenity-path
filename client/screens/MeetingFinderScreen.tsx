@@ -84,12 +84,15 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
   TR: "Tradition Study",
 };
 
+type MeetingModality = "In-Person" | "Online" | "Hybrid";
+
 interface NearbyMeeting {
   name: string;
   formatted_address?: string;
   day: number;
   time: string;
   types?: string[];
+  modality?: MeetingModality;
   distance?: number;
   url?: string;
   lat?: number;
@@ -165,12 +168,27 @@ interface MeetingCardProps {
   onPress: () => void;
 }
 
+const MODALITY_COLOR: Record<MeetingModality, string> = {
+  "In-Person": "#3A9BD9",
+  Online: "#06D6A0",
+  Hybrid: "#7B3FF2",
+};
+
+const MODALITY_ICON: Record<MeetingModality, "map-pin" | "video" | "layers"> = {
+  "In-Person": "map-pin",
+  Online: "video",
+  Hybrid: "layers",
+};
+
 function MeetingCard({ meeting, onPress }: MeetingCardProps) {
   const { theme } = useTheme();
   const dayLabel = DAY_FULL[meeting.day] ?? "";
   const timeLabel = formatTime(meeting.time);
   const distLabel = formatDistance(meeting.distance);
   const typeLabel = getMeetingTypeLabel(meeting.types);
+  const modality: MeetingModality = meeting.modality ?? "In-Person";
+  const modalityColor = MODALITY_COLOR[modality];
+  const modalityIcon = MODALITY_ICON[modality];
 
   return (
     <Card style={styles.meetingCard}>
@@ -196,11 +214,19 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
                 {dayLabel} {timeLabel}
               </ThemedText>
             </View>
-            <View style={[styles.metaBadge, { backgroundColor: theme.accent + "15" }]}>
-              <ThemedText style={[styles.metaBadgeText, { color: theme.accent }]}>
-                {typeLabel}
+            <View style={[styles.metaBadge, { backgroundColor: modalityColor + "20" }]}>
+              <Feather name={modalityIcon} size={11} color={modalityColor} />
+              <ThemedText style={[styles.metaBadgeText, { color: modalityColor }]}>
+                {modality}
               </ThemedText>
             </View>
+            {typeLabel ? (
+              <View style={[styles.metaBadge, { backgroundColor: theme.accent + "15" }]}>
+                <ThemedText style={[styles.metaBadgeText, { color: theme.accent }]}>
+                  {typeLabel}
+                </ThemedText>
+              </View>
+            ) : null}
           </View>
           {meeting.formatted_address ? (
             <ThemedText
