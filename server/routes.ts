@@ -4,11 +4,154 @@ import { sql } from "drizzle-orm";
 import path from "node:path";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
+interface TSMLMeeting {
+  name?: string;
+  day?: number | string;
+  time?: string;
+  types?: string[];
+  type?: string[];
+  address?: string;
+  formatted_address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  lat?: number | string;
+  lng?: number | string;
+  distance?: number | string;
+  url?: string;
+  slug?: string;
+  timezone?: string;
+  location?: string;
+  location_url?: string;
+  notes?: string;
+}
+
+interface NormalizedMeeting {
+  name: string;
+  formatted_address: string;
+  day: number;
+  time: string;
+  types: string[];
+  distance: number | null;
+  url: string;
+  lat: number | null;
+  lng: number | null;
+}
+
+function normalizeTSML(raw: TSMLMeeting): NormalizedMeeting | null {
+  const name = raw.name?.trim();
+  if (!name) return null;
+  const day = parseInt(String(raw.day ?? "0"), 10);
+  if (isNaN(day) || day < 0 || day > 6) return null;
+  const time = String(raw.time ?? "").replace(/^(\d{1,2}):(\d{2}).*$/, "$1:$2");
+  if (!time) return null;
+
+  const addrParts: string[] = [];
+  if (raw.address) addrParts.push(raw.address.trim());
+  if (raw.city) addrParts.push(raw.city.trim());
+  if (raw.state) addrParts.push(raw.state.trim());
+  const formatted_address = raw.formatted_address?.trim() || addrParts.join(", ");
+
+  const types = Array.isArray(raw.types)
+    ? raw.types
+    : Array.isArray(raw.type)
+    ? raw.type
+    : [];
+
+  const distRaw = raw.distance;
+  const distance =
+    distRaw !== undefined && distRaw !== null ? parseFloat(String(distRaw)) || null : null;
+
+  const lat = raw.lat !== undefined ? parseFloat(String(raw.lat)) || null : null;
+  const lng = raw.lng !== undefined ? parseFloat(String(raw.lng)) || null : null;
+
+  const url =
+    raw.url?.trim() ||
+    raw.location_url?.trim() ||
+    (raw.slug ? `https://www.aa.org/meetings/${raw.slug}` : "");
+
+  return { name, formatted_address, day, time, types, distance, url, lat, lng };
+}
+
+const REGIONAL_TSML_SOURCES: Array<{
+  url: (lat: number, lng: number, dist: number) => string;
+  label: string;
+}> = [
+  {
+    label: "Meeting Guide REST",
+    url: (lat, lng, dist) =>
+      `https://www.aa.org/find-aa/meetings/?format=json&lat=${lat}&lng=${lng}&distance=${dist}`,
+  },
+  {
+    label: "Meeting Guide API",
+    url: (lat, lng, dist) =>
+      `https://api.meetingguide.org/meetings.json?lat=${lat}&lng=${lng}&distance=${dist}`,
+  },
+];
+
+async function fetchMeetings(
+  lat: number,
+  lng: number,
+  distance: number
+): Promise<NormalizedMeeting[]> {
+  for (const source of REGIONAL_TSML_SOURCES) {
+    try {
+      const url = source.url(lat, lng, distance);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 7000);
+      const resp = await fetch(url, {
+        signal: controller.signal,
+        headers: { Accept: "application/json", "User-Agent": "SerenityPath/1.0" },
+      });
+      clearTimeout(timer);
+      if (!resp.ok) continue;
+      const ct = resp.headers.get("content-type") ?? "";
+      if (!ct.includes("application/json")) continue;
+      const raw = await resp.json();
+      const list: TSMLMeeting[] = Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.meetings)
+        ? raw.meetings
+        : [];
+      if (list.length === 0) continue;
+      const normalized = list
+        .map(normalizeTSML)
+        .filter((m): m is NormalizedMeeting => m !== null)
+        .slice(0, 40);
+      if (normalized.length > 0) return normalized;
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
 function getBaseUrl(): string {
   return process.env.APP_URL || `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}`;
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.get('/api/meetings', async (req, res) => {
+    const lat = parseFloat(String(req.query.lat ?? ""));
+    const lng = parseFloat(String(req.query.lng ?? ""));
+    const distance = parseFloat(String(req.query.distance ?? "25")) || 25;
+
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ error: 'lat and lng are required numeric query parameters' });
+    }
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return res.status(400).json({ error: 'lat must be -90..90 and lng must be -180..180' });
+    }
+
+    try {
+      const meetings = await fetchMeetings(lat, lng, distance);
+      res.json({ meetings, count: meetings.length });
+    } catch (error: any) {
+      console.error('Error fetching meetings:', error);
+      res.status(500).json({ error: 'Failed to fetch nearby meetings', meetings: [] });
+    }
+  });
+
   app.get('/privacy', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'server/pages/privacy-policy.html'));
   });

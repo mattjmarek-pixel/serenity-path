@@ -20,6 +20,7 @@ import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { getApiUrl } from "@/lib/query-client";
 
 const MEETING_RESOURCES = [
   {
@@ -220,38 +221,28 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
   );
 }
 
-const AA_MEETING_APIS = [
-  (lat: number, lng: number) =>
-    `https://www.aa.org/find-aa/?format=json&lat=${lat}&lng=${lng}&distance=25`,
-  (lat: number, lng: number) =>
-    `https://api.meetingguide.org/meetings.json?lat=${lat}&lng=${lng}&distance=25`,
-];
-
 async function tryFetchMeetings(lat: number, lng: number): Promise<NearbyMeeting[]> {
-  for (const buildUrl of AA_MEETING_APIS) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 6000);
-      const response = await fetch(buildUrl(lat, lng), {
-        signal: controller.signal,
-        headers: { Accept: "application/json" },
-      });
-      clearTimeout(timeout);
-      if (!response.ok) continue;
-      const contentType = response.headers.get("content-type") ?? "";
-      if (!contentType.includes("application/json")) continue;
-      const data = await response.json();
-      const list: NearbyMeeting[] = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.meetings)
-        ? data.meetings
-        : [];
-      if (list.length > 0) return list.slice(0, 30);
-    } catch {
-      continue;
-    }
+  const url = new URL("/api/meetings", getApiUrl());
+  url.searchParams.set("lat", String(lat));
+  url.searchParams.set("lng", String(lng));
+  url.searchParams.set("distance", "25");
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(url.toString(), {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    });
+    clearTimeout(timeout);
+    if (!response.ok) return [];
+    const data = await response.json();
+    const list: NearbyMeeting[] = Array.isArray(data?.meetings) ? data.meetings : [];
+    return list.slice(0, 30);
+  } catch {
+    clearTimeout(timeout);
+    return [];
   }
-  return [];
 }
 
 export default function MeetingFinderScreen() {
@@ -264,11 +255,14 @@ export default function MeetingFinderScreen() {
   const [meetings, setMeetings] = useState<NearbyMeeting[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [apiError, setApiError] = useState(false);
   const [detectedLocation, setDetectedLocation] = useState<DetectedLocation | null>(null);
 
   const fetchNearbyMeetings = useCallback(async () => {
     setIsSearching(true);
     setHasSearched(true);
+    setApiError(false);
+    setMeetings([]);
 
     try {
       const loc = await Location.getCurrentPositionAsync({
@@ -290,10 +284,14 @@ export default function MeetingFinderScreen() {
 
       setDetectedLocation({ lat, lng, city, region, postalCode });
 
-      const found = await tryFetchMeetings(lat, lng);
-      setMeetings(found);
+      try {
+        const found = await tryFetchMeetings(lat, lng);
+        setMeetings(found);
+      } catch {
+        setApiError(true);
+      }
     } catch {
-      setMeetings([]);
+      setApiError(true);
     } finally {
       setIsSearching(false);
     }
@@ -492,6 +490,50 @@ export default function MeetingFinderScreen() {
       );
     }
 
+    if (apiError) {
+      return (
+        <Card style={styles.locationCard}>
+          <Feather name="wifi-off" size={32} color={theme.textSecondary} />
+          <ThemedText type="h4" style={styles.locationTitle}>
+            Connection Problem
+          </ThemedText>
+          <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
+            Could not reach the meeting directory right now. Use the Meeting Finder below to
+            search for meetings, or try again.
+          </ThemedText>
+          <View style={styles.locationButtons}>
+            <Pressable
+              onPress={fetchNearbyMeetings}
+              style={({ pressed }) => [
+                styles.locationButton,
+                { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+              ]}
+            >
+              <Feather name="refresh-cw" size={16} color="#FFFFFF" />
+              <ThemedText style={styles.locationButtonText}>Try Again</ThemedText>
+            </Pressable>
+            <Pressable
+              onPress={handleOpenMeetingFinder}
+              style={({ pressed }) => [
+                styles.locationButton,
+                {
+                  backgroundColor: theme.backgroundSecondary,
+                  borderWidth: 1,
+                  borderColor: theme.border,
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
+            >
+              <Feather name="compass" size={16} color={theme.text} />
+              <ThemedText style={[styles.locationButtonText, { color: theme.text }]}>
+                Meeting Finder
+              </ThemedText>
+            </Pressable>
+          </View>
+        </Card>
+      );
+    }
+
     if (hasSearched && meetings.length === 0) {
       return (
         <View>
@@ -501,7 +543,8 @@ export default function MeetingFinderScreen() {
               {locationLabel}
             </ThemedText>
             <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-              Open the AA Meeting Finder to see meetings near you, or search in Maps.
+              No meetings found nearby in our directory. Open the AA Meeting Finder to search
+              directly, or try Maps.
             </ThemedText>
             <View style={styles.locationButtons}>
               <Pressable
