@@ -5,7 +5,6 @@ import {
   Pressable,
   TextInput,
   Alert,
-  ScrollView,
 } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,7 +40,7 @@ export default function FourthStepScreen() {
   const { theme } = useTheme();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const { data, load, addResentment, deleteResentment, addFear, deleteFear, addHarm, deleteHarm } = useFourthStep();
+  const { data, addResentment, deleteResentment, addFear, deleteFear, addHarm, deleteHarm } = useFourthStep();
 
   const [activeTab, setActiveTab] = useState<SectionTab>("resentments");
   const [showForm, setShowForm] = useState(false);
@@ -79,26 +78,42 @@ export default function FourthStepScreen() {
     );
   }, []);
 
+  const showSaveError = useCallback(() => {
+    Alert.alert("Could not save", "There was a problem saving your entry. Please try again.");
+  }, []);
+
   const handleSaveResentment = useCallback(async () => {
     if (!rWhoOrWhat.trim()) return;
-    await addResentment({ whoOrWhat: rWhoOrWhat.trim(), cause: rCause.trim(), affectedInstincts: rInstincts });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    resetForms();
-  }, [rWhoOrWhat, rCause, rInstincts, addResentment, resetForms]);
+    const ok = await addResentment({ whoOrWhat: rWhoOrWhat.trim(), cause: rCause.trim(), affectedInstincts: rInstincts });
+    if (ok) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      resetForms();
+    } else {
+      showSaveError();
+    }
+  }, [rWhoOrWhat, rCause, rInstincts, addResentment, resetForms, showSaveError]);
 
   const handleSaveFear = useCallback(async () => {
     if (!fFear.trim()) return;
-    await addFear({ fear: fFear.trim(), effect: fEffect.trim() });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    resetForms();
-  }, [fFear, fEffect, addFear, resetForms]);
+    const ok = await addFear({ fear: fFear.trim(), effect: fEffect.trim() });
+    if (ok) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      resetForms();
+    } else {
+      showSaveError();
+    }
+  }, [fFear, fEffect, addFear, resetForms, showSaveError]);
 
   const handleSaveHarm = useCallback(async () => {
     if (!hWhom.trim()) return;
-    await addHarm({ whomHarmed: hWhom.trim(), whatDid: hWhat.trim(), howHarmed: hHow.trim() });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    resetForms();
-  }, [hWhom, hWhat, hHow, addHarm, resetForms]);
+    const ok = await addHarm({ whomHarmed: hWhom.trim(), whatDid: hWhat.trim(), howHarmed: hHow.trim() });
+    if (ok) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      resetForms();
+    } else {
+      showSaveError();
+    }
+  }, [hWhom, hWhat, hHow, addHarm, resetForms, showSaveError]);
 
   const confirmDelete = useCallback((label: string, onDelete: () => void) => {
     Alert.alert(
