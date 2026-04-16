@@ -37,6 +37,177 @@ const MILESTONES = [
   { days: 3650, label: "10 Years" },
 ];
 
+const DAILY_QUOTES = [
+  { text: "One day at a time. This moment is all you need to manage.", author: null },
+  { text: "Progress, not perfection. Every step forward counts.", author: null },
+  { text: "The secret of change is to focus all your energy on building the new, not fighting the old.", author: "Socrates" },
+  { text: "Our greatest glory is not in never falling, but in rising every time we fall.", author: "Confucius" },
+  { text: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+  { text: "You are not your past. You are who you choose to become.", author: null },
+  { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+  { text: "Courage is not the absence of fear, but taking action in spite of it.", author: null },
+  { text: "Recovery is a process, not an event. Be patient with yourself.", author: null },
+  { text: "Every morning you wake up sober is a victory. Celebrate it.", author: null },
+  { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
+  { text: "You don't have to see the whole staircase, just take the first step.", author: "Martin Luther King Jr." },
+  { text: "Pain is a signal, not a punishment. It is asking you to grow.", author: null },
+  { text: "Healing is not linear. Some days you will go backwards — and that is part of the path.", author: null },
+  { text: "The bravest thing you ever did was keep going when you wanted to quit.", author: null },
+  { text: "You were not made to be perfect. You were made to be real.", author: null },
+  { text: "In recovery, we do not suffer alone. We find strength in each other.", author: null },
+  { text: "Fall seven times, stand up eight.", author: "Japanese Proverb" },
+  { text: "The moment you accept yourself, you begin to heal.", author: null },
+  { text: "Gratitude turns what we have into enough.", author: null },
+  { text: "Strength does not come from what you can do. It comes from overcoming the things you once thought you could not.", author: null },
+  { text: "You cannot go back and change the beginning, but you can start where you are and change the ending.", author: "C.S. Lewis" },
+  { text: "Peace is not the absence of struggle. It is the presence of acceptance.", author: null },
+  { text: "Every day is a new beginning. Take a deep breath and start again.", author: null },
+  { text: "The only way out is through. Keep moving.", author: null },
+  { text: "Be gentle with yourself. You are a child of the universe, no less than the trees and the stars.", author: "Max Ehrmann" },
+  { text: "Recovery is giving yourself the life you always deserved.", author: null },
+  { text: "It does not matter how slowly you go, so long as you do not stop.", author: "Confucius" },
+  { text: "Your story is not over. The best chapters may still be ahead.", author: null },
+  { text: "Asking for help is not a weakness. It is the beginning of strength.", author: null },
+  { text: "The present moment is the only place where life happens. Stay here.", author: null },
+  { text: "You are worthy of recovery. Not because of what you have done, but because of who you are.", author: null },
+  { text: "Let go of what you cannot control. Hold on to what you can.", author: null },
+  { text: "Hope is the thing with feathers that perches in the soul and sings the tune without the words.", author: "Emily Dickinson" },
+  { text: "Showing up for yourself, even imperfectly, is an act of courage.", author: null },
+  { text: "Service to others is the rent you pay for your room here on earth.", author: "Muhammad Ali" },
+  { text: "When you cannot find the sunshine, be the sunshine.", author: null },
+];
+
+const HALT_OPTIONS = [
+  {
+    key: "hungry" as const,
+    label: "Hungry",
+    icon: "coffee" as const,
+    color: "#FB8500",
+    tip: "Low blood sugar can make everything harder. Have a meal or snack — taking care of your body is part of your recovery.",
+  },
+  {
+    key: "angry" as const,
+    label: "Angry",
+    icon: "zap" as const,
+    color: "#C62828",
+    tip: "Anger is a signal, not a command. Try a few slow deep breaths, call your sponsor, or write it out in your journal.",
+  },
+  {
+    key: "lonely" as const,
+    label: "Lonely",
+    icon: "users" as const,
+    color: "#3A9BD9",
+    tip: "Isolation is the enemy of recovery. Reach out to your sponsor, go to a meeting, or call someone from your home group.",
+  },
+  {
+    key: "tired" as const,
+    label: "Tired",
+    icon: "moon" as const,
+    color: "#7B3FF2",
+    tip: "Rest is not a luxury in recovery — it is essential. Give yourself permission to slow down and recharge today.",
+  },
+];
+
+type HaltKey = "hungry" | "angry" | "lonely" | "tired";
+
+function getDayOfYear(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function getDailyQuote() {
+  const day = getDayOfYear();
+  return DAILY_QUOTES[day % DAILY_QUOTES.length];
+}
+
+function DailyQuoteCard() {
+  const { theme } = useTheme();
+  const quote = useMemo(() => getDailyQuote(), []);
+
+  return (
+    <Card elevation={1} style={styles.quoteCard}>
+      <View style={styles.quoteHeader}>
+        <Feather name="sun" size={16} color={theme.accent} />
+        <ThemedText type="small" style={[styles.quoteLabel, { color: theme.accent }]}>
+          Thought for the Day
+        </ThemedText>
+      </View>
+      <ThemedText style={[styles.quoteText, { color: theme.text }]}>
+        "{quote.text}"
+      </ThemedText>
+      {quote.author ? (
+        <ThemedText type="small" style={[styles.quoteAuthor, { color: theme.textSecondary }]}>
+          — {quote.author}
+        </ThemedText>
+      ) : null}
+    </Card>
+  );
+}
+
+function HALTCard() {
+  const { theme } = useTheme();
+  const [selected, setSelected] = useState<HaltKey | null>(null);
+
+  const selectedOption = HALT_OPTIONS.find(o => o.key === selected);
+
+  const handlePress = (key: HaltKey) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelected(prev => (prev === key ? null : key));
+  };
+
+  return (
+    <Card elevation={1} style={styles.haltCard}>
+      <ThemedText type="h4" style={styles.haltTitle}>How are you right now?</ThemedText>
+      <ThemedText type="small" style={[styles.haltSubtitle, { color: theme.textSecondary }]}>
+        Check in with yourself — are you HALT?
+      </ThemedText>
+      <View style={styles.haltButtons}>
+        {HALT_OPTIONS.map((option) => {
+          const isSelected = selected === option.key;
+          return (
+            <Pressable
+              key={option.key}
+              onPress={() => handlePress(option.key)}
+              style={[
+                styles.haltButton,
+                {
+                  backgroundColor: isSelected ? option.color : option.color + "18",
+                  borderColor: isSelected ? option.color : "transparent",
+                  borderWidth: 1,
+                },
+              ]}
+            >
+              <Feather
+                name={option.icon}
+                size={18}
+                color={isSelected ? "#FFFFFF" : option.color}
+              />
+              <ThemedText
+                style={[
+                  styles.haltButtonLabel,
+                  { color: isSelected ? "#FFFFFF" : option.color },
+                ]}
+              >
+                {option.label}
+              </ThemedText>
+            </Pressable>
+          );
+        })}
+      </View>
+      {selectedOption ? (
+        <View style={[styles.haltTip, { backgroundColor: selectedOption.color + "12" }]}>
+          <Feather name="heart" size={14} color={selectedOption.color} />
+          <ThemedText type="small" style={[styles.haltTipText, { color: theme.text }]}>
+            {selectedOption.tip}
+          </ThemedText>
+        </View>
+      ) : null}
+    </Card>
+  );
+}
+
 interface TimeElapsed {
   days: number;
   hours: number;
@@ -122,6 +293,12 @@ export default function HomeScreen() {
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
+      {/* Daily Quote */}
+      <View style={styles.section}>
+        <DailyQuoteCard />
+      </View>
+
+      {/* Sobriety Counter */}
       {timeElapsed ? (
         <Card style={styles.heroCard} elevation={1} onPress={() => nav("SobrietyChips")}>
           <ThemedText type="small" style={[styles.heroLabel, { color: theme.textSecondary }]}>
@@ -185,6 +362,7 @@ export default function HomeScreen() {
         <Feather name="chevron-right" size={16} color="rgba(255,255,255,0.6)" />
       </Pressable>
 
+      {/* Today section */}
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Today</ThemedText>
         <View style={styles.todayRow}>
@@ -269,6 +447,12 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {/* HALT Check-in */}
+      <View style={styles.section}>
+        <HALTCard />
+      </View>
+
+      {/* Personal Mantra / Affirmation */}
       {profile.personalMantra ? (
         <View style={styles.section}>
           <Card style={styles.affirmationCard} elevation={1}>
@@ -277,16 +461,9 @@ export default function HomeScreen() {
             </ThemedText>
           </Card>
         </View>
-      ) : (
-        <View style={styles.section}>
-          <Card style={styles.affirmationCard} elevation={1}>
-            <ThemedText type="body" style={styles.affirmationText}>
-              "Progress, not perfection."
-            </ThemedText>
-          </Card>
-        </View>
-      )}
+      ) : null}
 
+      {/* Today's Reflection */}
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Today's Reflection</ThemedText>
         <Card onPress={() => nav("ReflectionsTab" as any)}>
@@ -301,6 +478,7 @@ export default function HomeScreen() {
         </Card>
       </View>
 
+      {/* Quick Access */}
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Quick Access</ThemedText>
         <View style={styles.quickAccessRow}>
@@ -353,6 +531,79 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  section: {
+    marginBottom: Spacing["2xl"],
+  },
+  sectionTitle: {
+    marginBottom: Spacing.md,
+  },
+
+  // Daily Quote
+  quoteCard: {
+    gap: Spacing.sm,
+  },
+  quoteHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    marginBottom: Spacing.xs,
+  },
+  quoteLabel: {
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    fontSize: 11,
+  },
+  quoteText: {
+    fontStyle: "italic",
+    lineHeight: 24,
+    fontSize: 15,
+  },
+  quoteAuthor: {
+    marginTop: Spacing.xs,
+  },
+
+  // HALT Card
+  haltCard: {
+    gap: Spacing.md,
+  },
+  haltTitle: {
+    marginBottom: 0,
+  },
+  haltSubtitle: {
+    marginTop: -Spacing.xs,
+    lineHeight: 18,
+  },
+  haltButtons: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+    flexWrap: "wrap",
+  },
+  haltButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
+    gap: Spacing.xs,
+  },
+  haltButtonLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  haltTip: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  haltTipText: {
+    flex: 1,
+    lineHeight: 20,
+  },
+
+  // Sobriety counter
   heroCard: {
     alignItems: "center",
     marginBottom: Spacing.lg,
@@ -428,12 +679,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     flex: 1,
     textAlign: "center",
-  },
-  section: {
-    marginBottom: Spacing["2xl"],
-  },
-  sectionTitle: {
-    marginBottom: Spacing.md,
   },
   todayRow: {
     flexDirection: "row",
