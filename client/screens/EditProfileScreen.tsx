@@ -158,6 +158,7 @@ function CompassionModal({
       animationType="fade"
       transparent={false}
       statusBarTranslucent
+      onRequestClose={onDismiss}
     >
       <View
         style={[
