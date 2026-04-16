@@ -221,7 +221,12 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
   );
 }
 
-async function tryFetchMeetings(lat: number, lng: number): Promise<NearbyMeeting[]> {
+interface MeetingFetchResult {
+  meetings: NearbyMeeting[];
+  failed: boolean;
+}
+
+async function tryFetchMeetings(lat: number, lng: number): Promise<MeetingFetchResult> {
   const url = new URL("/api/meetings", getApiUrl());
   url.searchParams.set("lat", String(lat));
   url.searchParams.set("lng", String(lng));
@@ -235,13 +240,13 @@ async function tryFetchMeetings(lat: number, lng: number): Promise<NearbyMeeting
       headers: { Accept: "application/json" },
     });
     clearTimeout(timeout);
-    if (!response.ok) return [];
+    if (!response.ok) return { meetings: [], failed: true };
     const data = await response.json();
     const list: NearbyMeeting[] = Array.isArray(data?.meetings) ? data.meetings : [];
-    return list.slice(0, 30);
+    return { meetings: list.slice(0, 30), failed: false };
   } catch {
     clearTimeout(timeout);
-    return [];
+    return { meetings: [], failed: true };
   }
 }
 
@@ -284,11 +289,11 @@ export default function MeetingFinderScreen() {
 
       setDetectedLocation({ lat, lng, city, region, postalCode });
 
-      try {
-        const found = await tryFetchMeetings(lat, lng);
-        setMeetings(found);
-      } catch {
+      const result = await tryFetchMeetings(lat, lng);
+      if (result.failed) {
         setApiError(true);
+      } else {
+        setMeetings(result.meetings);
       }
     } catch {
       setApiError(true);

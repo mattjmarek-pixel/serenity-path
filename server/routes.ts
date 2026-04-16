@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const meetings = await fetchMeetings(lat, lng, distance);
       res.json({ meetings, count: meetings.length });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching meetings:', error);
       res.status(500).json({ error: 'Failed to fetch nearby meetings', meetings: [] });
     }
@@ -163,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const publishableKey = await getStripePublishableKey();
       res.json({ publishableKey });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error getting publishable key:', error);
       res.status(500).json({ error: 'Failed to get Stripe configuration' });
     }
@@ -197,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }));
 
       res.json({ prices: formattedPrices });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching prices:', error);
       res.status(500).json({ error: 'Failed to fetch prices' });
     }
@@ -241,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       res.json({ url: session.url });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating checkout session:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });
     }
@@ -264,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       res.json({ url: session.url });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating portal session:', error);
       res.status(500).json({ error: 'Failed to create portal session' });
     }
