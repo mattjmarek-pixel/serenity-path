@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -269,7 +268,6 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
 export default function ServiceWorkTrackerScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const { entries, isLoading, addEntry, deleteEntry, load, thisMonthCount, allTimeCount, getTodayString } =
     useServiceWork();
@@ -347,7 +345,7 @@ export default function ServiceWorkTrackerScreen() {
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={{
           paddingTop: headerHeight + Spacing.lg,
-          paddingBottom: tabBarHeight + Spacing["2xl"],
+          paddingBottom: insets.bottom + Spacing["2xl"] + 80,
           paddingHorizontal: Spacing.lg,
           flexGrow: 1,
         }}
@@ -360,7 +358,7 @@ export default function ServiceWorkTrackerScreen() {
           styles.fab,
           {
             backgroundColor: theme.primary,
-            bottom: tabBarHeight + Spacing.lg,
+            bottom: insets.bottom + Spacing.lg,
             opacity: pressed ? 0.85 : 1,
           },
         ]}
