@@ -89,8 +89,8 @@ type MeetingModality = "In-Person" | "Online" | "Hybrid";
 interface NearbyMeeting {
   name: string;
   formatted_address?: string;
-  day: number;
-  time: string;
+  day?: number | null;
+  time?: string;
   types?: string[];
   modality?: MeetingModality;
   distance?: number;
@@ -182,10 +182,14 @@ const MODALITY_ICON: Record<MeetingModality, "map-pin" | "video" | "layers"> = {
 
 function MeetingCard({ meeting, onPress }: MeetingCardProps) {
   const { theme } = useTheme();
-  const dayLabel = DAY_FULL[meeting.day] ?? "";
-  const timeLabel = formatTime(meeting.time);
+  const hasSchedule =
+    typeof meeting.day === "number" && meeting.day >= 0 && !!meeting.time;
+  const dayLabel = hasSchedule ? DAY_FULL[meeting.day as number] ?? "" : "";
+  const timeLabel = hasSchedule ? formatTime(meeting.time as string) : "";
   const distLabel = formatDistance(meeting.distance);
-  const typeLabel = getMeetingTypeLabel(meeting.types);
+  const typeLabel = meeting.types && meeting.types.length > 0
+    ? getMeetingTypeLabel(meeting.types)
+    : "";
   const modality: MeetingModality = meeting.modality ?? "In-Person";
   const modalityColor = MODALITY_COLOR[modality];
   const modalityIcon = MODALITY_ICON[modality];
@@ -208,12 +212,14 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
             ) : null}
           </View>
           <View style={styles.meetingMeta}>
-            <View style={[styles.metaBadge, { backgroundColor: theme.primary + "15" }]}>
-              <Feather name="clock" size={11} color={theme.primary} />
-              <ThemedText style={[styles.metaBadgeText, { color: theme.primary }]}>
-                {dayLabel} {timeLabel}
-              </ThemedText>
-            </View>
+            {hasSchedule ? (
+              <View style={[styles.metaBadge, { backgroundColor: theme.primary + "15" }]}>
+                <Feather name="clock" size={11} color={theme.primary} />
+                <ThemedText style={[styles.metaBadgeText, { color: theme.primary }]}>
+                  {dayLabel} {timeLabel}
+                </ThemedText>
+              </View>
+            ) : null}
             <View style={[styles.metaBadge, { backgroundColor: modalityColor + "20" }]}>
               <Feather name={modalityIcon} size={11} color={modalityColor} />
               <ThemedText style={[styles.metaBadgeText, { color: modalityColor }]}>
@@ -234,6 +240,14 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
               numberOfLines={1}
             >
               {meeting.formatted_address}
+            </ThemedText>
+          ) : null}
+          {!hasSchedule ? (
+            <ThemedText
+              style={[styles.meetingAddress, { color: theme.textSecondary, fontStyle: "italic" }]}
+              numberOfLines={1}
+            >
+              Tap for directions and meeting times
             </ThemedText>
           ) : null}
         </View>

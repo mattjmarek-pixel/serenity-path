@@ -109,7 +109,7 @@ shared/           # Shared code between client/server
 12. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
 13. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
 14. **Support Us**: Platform-aware donation page (Stripe for web, "Always Free" + Share on native)
-15. **Meeting Finder**: Resource hub linking to AA Meeting Guide, Online Intergroup, and InTheRooms with meeting tips for newcomers
+15. **Meeting Finder**: GPS-based search for nearby AA meeting venues using Google Places API, plus resource hub linking to AA Meeting Guide, Online Intergroup, and InTheRooms with meeting tips for newcomers. Native cards show venue name, address, and distance; tapping opens Google Maps for directions and meeting times. Falls back to WebView (aa.org) on connection failures or when the API key is missing.
 16. **Push Notifications**: Configurable daily reminders for reflections, check-ins, and gratitude (mobile only)
 17. **Audio Resources**: Colorful resource hub linking to Big Book audio, 12 Steps & 12 Traditions audio, Joe and Charlie Big Book Study, and Living Sober audio on official AA and community sites
 18. **4th Step Inventory Worksheet**: Private, locally-persisted inventory with three sections: Resentments (who/what, cause, affected instincts), Fears (fear + life effect), and Harms Done (whom, what, how). Accessible from Profile > My Recovery and Steps tab Step 4 expanded view

@@ -4,34 +4,12 @@ import { sql } from "drizzle-orm";
 import path from "node:path";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
-interface TSMLMeeting {
-  name?: string;
-  day?: number | string;
-  time?: string;
-  types?: string[];
-  type?: string[];
-  address?: string;
-  formatted_address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  lat?: number | string;
-  lng?: number | string;
-  distance?: number | string;
-  url?: string;
-  slug?: string;
-  timezone?: string;
-  location?: string;
-  location_url?: string;
-  notes?: string;
-}
-
 type MeetingModality = "In-Person" | "Online" | "Hybrid";
 
 interface NormalizedMeeting {
   name: string;
   formatted_address: string;
-  day: number;
+  day: number | null;
   time: string;
   types: string[];
   modality: MeetingModality;
@@ -41,130 +19,128 @@ interface NormalizedMeeting {
   lng: number | null;
 }
 
-function normalizeTSML(raw: TSMLMeeting): NormalizedMeeting | null {
-  const name = raw.name?.trim();
-  if (!name) return null;
-  const day = parseInt(String(raw.day ?? "0"), 10);
-  if (isNaN(day) || day < 0 || day > 6) return null;
-  const rawTime = String(raw.time ?? "");
-  const timeMatch = rawTime.match(/^(\d{1,2}):(\d{2})/);
-  if (!timeMatch) return null;
-  const hour = parseInt(timeMatch[1], 10);
-  const minute = parseInt(timeMatch[2], 10);
-  if (isNaN(hour) || hour < 0 || hour > 23 || isNaN(minute) || minute < 0 || minute > 59) {
-    return null;
-  }
-  const time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-
-  const addrParts: string[] = [];
-  if (raw.address) addrParts.push(raw.address.trim());
-  if (raw.city) addrParts.push(raw.city.trim());
-  if (raw.state) addrParts.push(raw.state.trim());
-  const formatted_address = raw.formatted_address?.trim() || addrParts.join(", ");
-
-  const types = Array.isArray(raw.types)
-    ? raw.types
-    : Array.isArray(raw.type)
-    ? raw.type
-    : [];
-
-  const distRaw = raw.distance;
-  const distance =
-    distRaw !== undefined && distRaw !== null ? parseFloat(String(distRaw)) || null : null;
-
-  const lat = raw.lat !== undefined ? parseFloat(String(raw.lat)) || null : null;
-  const lng = raw.lng !== undefined ? parseFloat(String(raw.lng)) || null : null;
-
-  const url =
-    raw.url?.trim() ||
-    raw.location_url?.trim() ||
-    (raw.slug ? `https://www.aa.org/meetings/${raw.slug}` : "");
-
-  const ONLINE_CODES = new Set(["ONL", "VM"]);
-  const HYBRID_CODES = new Set(["H", "HYB", "HYBR", "TC"]);
-  const typesUpper = types.map((t) => t.toUpperCase());
-  let modality: MeetingModality = "In-Person";
-  if (typesUpper.some((t) => HYBRID_CODES.has(t))) {
-    modality = "Hybrid";
-  } else if (typesUpper.some((t) => ONLINE_CODES.has(t))) {
-    modality = "Online";
-  }
-
-  return { name, formatted_address, day, time, types, modality, distance, url, lat, lng };
+interface PlacesPlace {
+  id?: string;
+  displayName?: { text?: string };
+  formattedAddress?: string;
+  location?: { latitude?: number; longitude?: number };
 }
 
-const REGIONAL_TSML_SOURCES: Array<{
-  url: (lat: number, lng: number, dist: number) => string;
-  label: string;
-}> = [
-  {
-    label: "Meeting Guide REST",
-    url: (lat, lng, dist) =>
-      `https://www.aa.org/find-aa/meetings/?format=json&lat=${lat}&lng=${lng}&distance=${dist}`,
-  },
-  {
-    label: "Meeting Guide API",
-    url: (lat, lng, dist) =>
-      `https://api.meetingguide.org/meetings.json?lat=${lat}&lng=${lng}&distance=${dist}`,
-  },
-];
+interface PlacesResponse {
+  places?: PlacesPlace[];
+  error?: { code?: number; message?: string; status?: string };
+}
 
-async function fetchMeetings(
+function haversineMiles(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 3958.8;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+async function fetchMeetingsFromPlaces(
   lat: number,
   lng: number,
   distance: number
 ): Promise<NormalizedMeeting[]> {
-  let atLeastOneSourceSucceeded = false;
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) {
+    throw new Error("GOOGLE_PLACES_API_KEY is not configured");
+  }
 
-  for (const source of REGIONAL_TSML_SOURCES) {
-    try {
-      const url = source.url(lat, lng, distance);
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 7000);
-      const resp = await fetch(url, {
-        signal: controller.signal,
-        headers: { Accept: "application/json", "User-Agent": "SerenityPath/1.0" },
-      });
-      clearTimeout(timer);
+  const radiusMeters = Math.min(distance * 1609.34, 50000);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
 
-      if (!resp.ok) {
-        console.warn(`[meetings] ${source.label} returned HTTP ${resp.status}`);
-        continue;
-      }
+  try {
+    const resp = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "places.id,places.displayName,places.formattedAddress,places.location",
+      },
+      body: JSON.stringify({
+        textQuery: "Alcoholics Anonymous meeting",
+        locationBias: {
+          circle: {
+            center: { latitude: lat, longitude: lng },
+            radius: radiusMeters,
+          },
+        },
+        maxResultCount: 20,
+      }),
+    });
+    clearTimeout(timer);
 
-      const ct = resp.headers.get("content-type") ?? "";
-      if (!ct.includes("application/json")) {
-        console.warn(`[meetings] ${source.label} returned non-JSON content-type: ${ct}`);
-        continue;
-      }
-
-      const raw = await resp.json();
-      const list: TSMLMeeting[] = Array.isArray(raw)
-        ? raw
-        : Array.isArray(raw?.meetings)
-        ? raw.meetings
-        : [];
-
-      atLeastOneSourceSucceeded = true;
-
-      if (list.length === 0) continue;
-      const normalized = list
-        .map(normalizeTSML)
-        .filter((m): m is NormalizedMeeting => m !== null)
-        .slice(0, 40);
-      if (normalized.length > 0) return normalized;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`[meetings] ${source.label} error: ${msg}`);
-      continue;
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => "");
+      throw new Error(`Places API HTTP ${resp.status}: ${body.slice(0, 200)}`);
     }
-  }
 
-  if (!atLeastOneSourceSucceeded) {
-    throw new Error("All meeting directory sources are currently unavailable");
-  }
+    const data = (await resp.json()) as PlacesResponse;
+    if (data.error) {
+      throw new Error(`Places API error: ${data.error.message ?? data.error.status}`);
+    }
 
-  return [];
+    const places = Array.isArray(data.places) ? data.places : [];
+
+    const normalized: NormalizedMeeting[] = places
+      .map((p): NormalizedMeeting | null => {
+        const name = p.displayName?.text?.trim();
+        const formatted_address = p.formattedAddress?.trim() ?? "";
+        const placeLat =
+          typeof p.location?.latitude === "number" ? p.location.latitude : null;
+        const placeLng =
+          typeof p.location?.longitude === "number" ? p.location.longitude : null;
+        if (!name || !formatted_address) return null;
+
+        const dist =
+          placeLat !== null && placeLng !== null
+            ? haversineMiles(lat, lng, placeLat, placeLng)
+            : null;
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          `${name}, ${formatted_address}`
+        )}${p.id ? `&query_place_id=${p.id}` : ""}`;
+
+        return {
+          name,
+          formatted_address,
+          day: null,
+          time: "",
+          types: [],
+          modality: "In-Person",
+          distance: dist !== null ? Math.round(dist * 10) / 10 : null,
+          url,
+          lat: placeLat,
+          lng: placeLng,
+        };
+      })
+      .filter((m): m is NormalizedMeeting => m !== null)
+      .sort((a, b) => {
+        if (a.distance === null && b.distance === null) return 0;
+        if (a.distance === null) return 1;
+        if (b.distance === null) return -1;
+        return a.distance - b.distance;
+      });
+
+    return normalized;
+  } catch (err: unknown) {
+    clearTimeout(timer);
+    throw err;
+  }
 }
 
 function getBaseUrl(): string {
@@ -186,11 +162,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const meetings = await fetchMeetings(lat, lng, distance);
+      const meetings = await fetchMeetingsFromPlaces(lat, lng, distance);
       res.json({ meetings, count: meetings.length });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.warn('[meetings] Directory fetch failed:', msg);
+      console.warn('[meetings] Places fetch failed:', msg);
       res.status(503).json({ error: 'Meeting directory temporarily unavailable', meetings: [] });
     }
   });
