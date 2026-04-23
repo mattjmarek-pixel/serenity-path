@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -26,7 +27,9 @@ import {
   SERVICE_TYPES,
 } from "@/hooks/useServiceWork";
 
-const SERVICE_ICONS: Record<ServiceType, string> = {
+type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+
+const SERVICE_ICONS: Record<ServiceType, FeatherIconName> = {
   "Chaired a meeting": "mic",
   "Called a newcomer": "phone",
   "Sponsored someone": "users",
@@ -57,28 +60,24 @@ interface EntryCardProps {
 
 function EntryCard({ entry, onDelete }: EntryCardProps) {
   const { theme } = useTheme();
-  const icon = SERVICE_ICONS[entry.type] ?? "star";
+  const icon: FeatherIconName = SERVICE_ICONS[entry.type] ?? "star";
 
-  const handleLongPress = () => {
+  const handleDelete = () => {
     Alert.alert("Delete Entry", "Remove this service entry?", [
       { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => onDelete(entry.id),
-      },
+      { text: "Delete", style: "destructive", onPress: () => onDelete(entry.id) },
     ]);
   };
 
   return (
     <Card style={styles.entryCard}>
       <Pressable
-        onLongPress={handleLongPress}
+        onLongPress={handleDelete}
         delayLongPress={400}
         style={({ pressed }) => [styles.entryPressable, { opacity: pressed ? 0.7 : 1 }]}
       >
         <View style={[styles.entryIcon, { backgroundColor: theme.primary + "15" }]}>
-          <Feather name={icon as any} size={20} color={theme.primary} />
+          <Feather name={icon} size={20} color={theme.primary} />
         </View>
         <View style={styles.entryBody}>
           <ThemedText style={styles.entryType}>{entry.type}</ThemedText>
@@ -95,7 +94,7 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
           </ThemedText>
         </View>
         <Pressable
-          onPress={handleLongPress}
+          onPress={handleDelete}
           hitSlop={12}
           style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
         >
@@ -166,36 +165,22 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
           <ThemedText style={[styles.fieldLabel, { color: theme.textSecondary }]}>
             Type of Service
           </ThemedText>
-          <View style={styles.typeGrid}>
-            {SERVICE_TYPES.map((t) => {
-              const isSelected = t === selectedType;
-              const icon = SERVICE_ICONS[t] ?? "star";
-              return (
-                <Pressable
-                  key={t}
-                  onPress={() => setSelectedType(t)}
-                  style={[
-                    styles.typeChip,
-                    {
-                      backgroundColor: isSelected ? theme.primary : theme.backgroundSecondary,
-                      borderColor: isSelected ? theme.primary : theme.border,
-                    },
-                  ]}
-                >
-                  <Feather
-                    name={icon as any}
-                    size={14}
-                    color={isSelected ? "#FFFFFF" : theme.text}
-                  />
-                  <ThemedText
-                    style={[styles.typeChipText, { color: isSelected ? "#FFFFFF" : theme.text }]}
-                    numberOfLines={2}
-                  >
-                    {t}
-                  </ThemedText>
-                </Pressable>
-              );
-            })}
+          <View
+            style={[
+              styles.pickerWrapper,
+              { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
+            ]}
+          >
+            <Picker
+              selectedValue={selectedType}
+              onValueChange={(val) => setSelectedType(val as ServiceType)}
+              style={{ color: theme.text }}
+              dropdownIconColor={theme.textSecondary}
+            >
+              {SERVICE_TYPES.map((t) => (
+                <Picker.Item key={t} label={t} value={t} color={theme.text} />
+              ))}
+            </Picker>
           </View>
 
           <ThemedText style={[styles.fieldLabel, { color: theme.textSecondary }]}>
@@ -226,12 +211,11 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
             <DateTimePicker
               value={date}
               mode="date"
-              display="inline"
+              display="compact"
               maximumDate={new Date()}
               onChange={(_, d) => {
                 if (d) setDate(d);
               }}
-              style={{ alignSelf: "flex-start" }}
             />
           ) : (
             <>
@@ -243,7 +227,9 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
                 ]}
               >
                 <Feather name="calendar" size={16} color={theme.primary} />
-                <ThemedText style={{ color: theme.text }}>{formatDateDisplay(dateToString(date))}</ThemedText>
+                <ThemedText style={{ color: theme.text }}>
+                  {formatDateDisplay(dateToString(date))}
+                </ThemedText>
               </Pressable>
               {showDatePicker ? (
                 <DateTimePicker
@@ -269,8 +255,16 @@ export default function ServiceWorkTrackerScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const { entries, isLoading, addEntry, deleteEntry, load, thisMonthCount, allTimeCount, getTodayString } =
-    useServiceWork();
+  const {
+    entries,
+    isLoading,
+    addEntry,
+    deleteEntry,
+    load,
+    thisMonthCount,
+    allTimeCount,
+    getTodayString,
+  } = useServiceWork();
   const [showModal, setShowModal] = useState(false);
 
   useFocusEffect(
@@ -495,25 +489,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     marginTop: Spacing.lg,
   },
-  typeGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: Spacing.sm,
-  },
-  typeChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
+  pickerWrapper: {
     borderWidth: 1,
-    maxWidth: "48%",
-  },
-  typeChipText: {
-    fontSize: 13,
-    fontWeight: "500",
-    flexShrink: 1,
+    borderRadius: BorderRadius.md,
+    overflow: "hidden",
   },
   notesInput: {
     borderWidth: 1,
