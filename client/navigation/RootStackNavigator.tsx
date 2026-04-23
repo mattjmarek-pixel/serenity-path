@@ -23,6 +23,7 @@ import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import AudioResourcesScreen from "@/screens/AudioResourcesScreen";
 import WebViewScreen from "@/screens/WebViewScreen";
 import FourthStepScreen from "@/screens/FourthStepScreen";
+import ServiceWorkTrackerScreen from "@/screens/ServiceWorkTrackerScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -50,6 +51,7 @@ export type RootStackParamList = {
   AudioResources: undefined;
   WebViewScreen: { url: string; title: string };
   FourthStep: undefined;
+  ServiceWorkTracker: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -224,6 +226,13 @@ export default function RootStackNavigator() {
             component={FourthStepScreen}
             options={{
               headerTitle: "4th Step Inventory",
+            }}
+          />
+          <Stack.Screen
+            name="ServiceWorkTracker"
+            component={ServiceWorkTrackerScreen}
+            options={{
+              headerTitle: "Service Work",
             }}
           />
         </>

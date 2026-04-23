@@ -113,6 +113,7 @@ shared/           # Shared code between client/server
 16. **Push Notifications**: Configurable daily reminders for reflections, check-ins, and gratitude (mobile only)
 17. **Audio Resources**: Colorful resource hub linking to Big Book audio, 12 Steps & 12 Traditions audio, Joe and Charlie Big Book Study, and Living Sober audio on official AA and community sites
 18. **4th Step Inventory Worksheet**: Private, locally-persisted inventory with three sections: Resentments (who/what, cause, affected instincts), Fears (fear + life effect), and Harms Done (whom, what, how). Accessible from Profile > My Recovery and Steps tab Step 4 expanded view
+19. **Service Work Tracker**: Step 12 service log with monthly/all-time summary counts, entry list sorted by date, and "Log Service" modal. Captures service type (6 options), optional notes, and date. Delete via long-press or trash icon. Persisted via AsyncStorage (`@serenity_path_service_work`). Accessible from Profile > My Recovery.
 
 ## External Dependencies
 

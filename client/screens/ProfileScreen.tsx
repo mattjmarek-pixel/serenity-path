@@ -308,6 +308,11 @@ export default function ProfileScreen() {
           label="4th Step Inventory"
           onPress={() => navigation.navigate("FourthStep")}
         />
+        <SettingsItem
+          icon="users"
+          label="Service Work"
+          onPress={() => navigation.navigate("ServiceWorkTracker")}
+        />
       </View>
 
       <View style={styles.section}>
