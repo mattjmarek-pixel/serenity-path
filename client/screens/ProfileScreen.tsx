@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, StyleSheet, Pressable, Alert, Linking } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, StyleSheet, Pressable, Alert, Linking, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -114,6 +114,7 @@ export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
   const { user, isGuest, logout, deleteAccount } = useAuth();
+  const [showPathPicker, setShowPathPicker] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -155,16 +156,12 @@ export default function ProfileScreen() {
   };
 
   const handleChangeCommunityPath = () => {
-    Alert.alert(
-      "Choose Your Path",
-      `Currently: ${communityPath ?? "Not set"}. Pick the fellowship to display throughout the app.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "AA", onPress: () => { setCommunityPath("AA" as CommunityPath); } },
-        { text: "NA", onPress: () => { setCommunityPath("NA" as CommunityPath); } },
-        { text: "Both", onPress: () => { setCommunityPath("Both" as CommunityPath); } },
-      ]
-    );
+    setShowPathPicker(true);
+  };
+
+  const selectCommunityPath = (path: CommunityPath) => {
+    setCommunityPath(path);
+    setShowPathPicker(false);
   };
 
   const handleDeleteAccount = () => {
@@ -413,6 +410,77 @@ export default function ProfileScreen() {
         This app is not affiliated with Alcoholics Anonymous World Services, Inc. and does not replace professional medical advice.
       </ThemedText>
 
+      <Modal
+        visible={showPathPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPathPicker(false)}
+      >
+        <Pressable
+          style={styles.modalBackdrop}
+          onPress={() => setShowPathPicker(false)}
+        >
+          <Pressable
+            style={[styles.modalCard, { backgroundColor: theme.backgroundDefault }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <ThemedText type="h3" style={styles.modalTitle}>
+              Community Path
+            </ThemedText>
+            <ThemedText
+              type="small"
+              style={[styles.modalSubtitle, { color: theme.textSecondary }]}
+            >
+              Pick the fellowship to display throughout the app
+            </ThemedText>
+
+            {(["AA", "NA", "Both"] as CommunityPath[]).map((option) => {
+              const isCurrent = communityPath === option;
+              return (
+                <Pressable
+                  key={option}
+                  onPress={() => selectCommunityPath(option)}
+                  style={({ pressed }) => [
+                    styles.modalOption,
+                    {
+                      backgroundColor: isCurrent
+                        ? theme.primary
+                        : theme.backgroundSecondary,
+                      borderColor: isCurrent ? theme.primary : theme.border,
+                      opacity: pressed ? 0.7 : 1,
+                    },
+                  ]}
+                >
+                  <ThemedText
+                    style={[
+                      styles.modalOptionText,
+                      { color: isCurrent ? "#FFFFFF" : theme.text },
+                    ]}
+                  >
+                    {option === "Both" ? "Both (AA + NA)" : option}
+                  </ThemedText>
+                  {isCurrent ? (
+                    <Feather name="check" size={18} color="#FFFFFF" />
+                  ) : null}
+                </Pressable>
+              );
+            })}
+
+            <Pressable
+              onPress={() => setShowPathPicker(false)}
+              style={({ pressed }) => [
+                styles.modalCancel,
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <ThemedText style={{ color: theme.textSecondary, fontWeight: "600" }}>
+                Cancel
+              </ThemedText>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       {user ? (
         <View style={[styles.accountInfo, { borderColor: theme.border }]}>
           <Feather name={user.provider === "apple" ? "smartphone" : "mail"} size={14} color={theme.textSecondary} />
@@ -532,6 +600,46 @@ const styles = StyleSheet.create({
   appearanceLabel: {
     fontWeight: "600",
     fontSize: 14,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: Spacing.lg,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 400,
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.lg,
+  },
+  modalTitle: {
+    textAlign: "center",
+    marginBottom: Spacing.xs,
+  },
+  modalSubtitle: {
+    textAlign: "center",
+    marginBottom: Spacing.lg,
+  },
+  modalOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.sm,
+  },
+  modalOptionText: {
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  modalCancel: {
+    alignItems: "center",
+    paddingVertical: Spacing.md,
+    marginTop: Spacing.sm,
   },
   accountInfo: {
     flexDirection: "row",
