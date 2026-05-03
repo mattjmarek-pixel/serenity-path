@@ -12,6 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { useThemeContext, ThemeMode } from "@/contexts/ThemeContext";
+import { useCommunity, CommunityPath } from "@/contexts/CommunityContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { Spacing, BorderRadius } from "@/constants/theme";
@@ -109,6 +110,7 @@ export default function ProfileScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const { themeMode, setThemeMode } = useThemeContext();
+  const { path: communityPath, setPath: setCommunityPath } = useCommunity();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
   const { user, isGuest, logout, deleteAccount } = useAuth();
@@ -148,6 +150,19 @@ export default function ProfileScreen() {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Log Out", style: "destructive", onPress: () => { logout(); } },
+      ]
+    );
+  };
+
+  const handleChangeCommunityPath = () => {
+    Alert.alert(
+      "Choose Your Path",
+      `Currently: ${communityPath ?? "Not set"}. Pick the fellowship to display throughout the app.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "AA", onPress: () => { setCommunityPath("AA" as CommunityPath); } },
+        { text: "NA", onPress: () => { setCommunityPath("NA" as CommunityPath); } },
+        { text: "Both", onPress: () => { setCommunityPath("Both" as CommunityPath); } },
       ]
     );
   };
@@ -341,6 +356,11 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>Settings</ThemedText>
+        <SettingsItem
+          icon="users"
+          label={`Community Path${communityPath ? ` (${communityPath})` : ""}`}
+          onPress={handleChangeCommunityPath}
+        />
         <SettingsItem
           icon="bell"
           label="Notifications"

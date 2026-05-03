@@ -22,13 +22,20 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: StyleSheet-based with a custom theme system supporting light/dark modes
 - **Animations**: React Native Reanimated for smooth animations and gestures
 - **Typography**: Custom fonts (Inter for body/UI text, Crimson Pro for headings)
-- **Color Scheme**: Official Recovery Colors - WCAG AAA compliant
-  - Primary: Recovery Purple (#7B3FF2)
-  - Secondary: Healthcare Blue (#3A9BD9)
-  - Accent: Growth Green (#06D6A0)
-  - Highlight: Engagement Orange (#FB8500)
-  - Emergency: Red (#C62828) - Reserved for crisis buttons only
-- **Note**: App.tsx loading screen uses hardcoded colors because theme context is unavailable during initial load
+- **Color Scheme**: Official Recovery Colors - WCAG AAA compliant. Same five hex values are used in light and dark mode; only role assignments rotate by community.
+  - Recovery Purple (#7B3FF2)
+  - Healthcare Blue (#3A9BD9)
+  - Growth Green (#06D6A0)
+  - Engagement Orange (#FB8500)
+  - Emergency Red (#C62828) - Reserved for crisis buttons only, never decorative
+- **Community Theming**: Color roles rotate based on the active community.
+  - **AA**: primary=Purple, secondary=Blue, accent=Green, highlight=Orange
+  - **NA**: primary=Green, secondary=Orange, accent=Purple, highlight=Blue
+  - `success` is always green (#06D6A0); `warning` is always orange (#FB8500)
+  - `theme.highlight` is the new fourth role token (alongside primary/secondary/accent)
+  - Backgrounds, text, and borders come from a shared neutral base per light/dark mode
+- **Theme API**: `getThemeColors(scheme, community)` in `client/constants/theme.ts` returns the full theme object. `useTheme()` reads `activeCommunity` from `CommunityContext` automatically.
+- **Note**: App.tsx loading screen uses hardcoded colors (#7B3FF2) because context is unavailable during initial load.
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
@@ -55,6 +62,13 @@ server/           # Express backend
 shared/           # Shared code between client/server
   └── schema.ts   # Drizzle database schema
 ```
+
+### Community Path Selection
+- **Onboarding Step**: After authentication (or guest), users land on `PathSelectionScreen` where they pick AA, NA, or Both. Selection gates entry to the main app.
+- **Path Persistence**: `CommunityContext` (`client/contexts/CommunityContext.tsx`) stores `{path, activeView}` to AsyncStorage (`@serenity_path_community`).
+- **Both Mode**: When `path === "Both"`, a small AA/NA toggle pill appears in every screen header (injected via `useScreenOptions` -> `CommunityToggle`). Tapping flips `activeView`, instantly retinting all themed UI.
+- **Pure AA / NA**: `activeCommunity` equals the chosen path; the toggle is hidden.
+- **Change Anytime**: Profile > Settings > Community Path opens an alert allowing users to switch between AA/NA/Both.
 
 ### Authentication
 - **Apple Sign-In**: Native iOS via `expo-apple-authentication` (iOS only)

@@ -26,6 +26,7 @@ import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CommunityProvider } from "@/contexts/CommunityContext";
 import { DailyGreeting } from "@/components/DailyGreeting";
 
 export default function App() {
@@ -44,7 +45,7 @@ export default function App() {
   if (!fontsLoaded) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#1F4E79" />
+        <ActivityIndicator size="large" color="#7B3FF2" />
       </View>
     );
   }
@@ -53,8 +54,9 @@ export default function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <AuthProvider>
-            <SafeAreaProvider>
+          <CommunityProvider>
+            <AuthProvider>
+              <SafeAreaProvider>
               <GestureHandlerRootView style={styles.root}>
                 <KeyboardProvider>
                   <NavigationContainer>
@@ -68,6 +70,7 @@ export default function App() {
               </GestureHandlerRootView>
             </SafeAreaProvider>
           </AuthProvider>
+          </CommunityProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>

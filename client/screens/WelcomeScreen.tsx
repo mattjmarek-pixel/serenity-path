@@ -66,6 +66,7 @@ export default function WelcomeScreen() {
           <FeatureItem icon="award" text="Track sobriety milestones and streaks" theme={theme} />
           <FeatureItem icon="book-open" text="Step work companion and journal" theme={theme} />
           <FeatureItem icon="phone" text="Crisis support when you need it most" theme={theme} />
+          <FeatureItem icon="users" text="Built for both AA and NA communities" theme={theme} />
         </View>
 
         <View style={styles.buttonsSection}>

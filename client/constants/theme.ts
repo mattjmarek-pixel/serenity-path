@@ -1,44 +1,98 @@
 import { Platform } from "react-native";
 
+export type CommunityType = "AA" | "NA";
+
+export const RECOVERY_PALETTE = {
+  purple: "#7B3FF2",
+  blue: "#3A9BD9",
+  green: "#06D6A0",
+  orange: "#FB8500",
+  red: "#C62828",
+} as const;
+
+const COMMUNITY_ROLES: Record<CommunityType, {
+  primary: keyof typeof RECOVERY_PALETTE;
+  secondary: keyof typeof RECOVERY_PALETTE;
+  accent: keyof typeof RECOVERY_PALETTE;
+  highlight: keyof typeof RECOVERY_PALETTE;
+}> = {
+  AA: { primary: "purple", secondary: "blue", accent: "green", highlight: "orange" },
+  NA: { primary: "green", secondary: "orange", accent: "purple", highlight: "blue" },
+};
+
+const BASE_LIGHT = {
+  text: "#1A2A3A",
+  textSecondary: "#5A6A7A",
+  buttonText: "#FFFFFF",
+  tabIconDefault: "#5A6A7A",
+  backgroundRoot: "#F2F4F6",
+  backgroundDefault: "#FFFFFF",
+  backgroundSecondary: "#E8EEF4",
+  backgroundTertiary: "#D4DEE8",
+  border: "#D4DEE8",
+  emergency: RECOVERY_PALETTE.red,
+};
+
+const BASE_DARK = {
+  text: "#F2F4F6",
+  textSecondary: "#A9B8C8",
+  buttonText: "#FFFFFF",
+  tabIconDefault: "#7A8A9A",
+  backgroundRoot: "#0D1520",
+  backgroundDefault: "#152030",
+  backgroundSecondary: "#1E2D40",
+  backgroundTertiary: "#2A3D52",
+  border: "#2A3D52",
+  emergency: RECOVERY_PALETTE.red,
+};
+
+export interface ThemeColors {
+  text: string;
+  textSecondary: string;
+  buttonText: string;
+  tabIconDefault: string;
+  tabIconSelected: string;
+  link: string;
+  backgroundRoot: string;
+  backgroundDefault: string;
+  backgroundSecondary: string;
+  backgroundTertiary: string;
+  border: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  highlight: string;
+  emergency: string;
+  success: string;
+  warning: string;
+}
+
+export function getThemeColors(
+  scheme: "light" | "dark",
+  community: CommunityType = "AA"
+): ThemeColors {
+  const base = scheme === "dark" ? BASE_DARK : BASE_LIGHT;
+  const roles = COMMUNITY_ROLES[community];
+  const primary = RECOVERY_PALETTE[roles.primary];
+  const secondary = RECOVERY_PALETTE[roles.secondary];
+  const accent = RECOVERY_PALETTE[roles.accent];
+  const highlight = RECOVERY_PALETTE[roles.highlight];
+  return {
+    ...base,
+    primary,
+    secondary,
+    accent,
+    highlight,
+    success: RECOVERY_PALETTE.green,
+    warning: RECOVERY_PALETTE.orange,
+    tabIconSelected: primary,
+    link: primary,
+  };
+}
+
 export const Colors = {
-  light: {
-    text: "#1A2A3A",
-    textSecondary: "#5A6A7A",
-    buttonText: "#FFFFFF",
-    tabIconDefault: "#5A6A7A",
-    tabIconSelected: "#1F4E79",
-    link: "#1F4E79",
-    backgroundRoot: "#F2F4F6",
-    backgroundDefault: "#FFFFFF",
-    backgroundSecondary: "#E8EEF4",
-    backgroundTertiary: "#D4DEE8",
-    primary: "#1F4E79",
-    secondary: "#A9C7E8",
-    accent: "#D4A017",
-    emergency: "#C62828",
-    success: "#2E7D4A",
-    warning: "#D4A017",
-    border: "#D4DEE8",
-  },
-  dark: {
-    text: "#F2F4F6",
-    textSecondary: "#A9B8C8",
-    buttonText: "#FFFFFF",
-    tabIconDefault: "#7A8A9A",
-    tabIconSelected: "#A9C7E8",
-    link: "#A9C7E8",
-    backgroundRoot: "#0D1520",
-    backgroundDefault: "#152030",
-    backgroundSecondary: "#1E2D40",
-    backgroundTertiary: "#2A3D52",
-    primary: "#A9C7E8",
-    secondary: "#1F4E79",
-    accent: "#E8B82A",
-    emergency: "#FF6B6B",
-    success: "#4CAF6A",
-    warning: "#E8B82A",
-    border: "#2A3D52",
-  },
+  light: getThemeColors("light", "AA"),
+  dark: getThemeColors("dark", "AA"),
 };
 
 export const Spacing = {

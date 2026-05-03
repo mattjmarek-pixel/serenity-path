@@ -1,8 +1,11 @@
+import React from "react";
 import { Platform } from "react-native";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 
 import { useTheme } from "@/hooks/useTheme";
+import { useCommunity } from "@/contexts/CommunityContext";
+import { CommunityToggle } from "@/components/CommunityToggle";
 
 interface UseScreenOptionsParams {
   transparent?: boolean;
@@ -12,6 +15,7 @@ export function useScreenOptions({
   transparent = true,
 }: UseScreenOptionsParams = {}): NativeStackNavigationOptions {
   const { theme, isDark } = useTheme();
+  const { path } = useCommunity();
 
   return {
     headerTitleAlign: "center",
@@ -29,6 +33,7 @@ export function useScreenOptions({
         web: transparent ? theme.backgroundRoot : theme.backgroundDefault,
       }),
     },
+    headerRight: path === "Both" ? () => React.createElement(CommunityToggle) : undefined,
     gestureEnabled: true,
     gestureDirection: "horizontal",
     fullScreenGestureEnabled: isLiquidGlassAvailable() ? false : true,

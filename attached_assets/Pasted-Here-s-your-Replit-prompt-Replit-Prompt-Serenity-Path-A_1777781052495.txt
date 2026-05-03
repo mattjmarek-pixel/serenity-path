@@ -1,0 +1,104 @@
+Here's your Replit prompt:
+
+---
+
+**Replit Prompt — Serenity Path: AA/NA Community App**
+
+---
+
+Build a full-stack general recovery community app called **Serenity Path**. The app supports both AA and NA communities and must follow the design system and onboarding flow described below exactly.
+
+---
+
+**ONBOARDING / PATH SELECTION SCREEN**
+
+When a user logs in for the first time, show a full-screen **split-panel "Choose Your Path" screen** before entering the main app. This is a one-time selection that can be changed in settings later.
+
+- The screen is divided into two equal vertical panels side by side
+- **Left panel** — AA (Alcoholics Anonymous)
+- **Right panel** — NA (Narcotics Anonymous)
+- A third option, a slim center divider button labeled **"Both"**, allows the user to select both communities simultaneously
+- Each panel displays the community name, a short welcoming tagline, and a "Begin" CTA button
+- The panel color schemes (see below) make it immediately visually clear which side is which
+- On mobile, stack the panels vertically instead of side by side
+- After selection, save the preference to the user profile and route to the main app dashboard
+
+---
+
+**COLOR SYSTEM — Official Recovery Colors Palette**
+
+All colors are WCAG AAA compliant. Light mode and dark mode are both fully supported. Use background tokens (`backgroundDefault`, `backgroundSecondary`, `backgroundTertiary`) for layered cards and elevation — no drop shadows. Text adapts automatically to maintain AAA contrast ratios on every background.
+
+Use these exact hex values across both themes:
+
+| Role | Name | Hex |
+|---|---|---|
+| Recovery Purple | `#7B3FF2` |
+| Healthcare Blue | `#3A9BD9` |
+| Growth Green | `#06D6A0` |
+| Engagement Orange | `#FB8500` |
+| Emergency Red | `#C62828` |
+
+Red (`#C62828`) is reserved **exclusively** for crisis/panic buttons and emergency call elements. Never use it decoratively.
+
+---
+
+**AA SIDE — Color Role Arrangement**
+
+| Role | Color |
+|---|---|
+| Primary (brand, buttons, nav, sobriety counter) | Recovery Purple `#7B3FF2` |
+| Secondary (supporting actions, info) | Healthcare Blue `#3A9BD9` |
+| Accent (milestones, gratitude, success) | Growth Green `#06D6A0` |
+| Highlight (CTAs, streaks, attention) | Engagement Orange `#FB8500` |
+| Emergency only | Red `#C62828` |
+
+---
+
+**NA SIDE — Color Role Arrangement**
+
+Same five colors, roles rotated so the NA side has a distinctly different feel at a glance:
+
+| Role | Color |
+|---|---|
+| Primary (brand, buttons, nav, sobriety counter) | Growth Green `#06D6A0` |
+| Secondary (supporting actions, info) | Engagement Orange `#FB8500` |
+| Accent (milestones, gratitude, success) | Recovery Purple `#7B3FF2` |
+| Highlight (CTAs, streaks, attention) | Healthcare Blue `#3A9BD9` |
+| Emergency only | Red `#C62828` |
+
+---
+
+**BOTH MODE**
+
+When a user selects "Both," the app displays a toggle in the navigation bar to switch between the AA view and the NA view. Each view loads its respective color arrangement. Shared data (meetings attended, journal entries, etc.) is visible in both views but badged with the appropriate community label (AA or NA).
+
+---
+
+**TYPOGRAPHY**
+
+- **Headings:** Crimson Pro — gives the app a reflective, slightly devotional tone
+- **Body & UI text:** Inter — clean, accessible, modern
+- Load both fonts via Google Fonts
+
+---
+
+**DESIGN INTENT**
+
+The palette should feel calm, supportive, and hopeful — never clinical. Purple anchors serenity and spirituality. Blue signals trust and health. Green represents growth and progress. Orange adds warmth and human connection. Red carries real weight — it should only appear when crisis support is needed.
+
+---
+
+**GENERAL APP REQUIREMENTS**
+
+- Full user authentication (sign up, login, logout, forgot password)
+- User profile with selected community path (AA, NA, or Both), sobriety start date, and display name
+- Sobriety counter on the dashboard, styled with the Primary color of the active community
+- Light mode / dark mode toggle, persisted per user
+- Mobile-responsive throughout
+- Community path preference is saved to the user's profile and respected on every subsequent login
+- All crisis/emergency buttons use Red `#C62828` regardless of which community side is active
+
+---
+
+Paste this directly into Replit Agent and it will scaffold the full app. Let me know if you want me to add any specific features (meetings, journaling, step work, etc.) to the prompt before you use it!

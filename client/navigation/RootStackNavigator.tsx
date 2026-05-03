@@ -24,11 +24,14 @@ import AudioResourcesScreen from "@/screens/AudioResourcesScreen";
 import WebViewScreen from "@/screens/WebViewScreen";
 import FourthStepScreen from "@/screens/FourthStepScreen";
 import ServiceWorkTrackerScreen from "@/screens/ServiceWorkTrackerScreen";
+import PathSelectionScreen from "@/screens/PathSelectionScreen";
 import { useAuth } from "@/hooks/useAuth";
+import { useCommunity } from "@/contexts/CommunityContext";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type RootStackParamList = {
   Welcome: undefined;
+  PathSelection: undefined;
   Main: undefined;
   Support: undefined;
   SupportUs: undefined;
@@ -59,8 +62,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function RootStackNavigator() {
   const screenOptions = useScreenOptions();
   const { isAuthenticated, isLoading } = useAuth();
+  const { path, isLoaded: communityLoaded } = useCommunity();
 
-  if (isLoading) {
+  if (isLoading || !communityLoaded) {
     return null;
   }
 
@@ -70,6 +74,12 @@ export default function RootStackNavigator() {
         <Stack.Screen
           name="Welcome"
           component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+      ) : !path ? (
+        <Stack.Screen
+          name="PathSelection"
+          component={PathSelectionScreen}
           options={{ headerShown: false }}
         />
       ) : (
