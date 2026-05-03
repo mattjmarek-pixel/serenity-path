@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import MainTabNavigator from "@/navigation/MainTabNavigator";
+import MainShell from "@/navigation/MainShell";
 import WelcomeScreen from "@/screens/WelcomeScreen";
 import SupportScreen from "@/screens/SupportScreen";
 import JournalScreen from "@/screens/JournalScreen";
@@ -86,7 +86,7 @@ export default function RootStackNavigator() {
         <>
           <Stack.Screen
             name="Main"
-            component={MainTabNavigator}
+            component={MainShell}
             options={{ headerShown: false }}
           />
           <Stack.Screen
