@@ -11,6 +11,12 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const log = isProduction ? () => {} : console.log;
 
+if (isProduction && !process.env.STRIPE_SECRET_KEY) {
+  throw new Error(
+    "STRIPE_SECRET_KEY is required when NODE_ENV=production. Refusing to start.",
+  );
+}
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;

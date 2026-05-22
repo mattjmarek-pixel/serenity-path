@@ -2,7 +2,16 @@ import type { Express } from "express";
 import { createServer, type Server } from "node:http";
 import { sql } from "drizzle-orm";
 import path from "node:path";
+import { z } from "zod";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+
+const createCheckoutSessionSchema = z.object({
+  priceId: z.string().min(1, "priceId is required").max(255),
+});
+
+const createPortalSessionSchema = z.object({
+  customerId: z.string().min(1, "customerId is required").max(255),
+});
 
 type MeetingModality = "In-Person" | "Online" | "Hybrid";
 
@@ -224,11 +233,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/stripe/create-checkout-session', async (req, res) => {
     try {
-      const { priceId } = req.body;
-
-      if (!priceId) {
-        return res.status(400).json({ error: 'Price ID is required' });
+      const parsed = createCheckoutSessionSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          error: 'Invalid request body',
+          details: parsed.error.flatten(),
+        });
       }
+      const { priceId } = parsed.data;
 
       const stripe = await getUncachableStripeClient();
       
@@ -268,11 +280,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/stripe/create-portal-session', async (req, res) => {
     try {
-      const { customerId } = req.body;
-
-      if (!customerId) {
-        return res.status(400).json({ error: 'Customer ID is required' });
+      const parsed = createPortalSessionSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          error: 'Invalid request body',
+          details: parsed.error.flatten(),
+        });
       }
+      const { customerId } = parsed.data;
 
       const stripe = await getUncachableStripeClient();
       const baseUrl = getBaseUrl();

@@ -20,6 +20,8 @@ import { Spacing, BorderRadius } from "@/constants/theme";
 import { getTodayReflection } from "@/constants/reflections";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RecoveryErrorFallback } from "@/components/RecoveryErrorFallback";
 
 type HomeNavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, "HomeTab">,
@@ -237,7 +239,7 @@ function getNextMilestone(days: number) {
   return MILESTONES.find(m => m.days > days);
 }
 
-export default function HomeScreen() {
+function HomeScreenInner() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
@@ -756,3 +758,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default function HomeScreen() {
+  return (
+    <ErrorBoundary FallbackComponent={RecoveryErrorFallback}>
+      <HomeScreenInner />
+    </ErrorBoundary>
+  );
+}

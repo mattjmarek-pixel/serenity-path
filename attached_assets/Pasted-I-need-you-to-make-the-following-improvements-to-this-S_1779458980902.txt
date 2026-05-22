@@ -1,0 +1,132 @@
+I need you to make the following improvements to this Serenity Path app (AA/NA recovery support app built with React Native + Expo + Express) before it goes live. Work through each section in order.
+
+---
+
+## 1. Fix package name (CRITICAL)
+
+In `package.json`, change:
+  "name": "my-app"
+to:
+  "name": "serenity-path"
+
+Then open `app.json` and verify the following fields are set correctly (update if they are missing or still set to placeholder values):
+- `name` → "Serenity Path"
+- `slug` → "serenity-path"
+- `ios.bundleIdentifier` → "com.serenitypath.app"
+- `android.package` → "com.serenitypath.app"
+- `version` → "1.0.0"
+- `orientation` → "portrait"
+
+---
+
+## 2. Replace MemStorage with PostgreSQL (CRITICAL)
+
+Open `server/storage.ts`. The current implementation uses an in-memory `MemStorage` class. Replace it with a real database-backed implementation using Drizzle ORM and PostgreSQL.
+
+- Use the existing schema in `shared/schema.ts`
+- Use the existing `drizzle.config.ts` for configuration
+- Create a `db` instance using `drizzle(pool)` where `pool` is a `pg.Pool` using `process.env.DATABASE_URL`
+- Implement each storage method using Drizzle query syntax against the real schema tables
+- Export the new DB-backed storage as the default storage object used in `server/routes.ts`
+- Add a graceful startup check: if `DATABASE_URL` is not set, log a warning and fall back to MemStorage with a console warning that data will not persist
+
+After updating, run `npm run db:push` to push the schema to the database.
+
+---
+
+## 3. Abstract Replit-specific environment variables
+
+In `package.json` scripts, the following env vars are hardcoded:
+- `$REPLIT_DEV_DOMAIN`
+- `$REPLIT_INTERNAL_APP_DOMAIN`
+
+Update the scripts so that these are read from environment with the Replit vars as defaults when running inside Replit. Add a new script `"expo:dev:local"` that uses `localhost` so the app can be developed outside Replit. Document all required environment variables in a new `ENVIRONMENT.md` file at the root.
+
+---
+
+## 4. Secure Stripe integration (CRITICAL)
+
+Audit all Stripe-related code in `server/routes.ts`:
+- Confirm `STRIPE_SECRET_KEY` is only accessed via `process.env.STRIPE_SECRET_KEY` on the server — never in any file under `client/`
+- Add a startup assertion in `server/index.ts`: if `NODE_ENV === 'production'` and `STRIPE_SECRET_KEY` is not set, throw an error and refuse to start
+- Confirm the Stripe publishable key is accessed via `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` on the client side
+- Add Zod input validation on the `POST /api/stripe/create-checkout-session` route
+
+---
+
+## 5. Remove or demote @octokit/rest
+
+Search the codebase for any imports of `@octokit/rest`:
+- If found only in scripts or build tooling → move to devDependencies
+- If not found anywhere → remove from package.json entirely
+
+Run `npm install` after making changes.
+
+---
+
+## 6. Add error boundaries around crisis-critical screens
+
+Create `client/components/ErrorBoundary.tsx` — a class-based React error boundary that:
+- Catches rendering errors in its subtree
+- Displays a calm fallback UI: "Something went wrong. If you need immediate help, call 988 or your sponsor."
+- Includes a "Try Again" button that resets the error state
+- Logs the error to console in development
+
+Wrap the following with this ErrorBoundary:
+- The Support / panic button screen
+- The Home screen
+- The root App component as a top-level safety net
+
+---
+
+## 7. Strengthen AA disclaimer visibility
+
+Add the disclaimer to `client/screens/WelcomeScreen.tsx` below the sign-in buttons:
+- Text: "Serenity Path is not affiliated with Alcoholics Anonymous World Services, Inc. This app is an independent tool to support your recovery journey."
+- Style as 12pt muted secondary text using the theme's text secondary color
+- Must be visible without scrolling
+
+---
+
+## 8. Add basic test suite
+
+Install Jest and React Native Testing Library:
+npm install --save-dev jest jest-expo @testing-library/react-native @testing-library/jest-native @types/jest
+
+Add to `package.json`:
+"jest": { "preset": "jest-expo" }
+Add script: "test": "jest"
+
+Create these test files:
+
+`client/__tests__/sobrietyCounter.test.ts` — test days elapsed calculation including edge cases (same day, exactly 1 year, leap years)
+
+`client/__tests__/streakCalculation.test.ts` — test streak logic: consecutive days give correct count, a gap resets to 0, single entry gives streak of 1
+
+`server/__tests__/stripeRoutes.test.ts` — test Stripe route validation: missing priceId → 400, invalid type → 400, valid priceId → passes (mock Stripe call)
+
+Run `npm test` to confirm all tests pass.
+
+---
+
+## 9. Add GitHub Actions CI
+
+Create `.github/workflows/ci.yml` triggered on push and pull_request to `main` with four jobs: lint, typecheck, format, and test. Use node-version 20 and cache npm dependencies.
+
+---
+
+## 10. Final verification
+
+After all changes, confirm:
+- [ ] package.json "name" is "serenity-path"
+- [ ] app.json has real bundle identifiers
+- [ ] Server starts with a real DATABASE_URL
+- [ ] STRIPE_SECRET_KEY is never referenced in any file under client/
+- [ ] @octokit/rest is removed or moved to devDependencies
+- [ ] ErrorBoundary wraps the Support screen and App root
+- [ ] AA disclaimer appears on WelcomeScreen
+- [ ] npm test passes
+- [ ] npm run lint passes
+- [ ] npm run check:types passes
+- [ ] .github/workflows/ci.yml exists and is valid YAML
+- [ ] ENVIRONMENT.md documents all required environment variables

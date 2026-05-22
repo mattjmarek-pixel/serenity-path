@@ -128,6 +128,10 @@ export default function WelcomeScreen() {
           <ThemedText type="small" style={[styles.disclaimer, { color: theme.textSecondary }]}>
             Your data is stored locally on your device. Creating an account enables future cloud backup features.
           </ThemedText>
+
+          <ThemedText style={[styles.aaDisclaimer, { color: theme.textSecondary }]}>
+            Serenity Path is not affiliated with Alcoholics Anonymous World Services, Inc. This app is an independent tool to support your recovery journey.
+          </ThemedText>
         </View>
       </View>
     </View>
@@ -245,5 +249,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
     paddingHorizontal: Spacing.lg,
+  },
+  aaDisclaimer: {
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: "center",
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.xs,
   },
 });

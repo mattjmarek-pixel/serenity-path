@@ -12,8 +12,10 @@ import { useTheme } from "@/hooks/useTheme";
 import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RecoveryErrorFallback } from "@/components/RecoveryErrorFallback";
 
-export default function SupportScreen() {
+function SupportScreenInner() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
@@ -370,3 +372,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export default function SupportScreen() {
+  return (
+    <ErrorBoundary FallbackComponent={RecoveryErrorFallback}>
+      <SupportScreenInner />
+    </ErrorBoundary>
+  );
+}
