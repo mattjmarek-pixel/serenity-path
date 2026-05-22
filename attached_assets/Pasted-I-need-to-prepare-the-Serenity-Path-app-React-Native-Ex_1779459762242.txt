@@ -1,0 +1,230 @@
+I need to prepare the Serenity Path app (React Native + Expo) for submission to the Apple App Store and Google Play Store. Work through each section in order.
+
+---
+
+## 1. Install and configure Expo EAS
+
+Install EAS CLI: npm install -g eas-cli
+
+Create `eas.json` at the root:
+{
+  "cli": { "version": ">= 12.0.0" },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": { "simulator": false }
+    },
+    "production": {
+      "autoIncrement": true,
+      "ios": { "buildConfiguration": "Release" },
+      "android": { "buildType": "app-bundle" }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "REPLACE_WITH_YOUR_APPLE_ID",
+        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "REPLACE_WITH_YOUR_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-play-key.json",
+        "track": "internal"
+      }
+    }
+  }
+}
+
+---
+
+## 2. Finalize app.json for store submission
+
+Ensure ALL of the following fields are present and correctly set in `app.json`:
+- name: "Serenity Path"
+- slug: "serenity-path"
+- version: "1.0.0"
+- orientation: "portrait"
+- icon: "./assets/images/icon.png"
+- userInterfaceStyle: "automatic"
+- splash: image "./assets/images/splash.png", resizeMode "contain", backgroundColor "#7B3FF2"
+- ios.supportsTablet: false
+- ios.bundleIdentifier: "com.serenitypath.app"
+- ios.buildNumber: "1"
+- ios.infoPlist.NSLocationWhenInUseUsageDescription: "Serenity Path uses your location to find nearby AA/NA meetings."
+- ios.infoPlist.NSUserNotificationsUsageDescription: "Serenity Path sends daily reminders for reflections, check-ins, and gratitude practice."
+- android.package: "com.serenitypath.app"
+- android.versionCode: 1
+- android.permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+- extra.eas.projectId: "REPLACE_WITH_EAS_PROJECT_ID"
+
+Leave all REPLACE_WITH_ values as-is for manual entry.
+
+---
+
+## 3. Audit iOS permission strings
+
+Search the entire `client/` directory for usage of expo-location, expo-notifications, expo-camera, expo-media-library, expo-contacts, and expo-apple-authentication. For each one found, confirm the matching infoPlist permission string is in app.json. Add any that are missing. Remove any for APIs not used.
+
+---
+
+## 4. Create store listing reference file
+
+Create `store-listing.md` at the root with the following content:
+
+# Serenity Path — Store Listing Reference
+
+## App Name
+Serenity Path
+
+## Subtitle (iOS only, 30 chars max)
+AA & NA Recovery Companion
+
+## Short Description (Google Play, 80 chars max)
+Daily support for your AA and NA recovery journey.
+
+## Full Description
+Serenity Path is a calm, private companion for your AA and NA recovery journey.
+
+Whether you're on day one or celebrating years of sobriety, Serenity Path gives you the tools to stay connected to your program — anytime, anywhere.
+
+FEATURES:
+- Sobriety counter — track your days, hours, and minutes with milestone celebrations
+- Daily reflections — 366 meditations, one for every day of the year
+- 12 Steps & Traditions — full reference library with guided reflection questions
+- Journal — private, mood-tagged entries stored only on your device
+- "I'm Struggling" panic button — one-tap crisis support, guided breathing, and grounding exercises
+- Daily check-in — track your mood and spot trends over time
+- Gratitude practice — three things daily, with history
+- Meeting finder — GPS-based search for nearby AA and NA meetings
+- Sobriety chips — traditional milestone chip system through 25 years
+- Step work companion — guided questions for all 12 steps
+- Push notifications — configurable daily reminders
+- 4th Step inventory — private, secure resentment and fear worksheets
+- Service work tracker — log and celebrate your Step 12 service
+
+YOUR PRIVACY MATTERS:
+All journal entries, step work, and personal data stay on your device. No account required to use the app.
+
+Serenity Path is not affiliated with Alcoholics Anonymous World Services, Inc. or Narcotics Anonymous World Services, Inc.
+
+## Keywords (iOS, 100 chars max)
+sobriety,AA,NA,recovery,alcoholics anonymous,12 steps,sober,addiction,narcotics anonymous
+
+## Category
+Health & Fitness (primary), Lifestyle (secondary)
+
+## Age Rating
+17+ (Frequent/Intense Alcohol, Tobacco, or Drug Use or References)
+
+## Privacy Policy URL
+https://REPLACE_WITH_YOUR_DOMAIN/privacy
+
+## Support URL
+https://REPLACE_WITH_YOUR_DOMAIN/support
+
+## What's New (v1.0.0)
+Initial release of Serenity Path.
+
+---
+
+## 5. Create ASSETS_NEEDED.md
+
+Check `assets/images/` and create `ASSETS_NEEDED.md` listing every missing asset with exact dimensions:
+
+Required assets:
+- icon.png — 1024×1024px, no transparency
+- adaptive-icon.png — 1024×1024px Android adaptive icon foreground
+- splash.png — 1284×2778px, centered logo on #7B3FF2 background
+- favicon.png — 48×48px
+
+App Store screenshots:
+- iPhone 6.9" (1320×2868px) — 3 minimum required
+- iPhone 6.5" (1242×2688px)
+
+Google Play screenshots:
+- Phone (1080×1920px) — 2 minimum required
+- Feature graphic (1024×500px)
+
+---
+
+## 6. Create PRE_SUBMISSION_CHECKLIST.md
+
+Create this file at the root:
+
+# Pre-Submission Checklist — Serenity Path
+
+## Environment & Config
+- [ ] DATABASE_URL set in production environment
+- [ ] STRIPE_SECRET_KEY set in production environment (server only)
+- [ ] EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY set (client-safe)
+- [ ] Google Places API key restricted to app bundle ID
+- [ ] EAS Project ID set in app.json
+- [ ] Apple Team ID set in eas.json
+- [ ] App Store Connect App ID set in eas.json
+
+## App Store Connect (Apple)
+- [ ] App record created at appstoreconnect.apple.com
+- [ ] Bundle ID com.serenitypath.app registered in Apple Developer portal
+- [ ] Sign In with Apple capability enabled
+- [ ] Push Notifications capability enabled
+- [ ] Privacy Policy URL added
+- [ ] Age rating questionnaire completed (expect 17+)
+- [ ] Screenshots uploaded (6.9" and 6.5" required)
+- [ ] Description, keywords, subtitle filled in
+- [ ] Encryption question answered (Yes, HTTPS, select exemption)
+
+## Google Play Console
+- [ ] App created at play.google.com/console
+- [ ] Package name com.serenitypath.app registered
+- [ ] Data safety form completed
+- [ ] Content rating questionnaire completed
+- [ ] Privacy Policy URL added
+- [ ] Screenshots uploaded
+- [ ] Store listing filled in
+- [ ] Internal test track set up
+
+## Legal
+- [ ] Privacy Policy live at your domain
+- [ ] Terms of Service live at your domain
+- [ ] AA/NA disclaimer on WelcomeScreen and Profile
+- [ ] No AA or NA logos used in icon or screenshots
+
+## Final Build Checks
+- [ ] npm run lint passes
+- [ ] npm run check:types passes
+- [ ] npm test passes
+- [ ] Production build tested on real iOS device via TestFlight
+- [ ] Production build tested on real Android device via Internal Testing
+- [ ] Crisis phone numbers (988, AA hotline) verified and dialable
+- [ ] Push notifications tested on real device
+- [ ] Meeting finder tested with real GPS location
+
+---
+
+## 7. Update .gitignore
+
+Ensure these entries are in `.gitignore`, add any that are missing:
+.env
+.env.local
+.env.production
+.expo/
+dist/
+web-build/
+google-play-key.json
+*.p8
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+.DS_Store
+Thumbs.db
+
+---
+
+After completing all steps, print a summary of:
+1. Which files were created or modified
+2. Any REPLACE_WITH_ placeholders that still need manual values
+3. Any assets listed in ASSETS_NEEDED.md that must be created before submission
