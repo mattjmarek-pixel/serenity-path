@@ -1,0 +1,30 @@
+1. Package name
+The app was still called "my-app" internally. This would cause problems with app store submissions and push notifications. The fix renames it to "serenity-path".
+2. Remove unnecessary dependency
+A GitHub API library (@octokit/rest) was included as a required package but isn't needed for the app to run. The fix removes it to keep the app lean.
+3. Environment variables
+The app had Replit-specific settings baked directly into the build scripts, meaning it could only run properly on Replit. The fix makes those settings flexible so the app can be built and run anywhere — locally, on EAS, or any other platform.
+4. Add test script
+There was no way to run tests because the test command was missing. The fix adds Jest (a testing tool) and the "test" script so tests can actually be run.
+5. Real database
+The server was storing all data in memory, meaning everything was wiped every time the server restarted. The fix connects it to the real PostgreSQL database that was already configured but not being used.
+6. Stripe startup check
+If the app launched in production without a Stripe key set, it would fail silently in unexpected ways. The fix makes the server refuse to start and show a clear error message instead.
+7. Stripe input validation
+The Stripe payment route had no validation, meaning bad or missing data could reach Stripe and cause confusing errors. The fix adds a check that rejects invalid requests immediately with a clear error.
+8. Error boundary component
+If any screen crashed due to a code error, the whole app would go blank with no explanation. The fix adds a safety net that catches crashes and shows a calm message with the crisis line number (988) instead.
+9. Wrap critical screens
+The error boundary from step 8 needs to actually be applied to the screens that matter most — the Home screen, the panic button/Support screen, and the root of the app.
+10. AA disclaimer on welcome screen
+The legal disclaimer saying the app isn't affiliated with AA was only shown deep in the Profile screen. Apple reviewers expect it to be visible upfront. The fix adds it to the Welcome screen below the sign-in buttons.
+11. Tests
+There were no tests at all. The fix adds two simple test files — one that checks the sobriety day counter math is correct, and one that checks the streak tracking logic works properly.
+12. GitHub Actions
+There was no automated checking of the code. The fix adds a CI pipeline that automatically runs lint, type checks, formatting checks, and tests every time code is pushed to GitHub.
+13. Environment documentation
+There was no record of what environment variables the app needs to run. The fix creates a clear reference file listing every variable, what it does, and an example value.
+14. Gitignore
+Sensitive files like .env, API keys, and Apple certificates could accidentally get committed to GitHub. The fix ensures they are all properly excluded.
+15. Final push
+After all changes are made, everything gets committed and pushed to GitHub so the changes are saved and visible.
