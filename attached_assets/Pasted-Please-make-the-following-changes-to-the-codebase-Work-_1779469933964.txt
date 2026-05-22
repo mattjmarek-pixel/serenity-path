@@ -1,0 +1,460 @@
+Please make the following changes to the codebase. Work through each one in order and confirm each change is saved before moving to the next.
+
+---
+
+## 1. Fix package.json name
+
+Open `package.json` and change:
+  "name": "my-app"
+to:
+  "name": "serenity-path"
+
+---
+
+## 2. Remove @octokit/rest from dependencies
+
+In `package.json`, search the entire codebase for any file that imports from "@octokit/rest".
+
+If it is imported somewhere in the client/ or server/ folders at runtime, move it from dependencies to devDependencies.
+
+If it is not imported anywhere, remove it from package.json entirely.
+
+Then run: npm install
+
+---
+
+## 3. Fix Replit-specific environment variables in scripts
+
+In `package.json`, replace the existing scripts section with this:
+
+"scripts": {
+  "expo:dev": "EXPO_PACKAGER_PROXY_URL=https://${DEV_DOMAIN:-$REPLIT_DEV_DOMAIN} REACT_NATIVE_PACKAGER_HOSTNAME=${DEV_DOMAIN:-$REPLIT_DEV_DOMAIN} EXPO_PUBLIC_DOMAIN=${DEV_DOMAIN:-$REPLIT_DEV_DOMAIN}:5000 npx expo start --localhost",
+  "expo:dev:local": "EXPO_PACKAGER_PROXY_URL=http://localhost REACT_NATIVE_PACKAGER_HOSTNAME=localhost EXPO_PUBLIC_DOMAIN=localhost:5000 npx expo start --localhost",
+  "server:dev": "NODE_ENV=development tsx server/index.ts",
+  "all:dev": "npm run expo:dev & npm run server:dev",
+  "expo:start:static:build": "EXPO_PUBLIC_DOMAIN=${APP_DOMAIN:-$REPLIT_INTERNAL_APP_DOMAIN} npx expo start --no-dev --minify --localhost",
+  "expo:static:build": "node scripts/build.js",
+  "server:build": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=server_dist",
+  "server:prod": "NODE_ENV=production node server_dist/index.js",
+  "db:push": "drizzle-kit push",
+  "test": "jest",
+  "lint": "npx expo lint",
+  "lint:fix": "npx expo lint --fix",
+  "check:types": "tsc --noEmit",
+  "check:format": "prettier --check \"**/*.{js,ts,tsx,css,json}\"",
+  "format": "prettier --write \"**/*.{js,ts,tsx,css,json}\""
+}
+
+---
+
+## 4. Add Jest to package.json
+
+In `package.json`, add the following to devDependencies:
+  "jest": "^29.0.0",
+  "jest-expo": "~54.0.0",
+  "@testing-library/react-native": "^12.0.0",
+  "@testing-library/jest-native": "^5.0.0",
+  "@types/jest": "^29.0.0"
+
+Add the following jest config at the root level of package.json (alongside "name", "version", etc.):
+  "jest": {
+    "preset": "jest-expo"
+  }
+
+Then run: npm install
+
+---
+
+## 5. Replace MemStorage with PostgreSQL in the server
+
+Open `server/storage.ts`.
+
+At the top of the file, add these imports if they are not already present:
+  import { drizzle } from 'drizzle-orm/node-postgres';
+  import { Pool } from 'pg';
+  import * as schema from '../shared/schema';
+
+Create a database connection pool:
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const db = drizzle(pool, { schema });
+
+For each method in the storage class that currently uses an in-memory array or Map, replace it with the equivalent Drizzle ORM query using the real schema tables from shared/schema.ts. For example:
+  - getUser(id) → db.select().from(schema.users).where(eq(schema.users.id, id))
+  - createUser(data) → db.insert(schema.users).values(data).returning()
+  - etc.
+
+At the bottom of the file, export the database-backed storage as the default:
+  export const storage = new DatabaseStorage();
+
+Add a startup check at the top of `server/index.ts`: if DATABASE_URL is not set in process.env, log this warning and continue with MemStorage:
+  console.warn('WARNING: DATABASE_URL is not set. Using in-memory storage. Data will not persist between restarts.');
+
+If DATABASE_URL IS set, use the PostgreSQL-backed storage.
+
+After updating, run: npm run db:push
+
+---
+
+## 6. Add Stripe security check to server startup
+
+Open `server/index.ts`.
+
+Find where the Express app starts listening (the app.listen() call).
+
+Before that line, add:
+  if (process.env.NODE_ENV === 'production' && !process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY must be set in production. Server refused to start.');
+  }
+
+---
+
+## 7. Add Zod validation to the Stripe checkout route
+
+Open `server/routes.ts`.
+
+Find the POST /api/stripe/create-checkout-session route handler.
+
+At the top of that handler, before any Stripe calls, add input validation:
+  const bodySchema = z.object({
+    priceId: z.string().min(1, 'priceId is required'),
+  });
+  const parsed = bodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.errors[0].message });
+  }
+  const { priceId } = parsed.data;
+
+Make sure zod is imported at the top of the file: import { z } from 'zod';
+
+---
+
+## 8. Create ErrorBoundary component
+
+Create a new file `client/components/ErrorBoundary.tsx` with this content:
+
+import React, { Component, ReactNode } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
+interface Props {
+  children: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    if (__DEV__) {
+      console.error('ErrorBoundary caught:', error, info);
+    }
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.title}>Something went wrong.</Text>
+          <Text style={styles.message}>
+            If you need immediate help, call 988 or your sponsor.
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={this.handleReset}>
+            <Text style={styles.buttonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+    backgroundColor: '#F8F7FC',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1A1A2E',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  message: {
+    fontSize: 16,
+    color: '#6B6B80',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  button: {
+    backgroundColor: '#7B3FF2',
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 16,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
+---
+
+## 9. Wrap critical screens with ErrorBoundary
+
+Open the root App component (likely `client/App.tsx` or `client/index.js` or wherever the root navigator is set up).
+
+Import ErrorBoundary at the top:
+  import { ErrorBoundary } from './components/ErrorBoundary';
+
+Wrap the entire navigator tree with ErrorBoundary so it is the outermost wrapper:
+  <ErrorBoundary>
+    {/* existing navigator code */}
+  </ErrorBoundary>
+
+Then find the Support screen component (the panic button / crisis screen). Wrap its contents with ErrorBoundary as well.
+
+Then find the Home screen component. Wrap its contents with ErrorBoundary as well.
+
+---
+
+## 10. Add AA disclaimer to WelcomeScreen
+
+Open `client/screens/WelcomeScreen.tsx`.
+
+Find the sign-in buttons section. Directly below the last sign-in button, add this disclaimer text:
+
+  <Text style={{
+    fontSize: 12,
+    color: '#6B6B80',
+    textAlign: 'center',
+    marginTop: 24,
+    paddingHorizontal: 32,
+    lineHeight: 18,
+  }}>
+    Serenity Path is not affiliated with Alcoholics Anonymous World Services, Inc. This app is an independent tool to support your recovery journey.
+  </Text>
+
+Make sure this text is visible without scrolling on the welcome screen. If needed, adjust the layout so it sits naturally below the buttons.
+
+---
+
+## 11. Create test files
+
+Create `client/__tests__/sobrietyCounter.test.ts` with the following content:
+
+describe('Sobriety counter', () => {
+  function getDaysSober(startDate: Date, now: Date): number {
+    const ms = now.getTime() - startDate.getTime();
+    return Math.floor(ms / (1000 * 60 * 60 * 24));
+  }
+
+  it('returns 0 when start date is today', () => {
+    const now = new Date('2026-01-01');
+    expect(getDaysSober(now, now)).toBe(0);
+  });
+
+  it('returns 1 after one full day', () => {
+    const start = new Date('2026-01-01');
+    const now = new Date('2026-01-02');
+    expect(getDaysSober(start, now)).toBe(1);
+  });
+
+  it('returns 365 after one year', () => {
+    const start = new Date('2025-01-01');
+    const now = new Date('2026-01-01');
+    expect(getDaysSober(start, now)).toBe(365);
+  });
+
+  it('handles leap year correctly', () => {
+    const start = new Date('2024-01-01');
+    const now = new Date('2025-01-01');
+    expect(getDaysSober(start, now)).toBe(366);
+  });
+});
+
+Create `client/__tests__/streakCalculation.test.ts` with the following content:
+
+describe('Streak calculation', () => {
+  function calculateStreak(dates: string[]): number {
+    if (dates.length === 0) return 0;
+    const sorted = [...dates].sort().reverse();
+    let streak = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      const prev = new Date(sorted[i - 1]);
+      const curr = new Date(sorted[i]);
+      const diff = (prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24);
+      if (diff === 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  it('returns 1 for a single entry', () => {
+    expect(calculateStreak(['2026-01-01'])).toBe(1);
+  });
+
+  it('returns correct streak for consecutive days', () => {
+    expect(calculateStreak(['2026-01-01', '2026-01-02', '2026-01-03'])).toBe(3);
+  });
+
+  it('resets streak when there is a gap', () => {
+    expect(calculateStreak(['2026-01-01', '2026-01-03'])).toBe(1);
+  });
+
+  it('returns 0 for empty array', () => {
+    expect(calculateStreak([])).toBe(0);
+  });
+});
+
+---
+
+## 12. Create GitHub Actions CI workflow
+
+Create the file `.github/workflows/ci.yml` with this content:
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run check:types
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run check:format
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+
+---
+
+## 13. Create ENVIRONMENT.md
+
+Create a file `ENVIRONMENT.md` at the root with this content:
+
+# Environment Variables
+
+This file documents all environment variables required to run Serenity Path.
+
+## Server (required in production)
+
+| Variable | Description | Example |
+|---|---|---|
+| DATABASE_URL | PostgreSQL connection string | postgresql://user:pass@host:5432/serenitypath |
+| STRIPE_SECRET_KEY | Stripe secret key (server only, never expose to client) | sk_live_... |
+| NODE_ENV | Environment name | production |
+
+## Client (Expo public variables)
+
+| Variable | Description | Example |
+|---|---|---|
+| EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY | Stripe publishable key (safe for client) | pk_live_... |
+
+## Development only
+
+| Variable | Description | Example |
+|---|---|---|
+| DEV_DOMAIN | Override for Replit dev domain when running outside Replit | localhost |
+| APP_DOMAIN | Override for Replit app domain when running outside Replit | localhost |
+| REPLIT_DEV_DOMAIN | Set automatically by Replit | your-repl.replit.dev |
+| REPLIT_INTERNAL_APP_DOMAIN | Set automatically by Replit | your-repl.repl.co |
+
+## Setup instructions
+
+1. Copy `.env.example` to `.env` and fill in your values
+2. In Replit, add secrets via the Secrets tab (lock icon in sidebar)
+3. Never commit `.env` to git — it is listed in `.gitignore`
+
+---
+
+## 14. Update .gitignore
+
+Open `.gitignore` and make sure these lines are present. Add any that are missing:
+
+.env
+.env.local
+.env.production
+.expo/
+dist/
+web-build/
+google-play-key.json
+*.p8
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+.DS_Store
+Thumbs.db
+
+---
+
+## 15. Final check
+
+After completing all of the above:
+
+1. Run `npm run check:types` and fix any TypeScript errors introduced by the changes
+2. Run `npm test` and confirm all tests pass
+3. Run `npm run lint` and fix any lint errors
+4. Confirm `package.json` now has "name": "serenity-path"
+5. Push all changes to GitHub with: git add . && git commit -m "Apply pre-launch fixes" && git push
