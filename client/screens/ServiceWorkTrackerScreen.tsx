@@ -41,7 +41,11 @@ const SERVICE_ICONS: Record<ServiceType, FeatherIconName> = {
 function formatDateDisplay(dateStr: string): string {
   const [year, month, day] = dateStr.split("-").map(Number);
   const d = new Date(year, month - 1, day);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function dateFromString(dateStr: string): Date {
@@ -65,7 +69,11 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
   const handleDelete = () => {
     Alert.alert("Delete Entry", "Remove this service entry?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => onDelete(entry.id) },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => onDelete(entry.id),
+      },
     ]);
   };
 
@@ -74,9 +82,14 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
       <Pressable
         onLongPress={handleDelete}
         delayLongPress={400}
-        style={({ pressed }) => [styles.entryPressable, { opacity: pressed ? 0.7 : 1 }]}
+        style={({ pressed }) => [
+          styles.entryPressable,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
       >
-        <View style={[styles.entryIcon, { backgroundColor: theme.primary + "15" }]}>
+        <View
+          style={[styles.entryIcon, { backgroundColor: theme.primary + "15" }]}
+        >
           <Feather name={icon} size={20} color={theme.primary} />
         </View>
         <View style={styles.entryBody}>
@@ -89,7 +102,9 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
               {entry.notes}
             </ThemedText>
           ) : null}
-          <ThemedText style={[styles.entryDate, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.entryDate, { color: theme.textSecondary }]}
+          >
             {formatDateDisplay(entry.date)}
           </ThemedText>
         </View>
@@ -112,9 +127,15 @@ interface AddEntryModalProps {
   todayString: string;
 }
 
-function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalProps) {
+function AddEntryModal({
+  visible,
+  onClose,
+  onSave,
+  todayString,
+}: AddEntryModalProps) {
   const { theme } = useTheme();
-  const [selectedType, setSelectedType] = useState<ServiceType>("Chaired a meeting");
+  const [selectedType, setSelectedType] =
+    useState<ServiceType>("Chaired a meeting");
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState<Date>(dateFromString(todayString));
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -144,31 +165,45 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View style={[styles.modalContainer, { backgroundColor: theme.backgroundDefault }]}>
+      <View
+        style={[
+          styles.modalContainer,
+          { backgroundColor: theme.backgroundDefault },
+        ]}
+      >
         <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
           <Pressable
             onPress={handleClose}
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
-            <ThemedText style={{ color: theme.textSecondary }}>Cancel</ThemedText>
+            <ThemedText style={{ color: theme.textSecondary }}>
+              Cancel
+            </ThemedText>
           </Pressable>
           <ThemedText type="h4">Log Service</ThemedText>
           <Pressable
             onPress={handleSave}
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
-            <ThemedText style={{ color: theme.primary, fontWeight: "700" }}>Save</ThemedText>
+            <ThemedText style={{ color: theme.primary, fontWeight: "700" }}>
+              Save
+            </ThemedText>
           </Pressable>
         </View>
 
         <View style={styles.modalBody}>
-          <ThemedText style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.fieldLabel, { color: theme.textSecondary }]}
+          >
             Type of Service
           </ThemedText>
           <View
             style={[
               styles.pickerWrapper,
-              { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
+              {
+                backgroundColor: theme.backgroundSecondary,
+                borderColor: theme.border,
+              },
             ]}
           >
             <Picker
@@ -183,7 +218,9 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
             </Picker>
           </View>
 
-          <ThemedText style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.fieldLabel, { color: theme.textSecondary }]}
+          >
             Notes (optional)
           </ThemedText>
           <TextInput
@@ -204,7 +241,9 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
             maxLength={400}
           />
 
-          <ThemedText style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.fieldLabel, { color: theme.textSecondary }]}
+          >
             Date
           </ThemedText>
           {Platform.OS === "ios" ? (
@@ -223,7 +262,10 @@ function AddEntryModal({ visible, onClose, onSave, todayString }: AddEntryModalP
                 onPress={() => setShowDatePicker(true)}
                 style={[
                   styles.dateButton,
-                  { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
+                  {
+                    backgroundColor: theme.backgroundSecondary,
+                    borderColor: theme.border,
+                  },
                 ]}
               >
                 <Feather name="calendar" size={16} color={theme.primary} />
@@ -270,14 +312,14 @@ export default function ServiceWorkTrackerScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load])
+    }, [load]),
   );
 
   const handleDelete = useCallback(
     (id: string) => {
       deleteEntry(id);
     },
-    [deleteEntry]
+    [deleteEntry],
   );
 
   const renderItem = ({ item }: { item: ServiceEntry }) => (
@@ -293,8 +335,8 @@ export default function ServiceWorkTrackerScreen() {
           No service logged yet
         </ThemedText>
         <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
-          Step 12 is about carrying the message. Log your first act of service to start your
-          record.
+          Step 12 is about carrying the message. Log your first act of service
+          to start your record.
         </ThemedText>
       </Card>
     );
@@ -307,7 +349,9 @@ export default function ServiceWorkTrackerScreen() {
           <ThemedText style={[styles.summaryNumber, { color: theme.primary }]}>
             {thisMonthCount}
           </ThemedText>
-          <ThemedText style={[styles.summaryLabel, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.summaryLabel, { color: theme.textSecondary }]}
+          >
             This Month
           </ThemedText>
         </Card>
@@ -315,14 +359,18 @@ export default function ServiceWorkTrackerScreen() {
           <ThemedText style={[styles.summaryNumber, { color: theme.accent }]}>
             {allTimeCount}
           </ThemedText>
-          <ThemedText style={[styles.summaryLabel, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.summaryLabel, { color: theme.textSecondary }]}
+          >
             All Time
           </ThemedText>
         </Card>
       </View>
 
       {entries.length > 0 ? (
-        <ThemedText style={[styles.listHeading, { color: theme.textSecondary }]}>
+        <ThemedText
+          style={[styles.listHeading, { color: theme.textSecondary }]}
+        >
           Service Log
         </ThemedText>
       ) : null}

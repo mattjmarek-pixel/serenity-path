@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, useWindowDimensions, Platform } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  useWindowDimensions,
+  Platform,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -7,7 +13,12 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { useCommunity, CommunityPath } from "@/contexts/CommunityContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors, RECOVERY_PALETTE, Spacing, BorderRadius } from "@/constants/theme";
+import {
+  getThemeColors,
+  RECOVERY_PALETTE,
+  Spacing,
+  BorderRadius,
+} from "@/constants/theme";
 
 interface PanelProps {
   community: "AA" | "NA";
@@ -19,7 +30,15 @@ interface PanelProps {
   isStacked: boolean;
 }
 
-function CommunityPanel({ community, title, subtitle, tagline, selected, onPress, isStacked }: PanelProps) {
+function CommunityPanel({
+  community,
+  title,
+  subtitle,
+  tagline,
+  selected,
+  onPress,
+  isStacked,
+}: PanelProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const palette = getThemeColors(colorScheme ?? "light", community);
@@ -44,21 +63,40 @@ function CommunityPanel({ community, title, subtitle, tagline, selected, onPress
         <View style={[styles.panelIcon, { backgroundColor: tint }]}>
           <Feather name="heart" size={32} color="#FFFFFF" />
         </View>
-        <ThemedText type="small" style={{ color: tint, fontWeight: "700", letterSpacing: 1.5 }}>
+        <ThemedText
+          type="small"
+          style={{ color: tint, fontWeight: "700", letterSpacing: 1.5 }}
+        >
           {community}
         </ThemedText>
-        <ThemedText type="h2" style={[styles.panelTitle, { color: palette.text }]}>
+        <ThemedText
+          type="h2"
+          style={[styles.panelTitle, { color: palette.text }]}
+        >
           {title}
         </ThemedText>
-        <ThemedText type="small" style={{ color: palette.textSecondary, textAlign: "center", marginTop: Spacing.xs }}>
+        <ThemedText
+          type="small"
+          style={{
+            color: palette.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.xs,
+          }}
+        >
           {subtitle}
         </ThemedText>
         <ThemedText style={[styles.panelTagline, { color: palette.text }]}>
           "{tagline}"
         </ThemedText>
         <View style={[styles.panelCta, { backgroundColor: tint }]}>
-          <ThemedText style={styles.panelCtaText}>{selected ? "Selected" : "Begin"}</ThemedText>
-          {selected ? <Feather name="check" size={16} color="#FFFFFF" /> : <Feather name="arrow-right" size={16} color="#FFFFFF" />}
+          <ThemedText style={styles.panelCtaText}>
+            {selected ? "Selected" : "Begin"}
+          </ThemedText>
+          {selected ? (
+            <Feather name="check" size={16} color="#FFFFFF" />
+          ) : (
+            <Feather name="arrow-right" size={16} color="#FFFFFF" />
+          )}
         </View>
       </View>
     </Pressable>
@@ -87,23 +125,51 @@ export default function PathSelectionScreen() {
     if (!selected || submitting) return;
     setSubmitting(true);
     if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
+        () => {},
+      );
     }
     await setPath(selected);
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: palette.backgroundRoot, paddingTop: insets.top + Spacing.xl, paddingBottom: insets.bottom + Spacing.lg }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: palette.backgroundRoot,
+          paddingTop: insets.top + Spacing.xl,
+          paddingBottom: insets.bottom + Spacing.lg,
+        },
+      ]}
+    >
       <View style={styles.header}>
-        <ThemedText type="h1" style={{ color: palette.text, textAlign: "center" }}>
+        <ThemedText
+          type="h1"
+          style={{ color: palette.text, textAlign: "center" }}
+        >
           Choose Your Path
         </ThemedText>
-        <ThemedText type="small" style={{ color: palette.textSecondary, textAlign: "center", marginTop: Spacing.sm, paddingHorizontal: Spacing.xl }}>
-          Pick the fellowship that fits your recovery. You can change this anytime in Settings.
+        <ThemedText
+          type="small"
+          style={{
+            color: palette.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.sm,
+            paddingHorizontal: Spacing.xl,
+          }}
+        >
+          Pick the fellowship that fits your recovery. You can change this
+          anytime in Settings.
         </ThemedText>
       </View>
 
-      <View style={[styles.panelsContainer, isStacked ? styles.panelsStacked : styles.panelsSideBySide]}>
+      <View
+        style={[
+          styles.panelsContainer,
+          isStacked ? styles.panelsStacked : styles.panelsSideBySide,
+        ]}
+      >
         <CommunityPanel
           community="AA"
           title="Alcoholics Anonymous"
@@ -120,7 +186,8 @@ export default function PathSelectionScreen() {
             styles.bothButton,
             isStacked ? styles.bothButtonStacked : styles.bothButtonSide,
             {
-              backgroundColor: selected === "Both" ? palette.text : palette.backgroundDefault,
+              backgroundColor:
+                selected === "Both" ? palette.text : palette.backgroundDefault,
               borderColor: selected === "Both" ? palette.text : palette.border,
               opacity: pressed ? 0.85 : 1,
             },
@@ -129,12 +196,19 @@ export default function PathSelectionScreen() {
           <Feather
             name="repeat"
             size={18}
-            color={selected === "Both" ? palette.backgroundDefault : palette.text}
+            color={
+              selected === "Both" ? palette.backgroundDefault : palette.text
+            }
           />
           <ThemedText
             style={[
               styles.bothButtonText,
-              { color: selected === "Both" ? palette.backgroundDefault : palette.text },
+              {
+                color:
+                  selected === "Both"
+                    ? palette.backgroundDefault
+                    : palette.text,
+              },
             ]}
           >
             Both
@@ -159,17 +233,40 @@ export default function PathSelectionScreen() {
           style={({ pressed }) => [
             styles.confirmButton,
             {
-              backgroundColor: selected ? palette.text : palette.backgroundTertiary,
+              backgroundColor: selected
+                ? palette.text
+                : palette.backgroundTertiary,
               opacity: !selected || submitting ? 0.6 : pressed ? 0.85 : 1,
             },
           ]}
         >
-          <ThemedText style={[styles.confirmButtonText, { color: selected ? palette.backgroundDefault : palette.textSecondary }]}>
-            {submitting ? "Setting up..." : selected ? `Continue with ${selected === "Both" ? "Both Fellowships" : selected}` : "Select a path to continue"}
+          <ThemedText
+            style={[
+              styles.confirmButtonText,
+              {
+                color: selected
+                  ? palette.backgroundDefault
+                  : palette.textSecondary,
+              },
+            ]}
+          >
+            {submitting
+              ? "Setting up..."
+              : selected
+                ? `Continue with ${selected === "Both" ? "Both Fellowships" : selected}`
+                : "Select a path to continue"}
           </ThemedText>
         </Pressable>
-        <ThemedText type="small" style={{ color: palette.textSecondary, textAlign: "center", marginTop: Spacing.md }}>
-          Choosing "Both" lets you switch between AA and NA views from any screen.
+        <ThemedText
+          type="small"
+          style={{
+            color: palette.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.md,
+          }}
+        >
+          Choosing "Both" lets you switch between AA and NA views from any
+          screen.
         </ThemedText>
       </View>
     </View>

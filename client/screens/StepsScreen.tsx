@@ -11,37 +11,190 @@ import { useStepWork } from "@/hooks/useStepWork";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 const STEP_QUESTION_COUNTS: { [step: number]: number } = {
-  1: 5, 2: 5, 3: 5, 4: 6, 5: 5, 6: 5, 7: 5, 8: 5, 9: 5, 10: 5, 11: 5, 12: 5,
+  1: 5,
+  2: 5,
+  3: 5,
+  4: 6,
+  5: 5,
+  6: 5,
+  7: 5,
+  8: 5,
+  9: 5,
+  10: 5,
+  11: 5,
+  12: 5,
 };
 
 const TWELVE_STEPS = [
-  { id: "1", number: 1, title: "Honesty", content: "We admitted we were powerless over alcohol\u2014that our lives had become unmanageable." },
-  { id: "2", number: 2, title: "Hope", content: "Came to believe that a Power greater than ourselves could restore us to sanity." },
-  { id: "3", number: 3, title: "Faith", content: "Made a decision to turn our will and our lives over to the care of God as we understood Him." },
-  { id: "4", number: 4, title: "Courage", content: "Made a searching and fearless moral inventory of ourselves." },
-  { id: "5", number: 5, title: "Integrity", content: "Admitted to God, to ourselves, and to another human being the exact nature of our wrongs." },
-  { id: "6", number: 6, title: "Willingness", content: "Were entirely ready to have God remove all these defects of character." },
-  { id: "7", number: 7, title: "Humility", content: "Humbly asked Him to remove our shortcomings." },
-  { id: "8", number: 8, title: "Brotherly Love", content: "Made a list of all persons we had harmed, and became willing to make amends to them all." },
-  { id: "9", number: 9, title: "Justice", content: "Made direct amends to such people wherever possible, except when to do so would injure them or others." },
-  { id: "10", number: 10, title: "Perseverance", content: "Continued to take personal inventory and when we were wrong promptly admitted it." },
-  { id: "11", number: 11, title: "Spiritual Awareness", content: "Sought through prayer and meditation to improve our conscious contact with God as we understood Him, praying only for knowledge of His will for us and the power to carry that out." },
-  { id: "12", number: 12, title: "Service", content: "Having had a spiritual awakening as the result of these Steps, we tried to carry this message to alcoholics, and to practice these principles in all our affairs." },
+  {
+    id: "1",
+    number: 1,
+    title: "Honesty",
+    content:
+      "We admitted we were powerless over alcohol\u2014that our lives had become unmanageable.",
+  },
+  {
+    id: "2",
+    number: 2,
+    title: "Hope",
+    content:
+      "Came to believe that a Power greater than ourselves could restore us to sanity.",
+  },
+  {
+    id: "3",
+    number: 3,
+    title: "Faith",
+    content:
+      "Made a decision to turn our will and our lives over to the care of God as we understood Him.",
+  },
+  {
+    id: "4",
+    number: 4,
+    title: "Courage",
+    content: "Made a searching and fearless moral inventory of ourselves.",
+  },
+  {
+    id: "5",
+    number: 5,
+    title: "Integrity",
+    content:
+      "Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.",
+  },
+  {
+    id: "6",
+    number: 6,
+    title: "Willingness",
+    content:
+      "Were entirely ready to have God remove all these defects of character.",
+  },
+  {
+    id: "7",
+    number: 7,
+    title: "Humility",
+    content: "Humbly asked Him to remove our shortcomings.",
+  },
+  {
+    id: "8",
+    number: 8,
+    title: "Brotherly Love",
+    content:
+      "Made a list of all persons we had harmed, and became willing to make amends to them all.",
+  },
+  {
+    id: "9",
+    number: 9,
+    title: "Justice",
+    content:
+      "Made direct amends to such people wherever possible, except when to do so would injure them or others.",
+  },
+  {
+    id: "10",
+    number: 10,
+    title: "Perseverance",
+    content:
+      "Continued to take personal inventory and when we were wrong promptly admitted it.",
+  },
+  {
+    id: "11",
+    number: 11,
+    title: "Spiritual Awareness",
+    content:
+      "Sought through prayer and meditation to improve our conscious contact with God as we understood Him, praying only for knowledge of His will for us and the power to carry that out.",
+  },
+  {
+    id: "12",
+    number: 12,
+    title: "Service",
+    content:
+      "Having had a spiritual awakening as the result of these Steps, we tried to carry this message to alcoholics, and to practice these principles in all our affairs.",
+  },
 ];
 
 const TWELVE_TRADITIONS = [
-  { id: "t1", number: 1, title: "Unity", content: "Our common welfare should come first; personal recovery depends upon A.A. unity." },
-  { id: "t2", number: 2, title: "Leadership", content: "For our group purpose there is but one ultimate authority\u2014a loving God as He may express Himself in our group conscience. Our leaders are but trusted servants; they do not govern." },
-  { id: "t3", number: 3, title: "Membership", content: "The only requirement for A.A. membership is a desire to stop drinking." },
-  { id: "t4", number: 4, title: "Autonomy", content: "Each group should be autonomous except in matters affecting other groups or A.A. as a whole." },
-  { id: "t5", number: 5, title: "Purpose", content: "Each group has but one primary purpose\u2014to carry its message to the alcoholic who still suffers." },
-  { id: "t6", number: 6, title: "Non-Endorsement", content: "An A.A. group ought never endorse, finance, or lend the A.A. name to any related facility or outside enterprise, lest problems of money, property, and prestige divert us from our primary purpose." },
-  { id: "t7", number: 7, title: "Self-Supporting", content: "Every A.A. group ought to be fully self-supporting, declining outside contributions." },
-  { id: "t8", number: 8, title: "Non-Professional", content: "Alcoholics Anonymous should remain forever non-professional, but our service centers may employ special workers." },
-  { id: "t9", number: 9, title: "Organization", content: "A.A., as such, ought never be organized; but we may create service boards or committees directly responsible to those they serve." },
-  { id: "t10", number: 10, title: "No Opinion", content: "Alcoholics Anonymous has no opinion on outside issues; hence the A.A. name ought never be drawn into public controversy." },
-  { id: "t11", number: 11, title: "Attraction", content: "Our public relations policy is based on attraction rather than promotion; we need always maintain personal anonymity at the level of press, radio, and films." },
-  { id: "t12", number: 12, title: "Anonymity", content: "Anonymity is the spiritual foundation of all our Traditions, ever reminding us to place principles before personalities." },
+  {
+    id: "t1",
+    number: 1,
+    title: "Unity",
+    content:
+      "Our common welfare should come first; personal recovery depends upon A.A. unity.",
+  },
+  {
+    id: "t2",
+    number: 2,
+    title: "Leadership",
+    content:
+      "For our group purpose there is but one ultimate authority\u2014a loving God as He may express Himself in our group conscience. Our leaders are but trusted servants; they do not govern.",
+  },
+  {
+    id: "t3",
+    number: 3,
+    title: "Membership",
+    content:
+      "The only requirement for A.A. membership is a desire to stop drinking.",
+  },
+  {
+    id: "t4",
+    number: 4,
+    title: "Autonomy",
+    content:
+      "Each group should be autonomous except in matters affecting other groups or A.A. as a whole.",
+  },
+  {
+    id: "t5",
+    number: 5,
+    title: "Purpose",
+    content:
+      "Each group has but one primary purpose\u2014to carry its message to the alcoholic who still suffers.",
+  },
+  {
+    id: "t6",
+    number: 6,
+    title: "Non-Endorsement",
+    content:
+      "An A.A. group ought never endorse, finance, or lend the A.A. name to any related facility or outside enterprise, lest problems of money, property, and prestige divert us from our primary purpose.",
+  },
+  {
+    id: "t7",
+    number: 7,
+    title: "Self-Supporting",
+    content:
+      "Every A.A. group ought to be fully self-supporting, declining outside contributions.",
+  },
+  {
+    id: "t8",
+    number: 8,
+    title: "Non-Professional",
+    content:
+      "Alcoholics Anonymous should remain forever non-professional, but our service centers may employ special workers.",
+  },
+  {
+    id: "t9",
+    number: 9,
+    title: "Organization",
+    content:
+      "A.A., as such, ought never be organized; but we may create service boards or committees directly responsible to those they serve.",
+  },
+  {
+    id: "t10",
+    number: 10,
+    title: "No Opinion",
+    content:
+      "Alcoholics Anonymous has no opinion on outside issues; hence the A.A. name ought never be drawn into public controversy.",
+  },
+  {
+    id: "t11",
+    number: 11,
+    title: "Attraction",
+    content:
+      "Our public relations policy is based on attraction rather than promotion; we need always maintain personal anonymity at the level of press, radio, and films.",
+  },
+  {
+    id: "t12",
+    number: 12,
+    title: "Anonymity",
+    content:
+      "Anonymity is the spiritual foundation of all our Traditions, ever reminding us to place principles before personalities.",
+  },
 ];
 
 type Tab = "steps" | "traditions";
@@ -59,7 +212,7 @@ export default function StepsScreen() {
   const data = activeTab === "steps" ? TWELVE_STEPS : TWELVE_TRADITIONS;
 
   const toggleExpand = (id: string) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -71,7 +224,7 @@ export default function StepsScreen() {
   };
 
   const toggleReflected = (id: string) => {
-    setReflectedItems(prev => {
+    setReflectedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -111,18 +264,29 @@ export default function StepsScreen() {
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      <View style={[styles.segmentedControl, { backgroundColor: theme.backgroundSecondary }]}>
+      <View
+        style={[
+          styles.segmentedControl,
+          { backgroundColor: theme.backgroundSecondary },
+        ]}
+      >
         <Pressable
           onPress={() => setActiveTab("steps")}
           style={[
             styles.segment,
-            activeTab === "steps" && [styles.activeSegment, { backgroundColor: theme.backgroundDefault }],
+            activeTab === "steps" && [
+              styles.activeSegment,
+              { backgroundColor: theme.backgroundDefault },
+            ],
           ]}
         >
           <ThemedText
             style={[
               styles.segmentText,
-              { color: activeTab === "steps" ? theme.primary : theme.textSecondary },
+              {
+                color:
+                  activeTab === "steps" ? theme.primary : theme.textSecondary,
+              },
             ]}
           >
             12 Steps
@@ -132,13 +296,21 @@ export default function StepsScreen() {
           onPress={() => setActiveTab("traditions")}
           style={[
             styles.segment,
-            activeTab === "traditions" && [styles.activeSegment, { backgroundColor: theme.backgroundDefault }],
+            activeTab === "traditions" && [
+              styles.activeSegment,
+              { backgroundColor: theme.backgroundDefault },
+            ],
           ]}
         >
           <ThemedText
             style={[
               styles.segmentText,
-              { color: activeTab === "traditions" ? theme.primary : theme.textSecondary },
+              {
+                color:
+                  activeTab === "traditions"
+                    ? theme.primary
+                    : theme.textSecondary,
+              },
             ]}
           >
             12 Traditions
@@ -149,26 +321,54 @@ export default function StepsScreen() {
       {data.map((item) => {
         const isStep = activeTab === "steps";
         return (
-          <View key={item.id} style={[styles.itemCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+          <View
+            key={item.id}
+            style={[
+              styles.itemCard,
+              {
+                backgroundColor: theme.backgroundDefault,
+                borderColor: theme.border,
+              },
+            ]}
+          >
             <Pressable
               onPress={() => toggleExpand(item.id)}
-              style={({ pressed }) => [styles.itemHeader, { opacity: pressed ? 0.7 : 1 }]}
+              style={({ pressed }) => [
+                styles.itemHeader,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
             >
               <View style={styles.itemHeaderLeft}>
-                <View style={[styles.numberBadge, { backgroundColor: theme.primary }]}>
-                  <ThemedText style={styles.numberText}>{item.number}</ThemedText>
+                <View
+                  style={[
+                    styles.numberBadge,
+                    { backgroundColor: theme.primary },
+                  ]}
+                >
+                  <ThemedText style={styles.numberText}>
+                    {item.number}
+                  </ThemedText>
                 </View>
                 <View style={styles.titleContainer}>
-                  <ThemedText type="h4" style={styles.itemTitle}>{item.title}</ThemedText>
+                  <ThemedText type="h4" style={styles.itemTitle}>
+                    {item.title}
+                  </ThemedText>
                   {isStep ? (
-                    <ThemedText style={[styles.progressLabel, { color: getProgressColor(item.number) }]}>
+                    <ThemedText
+                      style={[
+                        styles.progressLabel,
+                        { color: getProgressColor(item.number) },
+                      ]}
+                    >
                       {getProgressLabel(item.number)}
                     </ThemedText>
                   ) : null}
                 </View>
               </View>
               <Feather
-                name={expandedItems.has(item.id) ? "chevron-up" : "chevron-down"}
+                name={
+                  expandedItems.has(item.id) ? "chevron-up" : "chevron-down"
+                }
                 size={20}
                 color={theme.textSecondary}
               />
@@ -187,14 +387,24 @@ export default function StepsScreen() {
                     ]}
                   >
                     <Feather
-                      name={reflectedItems.has(item.id) ? "check-square" : "square"}
+                      name={
+                        reflectedItems.has(item.id) ? "check-square" : "square"
+                      }
                       size={20}
-                      color={reflectedItems.has(item.id) ? theme.accent : theme.textSecondary}
+                      color={
+                        reflectedItems.has(item.id)
+                          ? theme.accent
+                          : theme.textSecondary
+                      }
                     />
                     <ThemedText
                       style={[
                         styles.reflectedText,
-                        { color: reflectedItems.has(item.id) ? theme.accent : theme.textSecondary },
+                        {
+                          color: reflectedItems.has(item.id)
+                            ? theme.accent
+                            : theme.textSecondary,
+                        },
                       ]}
                     >
                       Reflected upon
@@ -207,7 +417,10 @@ export default function StepsScreen() {
                           onPress={() => navigation.navigate("FourthStep")}
                           style={({ pressed }) => [
                             styles.stepWorkButton,
-                            { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
+                            {
+                              backgroundColor: theme.accent,
+                              opacity: pressed ? 0.8 : 1,
+                            },
                           ]}
                         >
                           <Feather name="list" size={16} color="#FFFFFF" />
@@ -217,10 +430,17 @@ export default function StepsScreen() {
                         </Pressable>
                       ) : null}
                       <Pressable
-                        onPress={() => navigation.navigate("StepWork", { stepNumber: item.number })}
+                        onPress={() =>
+                          navigation.navigate("StepWork", {
+                            stepNumber: item.number,
+                          })
+                        }
                         style={({ pressed }) => [
                           styles.stepWorkButton,
-                          { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                          {
+                            backgroundColor: theme.primary,
+                            opacity: pressed ? 0.8 : 1,
+                          },
                         ]}
                       >
                         <Feather name="edit-3" size={16} color="#FFFFFF" />

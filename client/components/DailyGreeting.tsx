@@ -41,7 +41,9 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
 
   const checkAndShowGreeting = async () => {
     try {
-      const lastGreetingDate = await AsyncStorage.getItem(STORAGE_KEYS.LAST_GREETING_DATE);
+      const lastGreetingDate = await AsyncStorage.getItem(
+        STORAGE_KEYS.LAST_GREETING_DATE,
+      );
       const today = getTodayDateString();
 
       if (lastGreetingDate === today) {
@@ -67,11 +69,13 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
     if (nameInput.trim()) {
       try {
         await AsyncStorage.setItem(STORAGE_KEYS.USER_NAME, nameInput.trim());
-        await AsyncStorage.setItem(STORAGE_KEYS.LAST_GREETING_DATE, getTodayDateString());
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.LAST_GREETING_DATE,
+          getTodayDateString(),
+        );
         setUserName(nameInput.trim());
         setIsEditingName(false);
-      } catch (error) {
-      }
+      } catch (error) {}
     }
   };
 
@@ -88,23 +92,42 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
 
   return (
     <Modal visible={shouldShow} transparent animationType="fade">
-      <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={styles.overlay}>
-        <View style={[styles.container, { backgroundColor: theme.backgroundDefault }]}>
+      <BlurView
+        intensity={80}
+        tint={isDark ? "dark" : "light"}
+        style={styles.overlay}
+      >
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.backgroundDefault },
+          ]}
+        >
           {isEditingName ? (
             <>
-              <View style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}>
+              <View
+                style={[
+                  styles.iconCircle,
+                  { backgroundColor: theme.accent + "20" },
+                ]}
+              >
                 <Feather name="sun" size={40} color={theme.accent} />
               </View>
               <ThemedText type="h2" style={styles.welcomeTitle}>
                 Welcome to Serenity Path
               </ThemedText>
-              <ThemedText style={[styles.welcomeSubtitle, { color: theme.textSecondary }]}>
+              <ThemedText
+                style={[styles.welcomeSubtitle, { color: theme.textSecondary }]}
+              >
                 What should we call you?
               </ThemedText>
               <TextInput
                 style={[
                   styles.nameInput,
-                  { backgroundColor: theme.backgroundSecondary, color: theme.text },
+                  {
+                    backgroundColor: theme.backgroundSecondary,
+                    color: theme.text,
+                  },
                 ]}
                 placeholder="Enter your name"
                 placeholderTextColor={theme.textSecondary}
@@ -118,33 +141,49 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
                 style={({ pressed }) => [
                   styles.continueButton,
                   {
-                    backgroundColor: nameInput.trim() ? theme.primary : theme.backgroundSecondary,
+                    backgroundColor: nameInput.trim()
+                      ? theme.primary
+                      : theme.backgroundSecondary,
                     opacity: pressed ? 0.8 : 1,
                   },
                 ]}
               >
-                <ThemedText style={styles.continueButtonText}>Continue</ThemedText>
+                <ThemedText style={styles.continueButtonText}>
+                  Continue
+                </ThemedText>
               </Pressable>
             </>
           ) : (
             <>
-              <View style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}>
+              <View
+                style={[
+                  styles.iconCircle,
+                  { backgroundColor: theme.accent + "20" },
+                ]}
+              >
                 <Feather name="sun" size={40} color={theme.accent} />
               </View>
               <ThemedText type="h2" style={styles.greetingText}>
                 {greeting}, {userName}
               </ThemedText>
-              <ThemedText style={[styles.motivationText, { color: theme.textSecondary }]}>
+              <ThemedText
+                style={[styles.motivationText, { color: theme.textSecondary }]}
+              >
                 One day at a time. You've got this.
               </ThemedText>
               <Pressable
                 onPress={handleDismiss}
                 style={({ pressed }) => [
                   styles.continueButton,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  {
+                    backgroundColor: theme.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
               >
-                <ThemedText style={styles.continueButtonText}>Begin Your Day</ThemedText>
+                <ThemedText style={styles.continueButtonText}>
+                  Begin Your Day
+                </ThemedText>
               </Pressable>
             </>
           )}

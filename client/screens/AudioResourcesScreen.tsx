@@ -43,7 +43,8 @@ function AudioCard({
   colors,
   iconSide,
 }: (typeof AUDIO_RESOURCES)[0]) {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handlePress = () => {
     navigation.navigate("WebViewScreen", {
@@ -62,7 +63,12 @@ function AudioCard({
     >
       {iconSide === "left" ? (
         <View style={styles.cardContentLeftIcon}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.accent + "30" }]}>
+          <View
+            style={[
+              styles.iconCircle,
+              { backgroundColor: colors.accent + "30" },
+            ]}
+          >
             <Feather name="headphones" size={36} color={colors.accent} />
           </View>
           <View style={styles.cardTextRight}>
@@ -76,7 +82,12 @@ function AudioCard({
             <ThemedText style={styles.listenLabel}>Listen to</ThemedText>
             <ThemedText style={styles.cardTitle}>{title}</ThemedText>
           </View>
-          <View style={[styles.iconCircle, { backgroundColor: colors.accent + "30" }]}>
+          <View
+            style={[
+              styles.iconCircle,
+              { backgroundColor: colors.accent + "30" },
+            ]}
+          >
             <Feather name="headphones" size={36} color={colors.accent} />
           </View>
         </View>
@@ -101,10 +112,19 @@ export default function AudioResourcesScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <View style={[styles.headerNote, { backgroundColor: theme.backgroundSecondary }]}>
+      <View
+        style={[
+          styles.headerNote,
+          { backgroundColor: theme.backgroundSecondary },
+        ]}
+      >
         <Feather name="info" size={16} color={theme.textSecondary} />
-        <ThemedText type="small" style={{ color: theme.textSecondary, flex: 1, lineHeight: 20 }}>
-          Tap any card to browse official AA and community audio resources right here in the app. Use the back arrow to return.
+        <ThemedText
+          type="small"
+          style={{ color: theme.textSecondary, flex: 1, lineHeight: 20 }}
+        >
+          Tap any card to browse official AA and community audio resources right
+          here in the app. Use the back arrow to return.
         </ThemedText>
       </View>
 
@@ -116,7 +136,9 @@ export default function AudioResourcesScreen() {
         type="small"
         style={[styles.disclaimer, { color: theme.textSecondary }]}
       >
-        Audio resources are provided by Alcoholics Anonymous World Services and community contributors. This app is not affiliated with these organizations.
+        Audio resources are provided by Alcoholics Anonymous World Services and
+        community contributors. This app is not affiliated with these
+        organizations.
       </ThemedText>
     </ScrollView>
   );

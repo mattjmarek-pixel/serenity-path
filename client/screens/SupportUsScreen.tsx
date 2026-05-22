@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, Linking, ActivityIndicator, Alert, Platform, ScrollView, Share } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Linking,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  ScrollView,
+  Share,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -33,7 +43,7 @@ interface StripePrice {
   productName: string;
 }
 
-const isNativePlatform = Platform.OS === 'ios' || Platform.OS === 'android';
+const isNativePlatform = Platform.OS === "ios" || Platform.OS === "android";
 
 export default function SupportUsScreen() {
   const insets = useSafeAreaInsets();
@@ -41,19 +51,25 @@ export default function SupportUsScreen() {
   const { theme } = useTheme();
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-  const { data: pricesData, isLoading: pricesLoading } = useQuery<{ prices: StripePrice[] }>({
-    queryKey: ['/api/stripe/prices'],
+  const { data: pricesData, isLoading: pricesLoading } = useQuery<{
+    prices: StripePrice[];
+  }>({
+    queryKey: ["/api/stripe/prices"],
     enabled: !isNativePlatform,
   });
 
   const checkoutMutation = useMutation({
     mutationFn: async (priceId: string) => {
-      const response = await apiRequest('POST', '/api/stripe/create-checkout-session', { priceId });
+      const response = await apiRequest(
+        "POST",
+        "/api/stripe/create-checkout-session",
+        { priceId },
+      );
       return response.json();
     },
     onSuccess: async (data: { url: string }) => {
       if (data.url) {
-        if (Platform.OS === 'web') {
+        if (Platform.OS === "web") {
           window.location.href = data.url;
         } else {
           await WebBrowser.openBrowserAsync(data.url);
@@ -63,7 +79,7 @@ export default function SupportUsScreen() {
     },
     onError: (error: Error) => {
       setLoadingPriceId(null);
-      Alert.alert('Error', 'Failed to start checkout. Please try again.');
+      Alert.alert("Error", "Failed to start checkout. Please try again.");
     },
   });
 
@@ -74,31 +90,33 @@ export default function SupportUsScreen() {
 
   const handleRestorePurchases = () => {
     Alert.alert(
-      'Restore Purchases',
-      'If you have an existing subscription, please contact support with your email address to restore your supporter status.',
-      [{ text: 'OK' }]
+      "Restore Purchases",
+      "If you have an existing subscription, please contact support with your email address to restore your supporter status.",
+      [{ text: "OK" }],
     );
   };
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support');
+    Linking.openURL(
+      "mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support",
+    );
   };
 
   const handleShareApp = async () => {
     try {
       await Share.share({
-        message: Platform.OS === 'ios'
-          ? 'Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more.'
-          : 'Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more. https://serenitypath.app',
-        url: 'https://serenitypath.app',
-        title: 'Serenity Path',
+        message:
+          Platform.OS === "ios"
+            ? "Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more."
+            : "Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more. https://serenitypath.app",
+        url: "https://serenitypath.app",
+        title: "Serenity Path",
       });
-    } catch {
-    }
+    } catch {}
   };
 
-  const monthlyPrice = pricesData?.prices?.find(p => p.interval === 'month');
-  const yearlyPrice = pricesData?.prices?.find(p => p.interval === 'year');
+  const monthlyPrice = pricesData?.prices?.find((p) => p.interval === "month");
+  const yearlyPrice = pricesData?.prices?.find((p) => p.interval === "year");
 
   const formatPrice = (unitAmount: number, interval: string) => {
     const amount = (unitAmount / 100).toFixed(2);
@@ -107,49 +125,119 @@ export default function SupportUsScreen() {
 
   const renderNativePaymentSection = () => (
     <View style={styles.buttonsSection}>
-      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg }]}>
-        <Feather name="heart" size={28} color={theme.success} style={styles.nativeCardIcon} />
+      <View
+        style={[
+          styles.nativeCard,
+          {
+            backgroundColor: theme.backgroundDefault,
+            borderRadius: BorderRadius.lg,
+          },
+        ]}
+      >
+        <Feather
+          name="heart"
+          size={28}
+          color={theme.success}
+          style={styles.nativeCardIcon}
+        />
         <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
           Always Free
         </ThemedText>
-        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
-          Serenity Path is completely free and always will be. Every feature is available to everyone, with no paywalls or premium tiers.
+        <ThemedText
+          style={[styles.nativeCardText, { color: theme.textSecondary }]}
+        >
+          Serenity Path is completely free and always will be. Every feature is
+          available to everyone, with no paywalls or premium tiers.
         </ThemedText>
       </View>
 
-      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg, marginTop: Spacing.md }]}>
-        <Feather name="globe" size={28} color={theme.primary} style={styles.nativeCardIcon} />
+      <View
+        style={[
+          styles.nativeCard,
+          {
+            backgroundColor: theme.backgroundDefault,
+            borderRadius: BorderRadius.lg,
+            marginTop: Spacing.md,
+          },
+        ]}
+      >
+        <Feather
+          name="globe"
+          size={28}
+          color={theme.primary}
+          style={styles.nativeCardIcon}
+        />
         <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
           Want to Contribute?
         </ThemedText>
-        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
-          Voluntary donations to help cover maintenance costs are available through the web version of the app. Your support is appreciated but never expected.
+        <ThemedText
+          style={[styles.nativeCardText, { color: theme.textSecondary }]}
+        >
+          Voluntary donations to help cover maintenance costs are available
+          through the web version of the app. Your support is appreciated but
+          never expected.
         </ThemedText>
         <Pressable
-          style={[styles.primaryButton, { backgroundColor: theme.primary, marginTop: Spacing.lg }]}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: theme.primary, marginTop: Spacing.lg },
+          ]}
           onPress={handleContactSupport}
         >
-          <Feather name="mail" size={18} color="#FFFFFF" style={{ marginRight: Spacing.sm }} />
-          <ThemedText style={styles.buttonText}>
-            Contact Us
-          </ThemedText>
+          <Feather
+            name="mail"
+            size={18}
+            color="#FFFFFF"
+            style={{ marginRight: Spacing.sm }}
+          />
+          <ThemedText style={styles.buttonText}>Contact Us</ThemedText>
         </Pressable>
       </View>
 
-      <View style={[styles.nativeCard, { backgroundColor: theme.backgroundDefault, borderRadius: BorderRadius.lg, marginTop: Spacing.md }]}>
-        <Feather name="share-2" size={28} color={theme.accent} style={styles.nativeCardIcon} />
+      <View
+        style={[
+          styles.nativeCard,
+          {
+            backgroundColor: theme.backgroundDefault,
+            borderRadius: BorderRadius.lg,
+            marginTop: Spacing.md,
+          },
+        ]}
+      >
+        <Feather
+          name="share-2"
+          size={28}
+          color={theme.accent}
+          style={styles.nativeCardIcon}
+        />
         <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
           Spread the Word
         </ThemedText>
-        <ThemedText style={[styles.nativeCardText, { color: theme.textSecondary }]}>
-          The best way to support Serenity Path is to share it with someone who might benefit. Recovery is stronger together.
+        <ThemedText
+          style={[styles.nativeCardText, { color: theme.textSecondary }]}
+        >
+          The best way to support Serenity Path is to share it with someone who
+          might benefit. Recovery is stronger together.
         </ThemedText>
         <Pressable
-          style={[styles.shareButton, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.lg }]}
+          style={[
+            styles.shareButton,
+            {
+              backgroundColor: theme.backgroundSecondary,
+              marginTop: Spacing.lg,
+            },
+          ]}
           onPress={handleShareApp}
         >
-          <Feather name="share" size={18} color={theme.primary} style={{ marginRight: Spacing.sm }} />
-          <ThemedText style={[styles.shareButtonText, { color: theme.primary }]}>
+          <Feather
+            name="share"
+            size={18}
+            color={theme.primary}
+            style={{ marginRight: Spacing.sm }}
+          />
+          <ThemedText
+            style={[styles.shareButtonText, { color: theme.primary }]}
+          >
             Share the App
           </ThemedText>
         </Pressable>
@@ -160,14 +248,18 @@ export default function SupportUsScreen() {
   const renderWebPaymentSection = () => (
     <View style={styles.buttonsSection}>
       {pricesLoading ? (
-        <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: Spacing.xl }} />
+        <ActivityIndicator
+          size="large"
+          color={theme.primary}
+          style={{ marginVertical: Spacing.xl }}
+        />
       ) : (
         <>
           <Pressable
             style={[
-              styles.primaryButton, 
+              styles.primaryButton,
               { backgroundColor: theme.primary },
-              loadingPriceId === monthlyPrice?.id && styles.buttonDisabled
+              loadingPriceId === monthlyPrice?.id && styles.buttonDisabled,
             ]}
             onPress={() => monthlyPrice && handleSupport(monthlyPrice.id)}
             disabled={!monthlyPrice || loadingPriceId !== null}
@@ -176,7 +268,9 @@ export default function SupportUsScreen() {
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <ThemedText style={styles.buttonText}>
-                {monthlyPrice ? formatPrice(monthlyPrice.unitAmount, 'month') : '$1.99 / month'}
+                {monthlyPrice
+                  ? formatPrice(monthlyPrice.unitAmount, "month")
+                  : "$1.99 / month"}
               </ThemedText>
             )}
           </Pressable>
@@ -187,9 +281,9 @@ export default function SupportUsScreen() {
 
           <Pressable
             style={[
-              styles.primaryButton, 
+              styles.primaryButton,
               { backgroundColor: theme.primary },
-              loadingPriceId === yearlyPrice?.id && styles.buttonDisabled
+              loadingPriceId === yearlyPrice?.id && styles.buttonDisabled,
             ]}
             onPress={() => yearlyPrice && handleSupport(yearlyPrice.id)}
             disabled={!yearlyPrice || loadingPriceId !== null}
@@ -198,7 +292,9 @@ export default function SupportUsScreen() {
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <ThemedText style={styles.buttonText}>
-                {yearlyPrice ? formatPrice(yearlyPrice.unitAmount, 'year') : '$19.99 / year'}
+                {yearlyPrice
+                  ? formatPrice(yearlyPrice.unitAmount, "year")
+                  : "$19.99 / year"}
               </ThemedText>
             )}
           </Pressable>
@@ -228,30 +324,43 @@ export default function SupportUsScreen() {
 
       <ThemedText style={styles.title}>Support Us</ThemedText>
 
-      <View style={[styles.messageCard, { backgroundColor: theme.backgroundDefault }]}>
+      <View
+        style={[
+          styles.messageCard,
+          { backgroundColor: theme.backgroundDefault },
+        ]}
+      >
         <ThemedText style={[styles.messageText, { color: theme.text }]}>
           {PERSONAL_MESSAGE}
         </ThemedText>
       </View>
 
-      {isNativePlatform ? renderNativePaymentSection() : renderWebPaymentSection()}
+      {isNativePlatform
+        ? renderNativePaymentSection()
+        : renderWebPaymentSection()}
 
       <View style={styles.linksContainer}>
-        <Pressable onPress={() => {
-          const baseUrl = getApiUrl().replace('/api', '');
-          Linking.openURL(`${baseUrl}/terms`);
-        }}>
+        <Pressable
+          onPress={() => {
+            const baseUrl = getApiUrl().replace("/api", "");
+            Linking.openURL(`${baseUrl}/terms`);
+          }}
+        >
           <ThemedText style={[styles.linkText, { color: theme.primary }]}>
             Terms of Service
           </ThemedText>
         </Pressable>
-        <ThemedText style={[styles.linkSeparator, { color: theme.textSecondary }]}>
+        <ThemedText
+          style={[styles.linkSeparator, { color: theme.textSecondary }]}
+        >
           {" | "}
         </ThemedText>
-        <Pressable onPress={() => {
-          const baseUrl = getApiUrl().replace('/api', '');
-          Linking.openURL(`${baseUrl}/privacy`);
-        }}>
+        <Pressable
+          onPress={() => {
+            const baseUrl = getApiUrl().replace("/api", "");
+            Linking.openURL(`${baseUrl}/privacy`);
+          }}
+        >
           <ThemedText style={[styles.linkText, { color: theme.primary }]}>
             Privacy Policy
           </ThemedText>
@@ -259,7 +368,10 @@ export default function SupportUsScreen() {
       </View>
 
       {!isNativePlatform ? (
-        <Pressable onPress={handleRestorePurchases} style={styles.restoreButton}>
+        <Pressable
+          onPress={handleRestorePurchases}
+          style={styles.restoreButton}
+        >
           <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
             Restore Purchases
           </ThemedText>

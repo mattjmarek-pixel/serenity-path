@@ -57,19 +57,19 @@ export default function App() {
           <CommunityProvider>
             <AuthProvider>
               <SafeAreaProvider>
-              <GestureHandlerRootView style={styles.root}>
-                <KeyboardProvider>
-                  <NavigationContainer>
-                    <RootStackNavigator />
-                  </NavigationContainer>
-                {showGreeting ? (
-                  <DailyGreeting onDismiss={() => setShowGreeting(false)} />
-                ) : null}
-                <StatusBar style="auto" />
-                </KeyboardProvider>
-              </GestureHandlerRootView>
-            </SafeAreaProvider>
-          </AuthProvider>
+                <GestureHandlerRootView style={styles.root}>
+                  <KeyboardProvider>
+                    <NavigationContainer>
+                      <RootStackNavigator />
+                    </NavigationContainer>
+                    {showGreeting ? (
+                      <DailyGreeting onDismiss={() => setShowGreeting(false)} />
+                    ) : null}
+                    <StatusBar style="auto" />
+                  </KeyboardProvider>
+                </GestureHandlerRootView>
+              </SafeAreaProvider>
+            </AuthProvider>
           </CommunityProvider>
         </ThemeProvider>
       </QueryClientProvider>

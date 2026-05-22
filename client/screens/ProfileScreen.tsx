@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { View, StyleSheet, Pressable, Alert, Linking, Modal } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Alert,
+  Linking,
+  Modal,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -43,7 +50,12 @@ interface AppearanceOptionProps {
   onSelect: (mode: ThemeMode) => void;
 }
 
-function AppearanceOption({ mode, label, currentMode, onSelect }: AppearanceOptionProps) {
+function AppearanceOption({
+  mode,
+  label,
+  currentMode,
+  onSelect,
+}: AppearanceOptionProps) {
   const { theme } = useTheme();
   const isSelected = mode === currentMode;
 
@@ -53,7 +65,9 @@ function AppearanceOption({ mode, label, currentMode, onSelect }: AppearanceOpti
       style={[
         styles.appearanceOption,
         {
-          backgroundColor: isSelected ? theme.primary : theme.backgroundSecondary,
+          backgroundColor: isSelected
+            ? theme.primary
+            : theme.backgroundSecondary,
           borderColor: isSelected ? theme.primary : theme.border,
         },
       ]}
@@ -70,16 +84,24 @@ function AppearanceOption({ mode, label, currentMode, onSelect }: AppearanceOpti
   );
 }
 
-function SettingsItem({ icon, label, onPress, showChevron = true, danger = false }: SettingsItemProps) {
+function SettingsItem({
+  icon,
+  label,
+  onPress,
+  showChevron = true,
+  danger = false,
+}: SettingsItemProps) {
   const { theme } = useTheme();
-  
+
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         styles.settingsItem,
-        { 
-          backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundDefault,
+        {
+          backgroundColor: pressed
+            ? theme.backgroundSecondary
+            : theme.backgroundDefault,
           borderColor: theme.border,
         },
       ]}
@@ -90,10 +112,7 @@ function SettingsItem({ icon, label, onPress, showChevron = true, danger = false
         color={danger ? theme.emergency : theme.primary}
       />
       <ThemedText
-        style={[
-          styles.settingsLabel,
-          danger && { color: theme.emergency },
-        ]}
+        style={[styles.settingsLabel, danger && { color: theme.emergency }]}
       >
         {label}
       </ThemedText>
@@ -111,7 +130,8 @@ export default function ProfileScreen() {
   const { theme } = useTheme();
   const { themeMode, setThemeMode } = useThemeContext();
   const { path: communityPath, setPath: setCommunityPath } = useCommunity();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
   const { user, isGuest, logout, deleteAccount } = useAuth();
   const [showPathPicker, setShowPathPicker] = useState(false);
@@ -119,13 +139,13 @@ export default function ProfileScreen() {
   useFocusEffect(
     React.useCallback(() => {
       loadProfile();
-    }, [])
+    }, []),
   );
 
   const sobrietyDays = getSobrietyDays();
-  
+
   const milestoneStatus = useMemo(() => {
-    return MILESTONES.map(m => ({
+    return MILESTONES.map((m) => ({
       ...m,
       achieved: sobrietyDays !== null && sobrietyDays >= m.days,
     }));
@@ -150,8 +170,14 @@ export default function ProfileScreen() {
       "Are you sure you want to log out? Your local data will be preserved.",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Log Out", style: "destructive", onPress: () => { logout(); } },
-      ]
+        {
+          text: "Log Out",
+          style: "destructive",
+          onPress: () => {
+            logout();
+          },
+        },
+      ],
     );
   };
 
@@ -170,21 +196,27 @@ export default function ProfileScreen() {
       "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.",
       [
         { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          style: "destructive", 
+        {
+          text: "Delete",
+          style: "destructive",
           onPress: () => {
             Alert.alert(
               "Final Confirmation",
               "This will permanently delete all your sobriety data, journal entries, and account information.",
               [
                 { text: "Cancel", style: "cancel" },
-                { text: "Delete Forever", style: "destructive", onPress: () => { deleteAccount(); } },
-              ]
+                {
+                  text: "Delete Forever",
+                  style: "destructive",
+                  onPress: () => {
+                    deleteAccount();
+                  },
+                },
+              ],
             );
           },
         },
-      ]
+      ],
     );
   };
 
@@ -202,15 +234,20 @@ export default function ProfileScreen() {
         <View style={[styles.avatar, { backgroundColor: theme.accent + "30" }]}>
           <Feather name="user" size={40} color={theme.primary} />
         </View>
-        <ThemedText type="h3" style={styles.userName}>{profile.name}</ThemedText>
+        <ThemedText type="h3" style={styles.userName}>
+          {profile.name}
+        </ThemedText>
         {profile.pronouns ? (
           <ThemedText type="small" style={{ color: theme.textSecondary }}>
             {profile.pronouns}
           </ThemedText>
         ) : null}
-        <Pressable 
+        <Pressable
           onPress={handleEditProfile}
-          style={({ pressed }) => [styles.editButton, { opacity: pressed ? 0.6 : 1 }]}
+          style={({ pressed }) => [
+            styles.editButton,
+            { opacity: pressed ? 0.6 : 1 },
+          ]}
         >
           <ThemedText style={{ color: theme.primary }}>Edit Profile</ThemedText>
         </Pressable>
@@ -219,12 +256,17 @@ export default function ProfileScreen() {
       <Card style={styles.sobrietyCard}>
         <View style={styles.sobrietyRow}>
           <View>
-            <ThemedText type="small" style={{ color: theme.textSecondary }}>Sobriety Date</ThemedText>
+            <ThemedText type="small" style={{ color: theme.textSecondary }}>
+              Sobriety Date
+            </ThemedText>
             <ThemedText type="h4">{formattedSobrietyDate}</ThemedText>
           </View>
-          <Pressable 
+          <Pressable
             onPress={handleEditProfile}
-            style={({ pressed }) => [styles.editDateButton, { opacity: pressed ? 0.7 : 1 }]}
+            style={({ pressed }) => [
+              styles.editDateButton,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <Feather name="edit-2" size={16} color={theme.primary} />
           </Pressable>
@@ -232,7 +274,9 @@ export default function ProfileScreen() {
       </Card>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Milestone Progress</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Milestone Progress
+        </ThemedText>
         <View style={styles.milestonesRow}>
           {milestoneStatus.map((milestone) => (
             <View key={milestone.days} style={styles.milestoneItem}>
@@ -254,7 +298,11 @@ export default function ProfileScreen() {
                 type="small"
                 style={[
                   styles.milestoneLabel,
-                  { color: milestone.achieved ? theme.accent : theme.textSecondary },
+                  {
+                    color: milestone.achieved
+                      ? theme.accent
+                      : theme.textSecondary,
+                  },
                 ]}
               >
                 {milestone.label}
@@ -266,15 +314,22 @@ export default function ProfileScreen() {
 
       {profile.personalMantra ? (
         <Card style={styles.mantraCard}>
-          <ThemedText type="small" style={{ color: theme.textSecondary, marginBottom: Spacing.xs }}>
+          <ThemedText
+            type="small"
+            style={{ color: theme.textSecondary, marginBottom: Spacing.xs }}
+          >
             Your Mantra
           </ThemedText>
-          <ThemedText style={styles.mantraText}>"{profile.personalMantra}"</ThemedText>
+          <ThemedText style={styles.mantraText}>
+            "{profile.personalMantra}"
+          </ThemedText>
         </Card>
       ) : null}
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>My Recovery</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          My Recovery
+        </ThemedText>
         <SettingsItem
           icon="edit-3"
           label="Journal"
@@ -328,7 +383,9 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Appearance</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Appearance
+        </ThemedText>
         <View style={styles.appearanceRow}>
           <AppearanceOption
             mode="light"
@@ -352,7 +409,9 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Settings</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Settings
+        </ThemedText>
         <SettingsItem
           icon="users"
           label={`Community Path${communityPath ? ` (${communityPath})` : ""}`}
@@ -367,7 +426,7 @@ export default function ProfileScreen() {
           icon="lock"
           label="Privacy Policy"
           onPress={() => {
-            const baseUrl = getApiUrl().replace('/api', '');
+            const baseUrl = getApiUrl().replace("/api", "");
             Linking.openURL(`${baseUrl}/privacy`);
           }}
         />
@@ -375,7 +434,9 @@ export default function ProfileScreen() {
           icon="help-circle"
           label="Help & Support"
           onPress={() => {
-            Linking.openURL('mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20-%20Help%20%26%20Support');
+            Linking.openURL(
+              "mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20-%20Help%20%26%20Support",
+            );
           }}
         />
         <SettingsItem
@@ -386,7 +447,9 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Account</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Account
+        </ThemedText>
         <SettingsItem
           icon="log-out"
           label="Log Out"
@@ -402,12 +465,19 @@ export default function ProfileScreen() {
         />
       </View>
 
-      <ThemedText type="small" style={[styles.version, { color: theme.textSecondary }]}>
+      <ThemedText
+        type="small"
+        style={[styles.version, { color: theme.textSecondary }]}
+      >
         Serenity Path v1.0.0
       </ThemedText>
 
-      <ThemedText type="small" style={[styles.disclaimer, { color: theme.textSecondary }]}>
-        This app is not affiliated with Alcoholics Anonymous World Services, Inc. and does not replace professional medical advice.
+      <ThemedText
+        type="small"
+        style={[styles.disclaimer, { color: theme.textSecondary }]}
+      >
+        This app is not affiliated with Alcoholics Anonymous World Services,
+        Inc. and does not replace professional medical advice.
       </ThemedText>
 
       <Modal
@@ -421,7 +491,10 @@ export default function ProfileScreen() {
           onPress={() => setShowPathPicker(false)}
         >
           <Pressable
-            style={[styles.modalCard, { backgroundColor: theme.backgroundDefault }]}
+            style={[
+              styles.modalCard,
+              { backgroundColor: theme.backgroundDefault },
+            ]}
             onPress={(e) => e.stopPropagation()}
           >
             <ThemedText type="h3" style={styles.modalTitle}>
@@ -473,7 +546,9 @@ export default function ProfileScreen() {
                 { opacity: pressed ? 0.6 : 1 },
               ]}
             >
-              <ThemedText style={{ color: theme.textSecondary, fontWeight: "600" }}>
+              <ThemedText
+                style={{ color: theme.textSecondary, fontWeight: "600" }}
+              >
                 Cancel
               </ThemedText>
             </Pressable>
@@ -483,9 +558,16 @@ export default function ProfileScreen() {
 
       {user ? (
         <View style={[styles.accountInfo, { borderColor: theme.border }]}>
-          <Feather name={user.provider === "apple" ? "smartphone" : "mail"} size={14} color={theme.textSecondary} />
+          <Feather
+            name={user.provider === "apple" ? "smartphone" : "mail"}
+            size={14}
+            color={theme.textSecondary}
+          />
           <ThemedText type="small" style={{ color: theme.textSecondary }}>
-            Signed in{user.provider !== "guest" ? ` with ${user.provider === "apple" ? "Apple" : "Google"}` : " as guest"}
+            Signed in
+            {user.provider !== "guest"
+              ? ` with ${user.provider === "apple" ? "Apple" : "Google"}`
+              : " as guest"}
           </ThemedText>
         </View>
       ) : null}

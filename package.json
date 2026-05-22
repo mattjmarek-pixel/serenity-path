@@ -15,8 +15,8 @@
     "lint": "npx expo lint",
     "lint:fix": "npx expo lint --fix",
     "check:types": "tsc --noEmit",
-    "check:format": "prettier --check \"**/*.{js,ts,tsx,css,json}\"",
-    "format": "prettier --write \"**/*.{js,ts,tsx,css,json}\"",
+    "check:format": "prettier --check \"client/**/*.{js,ts,tsx,json}\" \"server/**/*.{js,ts,json}\" \"shared/**/*.{ts,json}\" \"*.{json,md}\"",
+    "format": "prettier --write \"client/**/*.{js,ts,tsx,json}\" \"server/**/*.{js,ts,json}\" \"shared/**/*.{ts,json}\" \"*.{json,md}\"",
     "test": "jest"
   },
   "jest": {
@@ -25,14 +25,23 @@
       "<rootDir>/client/__tests__",
       "<rootDir>/server/__tests__"
     ],
-    "testMatch": ["**/__tests__/**/*.test.ts"],
+    "testMatch": [
+      "**/__tests__/**/*.test.ts"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/.cache/",
       "<rootDir>/server_dist/",
       "<rootDir>/static-build/"
     ],
     "transform": {
-      "^.+\\.tsx?$": ["babel-jest", { "presets": ["babel-preset-expo"] }]
+      "^.+\\.tsx?$": [
+        "babel-jest",
+        {
+          "presets": [
+            "babel-preset-expo"
+          ]
+        }
+      ]
     }
   },
   "dependencies": {

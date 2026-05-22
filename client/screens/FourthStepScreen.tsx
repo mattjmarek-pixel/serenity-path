@@ -1,11 +1,5 @@
 import React, { useState, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  Alert,
-} from "react-native";
+import { View, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -15,7 +9,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { useTheme } from "@/hooks/useTheme";
-import { useFourthStep, ResentmentEntry, FearEntry, HarmEntry } from "@/hooks/useFourthStep";
+import {
+  useFourthStep,
+  ResentmentEntry,
+  FearEntry,
+  HarmEntry,
+} from "@/hooks/useFourthStep";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 type SectionTab = "resentments" | "fears" | "harms";
@@ -40,7 +39,15 @@ export default function FourthStepScreen() {
   const { theme } = useTheme();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const { data, addResentment, deleteResentment, addFear, deleteFear, addHarm, deleteHarm } = useFourthStep();
+  const {
+    data,
+    addResentment,
+    deleteResentment,
+    addFear,
+    deleteFear,
+    addHarm,
+    deleteHarm,
+  } = useFourthStep();
 
   const [activeTab, setActiveTab] = useState<SectionTab>("resentments");
   const [showForm, setShowForm] = useState(false);
@@ -60,38 +67,60 @@ export default function FourthStepScreen() {
   const [hHow, setHHow] = useState("");
 
   const resetForms = useCallback(() => {
-    setRWhoOrWhat(""); setRCause(""); setRInstincts([]);
-    setFFear(""); setFEffect("");
-    setHWhom(""); setHWhat(""); setHHow("");
+    setRWhoOrWhat("");
+    setRCause("");
+    setRInstincts([]);
+    setFFear("");
+    setFEffect("");
+    setHWhom("");
+    setHWhat("");
+    setHHow("");
     setShowForm(false);
   }, []);
 
-  const handleTabChange = useCallback((tab: SectionTab) => {
-    setActiveTab(tab);
-    setShowForm(false);
-    resetForms();
-  }, [resetForms]);
+  const handleTabChange = useCallback(
+    (tab: SectionTab) => {
+      setActiveTab(tab);
+      setShowForm(false);
+      resetForms();
+    },
+    [resetForms],
+  );
 
   const toggleInstinct = useCallback((key: string) => {
-    setRInstincts(prev =>
-      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    setRInstincts((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   }, []);
 
   const showSaveError = useCallback(() => {
-    Alert.alert("Could not save", "There was a problem saving your entry. Please try again.");
+    Alert.alert(
+      "Could not save",
+      "There was a problem saving your entry. Please try again.",
+    );
   }, []);
 
   const handleSaveResentment = useCallback(async () => {
     if (!rWhoOrWhat.trim()) return;
-    const ok = await addResentment({ whoOrWhat: rWhoOrWhat.trim(), cause: rCause.trim(), affectedInstincts: rInstincts });
+    const ok = await addResentment({
+      whoOrWhat: rWhoOrWhat.trim(),
+      cause: rCause.trim(),
+      affectedInstincts: rInstincts,
+    });
     if (ok) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       resetForms();
     } else {
       showSaveError();
     }
-  }, [rWhoOrWhat, rCause, rInstincts, addResentment, resetForms, showSaveError]);
+  }, [
+    rWhoOrWhat,
+    rCause,
+    rInstincts,
+    addResentment,
+    resetForms,
+    showSaveError,
+  ]);
 
   const handleSaveFear = useCallback(async () => {
     if (!fFear.trim()) return;
@@ -106,7 +135,11 @@ export default function FourthStepScreen() {
 
   const handleSaveHarm = useCallback(async () => {
     if (!hWhom.trim()) return;
-    const ok = await addHarm({ whomHarmed: hWhom.trim(), whatDid: hWhat.trim(), howHarmed: hHow.trim() });
+    const ok = await addHarm({
+      whomHarmed: hWhom.trim(),
+      whatDid: hWhat.trim(),
+      howHarmed: hHow.trim(),
+    });
     if (ok) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       resetForms();
@@ -122,13 +155,17 @@ export default function FourthStepScreen() {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Delete", style: "destructive", onPress: onDelete },
-      ]
+      ],
     );
   }, []);
 
   const inputStyle = [
     styles.input,
-    { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border },
+    {
+      backgroundColor: theme.backgroundSecondary,
+      color: theme.text,
+      borderColor: theme.border,
+    },
   ];
 
   const labelStyle = [styles.fieldLabel, { color: theme.textSecondary }];
@@ -144,39 +181,67 @@ export default function FourthStepScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       {/* Intro note */}
-      <View style={[styles.introCard, { backgroundColor: theme.primary + "14", borderColor: theme.primary + "30" }]}>
+      <View
+        style={[
+          styles.introCard,
+          {
+            backgroundColor: theme.primary + "14",
+            borderColor: theme.primary + "30",
+          },
+        ]}
+      >
         <Feather name="lock" size={16} color={theme.primary} />
-        <ThemedText type="small" style={[styles.introText, { color: theme.text }]}>
-          This inventory is private and for your eyes only. Take it slowly — there is no rush. You are doing courageous work.
+        <ThemedText
+          type="small"
+          style={[styles.introText, { color: theme.text }]}
+        >
+          This inventory is private and for your eyes only. Take it slowly —
+          there is no rush. You are doing courageous work.
         </ThemedText>
       </View>
 
       {/* Section tabs */}
-      <View style={[styles.tabBar, { backgroundColor: theme.backgroundSecondary }]}>
-        {([
-          { key: "resentments", label: "Resentments", count: data.resentments.length },
-          { key: "fears", label: "Fears", count: data.fears.length },
-          { key: "harms", label: "Harms Done", count: data.harms.length },
-        ] as { key: SectionTab; label: string; count: number }[]).map(tab => (
+      <View
+        style={[styles.tabBar, { backgroundColor: theme.backgroundSecondary }]}
+      >
+        {(
+          [
+            {
+              key: "resentments",
+              label: "Resentments",
+              count: data.resentments.length,
+            },
+            { key: "fears", label: "Fears", count: data.fears.length },
+            { key: "harms", label: "Harms Done", count: data.harms.length },
+          ] as { key: SectionTab; label: string; count: number }[]
+        ).map((tab) => (
           <Pressable
             key={tab.key}
             onPress={() => handleTabChange(tab.key)}
             style={[
               styles.tab,
-              activeTab === tab.key && [styles.activeTab, { backgroundColor: theme.backgroundDefault }],
+              activeTab === tab.key && [
+                styles.activeTab,
+                { backgroundColor: theme.backgroundDefault },
+              ],
             ]}
           >
             <ThemedText
               type="small"
               style={[
                 styles.tabText,
-                { color: activeTab === tab.key ? theme.primary : theme.textSecondary },
+                {
+                  color:
+                    activeTab === tab.key ? theme.primary : theme.textSecondary,
+                },
               ]}
             >
               {tab.label}
             </ThemedText>
             {tab.count > 0 ? (
-              <View style={[styles.tabBadge, { backgroundColor: theme.primary }]}>
+              <View
+                style={[styles.tabBadge, { backgroundColor: theme.primary }]}
+              >
                 <ThemedText style={styles.tabBadgeText}>{tab.count}</ThemedText>
               </View>
             ) : null}
@@ -187,37 +252,70 @@ export default function FourthStepScreen() {
       {/* ───── RESENTMENTS ───── */}
       {activeTab === "resentments" ? (
         <>
-          <ThemedText type="small" style={[styles.sectionHint, { color: theme.textSecondary }]}>
-            List people, institutions, or principles that you resent and the cause of that resentment.
+          <ThemedText
+            type="small"
+            style={[styles.sectionHint, { color: theme.textSecondary }]}
+          >
+            List people, institutions, or principles that you resent and the
+            cause of that resentment.
           </ThemedText>
 
           {data.resentments.map((entry: ResentmentEntry) => (
             <Card key={entry.id} elevation={1} style={styles.entryCard}>
               <View style={styles.entryHeader}>
-                <ThemedText type="h4" style={styles.entryTitle}>{entry.whoOrWhat}</ThemedText>
+                <ThemedText type="h4" style={styles.entryTitle}>
+                  {entry.whoOrWhat}
+                </ThemedText>
                 <Pressable
-                  onPress={() => confirmDelete("resentment", () => deleteResentment(entry.id))}
+                  onPress={() =>
+                    confirmDelete("resentment", () =>
+                      deleteResentment(entry.id),
+                    )
+                  }
                   hitSlop={8}
                   style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                 >
-                  <Feather name="trash-2" size={16} color={theme.textSecondary} />
+                  <Feather
+                    name="trash-2"
+                    size={16}
+                    color={theme.textSecondary}
+                  />
                 </Pressable>
               </View>
               {entry.cause ? (
-                <ThemedText type="small" style={[styles.entryField, { color: theme.textSecondary }]}>
+                <ThemedText
+                  type="small"
+                  style={[styles.entryField, { color: theme.textSecondary }]}
+                >
                   Cause: {entry.cause}
                 </ThemedText>
               ) : null}
               {entry.affectedInstincts.length > 0 ? (
                 <View style={styles.instinctTags}>
-                  {entry.affectedInstincts.map(inst => (
-                    <View key={inst} style={[styles.instinctTag, { backgroundColor: theme.primary + "18" }]}>
-                      <ThemedText style={[styles.instinctTagText, { color: theme.primary }]}>{inst}</ThemedText>
+                  {entry.affectedInstincts.map((inst) => (
+                    <View
+                      key={inst}
+                      style={[
+                        styles.instinctTag,
+                        { backgroundColor: theme.primary + "18" },
+                      ]}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.instinctTagText,
+                          { color: theme.primary },
+                        ]}
+                      >
+                        {inst}
+                      </ThemedText>
                     </View>
                   ))}
                 </View>
               ) : null}
-              <ThemedText type="small" style={[styles.entryDate, { color: theme.textSecondary }]}>
+              <ThemedText
+                type="small"
+                style={[styles.entryDate, { color: theme.textSecondary }]}
+              >
                 {formatDate(entry.createdAt)}
               </ThemedText>
             </Card>
@@ -225,9 +323,13 @@ export default function FourthStepScreen() {
 
           {showForm ? (
             <Card elevation={2} style={styles.formCard}>
-              <ThemedText type="h4" style={styles.formTitle}>Add Resentment</ThemedText>
+              <ThemedText type="h4" style={styles.formTitle}>
+                Add Resentment
+              </ThemedText>
 
-              <ThemedText style={labelStyle}>Who or what do you resent?</ThemedText>
+              <ThemedText style={labelStyle}>
+                Who or what do you resent?
+              </ThemedText>
               <TextInput
                 style={inputStyle}
                 placeholder="Person, institution, or principle"
@@ -237,7 +339,9 @@ export default function FourthStepScreen() {
                 returnKeyType="next"
               />
 
-              <ThemedText style={labelStyle}>What did they do? What is the cause?</ThemedText>
+              <ThemedText style={labelStyle}>
+                What did they do? What is the cause?
+              </ThemedText>
               <TextInput
                 style={[inputStyle, styles.multilineInput]}
                 placeholder="Describe what happened..."
@@ -248,9 +352,11 @@ export default function FourthStepScreen() {
                 onChangeText={setRCause}
               />
 
-              <ThemedText style={labelStyle}>Which instincts were affected?</ThemedText>
+              <ThemedText style={labelStyle}>
+                Which instincts were affected?
+              </ThemedText>
               <View style={styles.instinctGrid}>
-                {INSTINCT_OPTIONS.map(opt => {
+                {INSTINCT_OPTIONS.map((opt) => {
                   const selected = rInstincts.includes(opt.key);
                   return (
                     <Pressable
@@ -259,14 +365,19 @@ export default function FourthStepScreen() {
                       style={[
                         styles.instinctToggle,
                         {
-                          backgroundColor: selected ? theme.primary : theme.backgroundSecondary,
+                          backgroundColor: selected
+                            ? theme.primary
+                            : theme.backgroundSecondary,
                           borderColor: selected ? theme.primary : theme.border,
                         },
                       ]}
                     >
                       <ThemedText
                         type="small"
-                        style={{ color: selected ? "#FFFFFF" : theme.text, fontWeight: "600" }}
+                        style={{
+                          color: selected ? "#FFFFFF" : theme.text,
+                          fontWeight: "600",
+                        }}
                       >
                         {opt.label}
                       </ThemedText>
@@ -278,18 +389,30 @@ export default function FourthStepScreen() {
               <View style={styles.formActions}>
                 <Pressable
                   onPress={resetForms}
-                  style={({ pressed }) => [styles.cancelButton, { borderColor: theme.border, opacity: pressed ? 0.7 : 1 }]}
+                  style={({ pressed }) => [
+                    styles.cancelButton,
+                    { borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
+                  ]}
                 >
-                  <ThemedText style={{ color: theme.textSecondary }}>Cancel</ThemedText>
+                  <ThemedText style={{ color: theme.textSecondary }}>
+                    Cancel
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   onPress={handleSaveResentment}
                   style={({ pressed }) => [
                     styles.saveButton,
-                    { backgroundColor: rWhoOrWhat.trim() ? theme.primary : theme.border, opacity: pressed ? 0.8 : 1 },
+                    {
+                      backgroundColor: rWhoOrWhat.trim()
+                        ? theme.primary
+                        : theme.border,
+                      opacity: pressed ? 0.8 : 1,
+                    },
                   ]}
                 >
-                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Save</ThemedText>
+                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                    Save
+                  </ThemedText>
                 </Pressable>
               </View>
             </Card>
@@ -302,7 +425,11 @@ export default function FourthStepScreen() {
               ]}
             >
               <Feather name="plus" size={18} color={theme.primary} />
-              <ThemedText style={[styles.addButtonText, { color: theme.primary }]}>Add Resentment</ThemedText>
+              <ThemedText
+                style={[styles.addButtonText, { color: theme.primary }]}
+              >
+                Add Resentment
+              </ThemedText>
             </Pressable>
           )}
         </>
@@ -311,28 +438,46 @@ export default function FourthStepScreen() {
       {/* ───── FEARS ───── */}
       {activeTab === "fears" ? (
         <>
-          <ThemedText type="small" style={[styles.sectionHint, { color: theme.textSecondary }]}>
-            List what you are afraid of and how that fear has affected your life.
+          <ThemedText
+            type="small"
+            style={[styles.sectionHint, { color: theme.textSecondary }]}
+          >
+            List what you are afraid of and how that fear has affected your
+            life.
           </ThemedText>
 
           {data.fears.map((entry: FearEntry) => (
             <Card key={entry.id} elevation={1} style={styles.entryCard}>
               <View style={styles.entryHeader}>
-                <ThemedText type="h4" style={styles.entryTitle}>{entry.fear}</ThemedText>
+                <ThemedText type="h4" style={styles.entryTitle}>
+                  {entry.fear}
+                </ThemedText>
                 <Pressable
-                  onPress={() => confirmDelete("fear", () => deleteFear(entry.id))}
+                  onPress={() =>
+                    confirmDelete("fear", () => deleteFear(entry.id))
+                  }
                   hitSlop={8}
                   style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                 >
-                  <Feather name="trash-2" size={16} color={theme.textSecondary} />
+                  <Feather
+                    name="trash-2"
+                    size={16}
+                    color={theme.textSecondary}
+                  />
                 </Pressable>
               </View>
               {entry.effect ? (
-                <ThemedText type="small" style={[styles.entryField, { color: theme.textSecondary }]}>
+                <ThemedText
+                  type="small"
+                  style={[styles.entryField, { color: theme.textSecondary }]}
+                >
                   Effect: {entry.effect}
                 </ThemedText>
               ) : null}
-              <ThemedText type="small" style={[styles.entryDate, { color: theme.textSecondary }]}>
+              <ThemedText
+                type="small"
+                style={[styles.entryDate, { color: theme.textSecondary }]}
+              >
                 {formatDate(entry.createdAt)}
               </ThemedText>
             </Card>
@@ -340,7 +485,9 @@ export default function FourthStepScreen() {
 
           {showForm ? (
             <Card elevation={2} style={styles.formCard}>
-              <ThemedText type="h4" style={styles.formTitle}>Add Fear</ThemedText>
+              <ThemedText type="h4" style={styles.formTitle}>
+                Add Fear
+              </ThemedText>
 
               <ThemedText style={labelStyle}>What do you fear?</ThemedText>
               <TextInput
@@ -351,7 +498,9 @@ export default function FourthStepScreen() {
                 onChangeText={setFFear}
               />
 
-              <ThemedText style={labelStyle}>How has this fear affected your life?</ThemedText>
+              <ThemedText style={labelStyle}>
+                How has this fear affected your life?
+              </ThemedText>
               <TextInput
                 style={[inputStyle, styles.multilineInput]}
                 placeholder="It has caused me to..."
@@ -365,18 +514,30 @@ export default function FourthStepScreen() {
               <View style={styles.formActions}>
                 <Pressable
                   onPress={resetForms}
-                  style={({ pressed }) => [styles.cancelButton, { borderColor: theme.border, opacity: pressed ? 0.7 : 1 }]}
+                  style={({ pressed }) => [
+                    styles.cancelButton,
+                    { borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
+                  ]}
                 >
-                  <ThemedText style={{ color: theme.textSecondary }}>Cancel</ThemedText>
+                  <ThemedText style={{ color: theme.textSecondary }}>
+                    Cancel
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   onPress={handleSaveFear}
                   style={({ pressed }) => [
                     styles.saveButton,
-                    { backgroundColor: fFear.trim() ? theme.primary : theme.border, opacity: pressed ? 0.8 : 1 },
+                    {
+                      backgroundColor: fFear.trim()
+                        ? theme.primary
+                        : theme.border,
+                      opacity: pressed ? 0.8 : 1,
+                    },
                   ]}
                 >
-                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Save</ThemedText>
+                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                    Save
+                  </ThemedText>
                 </Pressable>
               </View>
             </Card>
@@ -389,7 +550,11 @@ export default function FourthStepScreen() {
               ]}
             >
               <Feather name="plus" size={18} color={theme.primary} />
-              <ThemedText style={[styles.addButtonText, { color: theme.primary }]}>Add Fear</ThemedText>
+              <ThemedText
+                style={[styles.addButtonText, { color: theme.primary }]}
+              >
+                Add Fear
+              </ThemedText>
             </Pressable>
           )}
         </>
@@ -398,33 +563,54 @@ export default function FourthStepScreen() {
       {/* ───── HARMS DONE ───── */}
       {activeTab === "harms" ? (
         <>
-          <ThemedText type="small" style={[styles.sectionHint, { color: theme.textSecondary }]}>
-            List people you have harmed through your actions, what you did, and how they were affected.
+          <ThemedText
+            type="small"
+            style={[styles.sectionHint, { color: theme.textSecondary }]}
+          >
+            List people you have harmed through your actions, what you did, and
+            how they were affected.
           </ThemedText>
 
           {data.harms.map((entry: HarmEntry) => (
             <Card key={entry.id} elevation={1} style={styles.entryCard}>
               <View style={styles.entryHeader}>
-                <ThemedText type="h4" style={styles.entryTitle}>{entry.whomHarmed}</ThemedText>
+                <ThemedText type="h4" style={styles.entryTitle}>
+                  {entry.whomHarmed}
+                </ThemedText>
                 <Pressable
-                  onPress={() => confirmDelete("harm", () => deleteHarm(entry.id))}
+                  onPress={() =>
+                    confirmDelete("harm", () => deleteHarm(entry.id))
+                  }
                   hitSlop={8}
                   style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                 >
-                  <Feather name="trash-2" size={16} color={theme.textSecondary} />
+                  <Feather
+                    name="trash-2"
+                    size={16}
+                    color={theme.textSecondary}
+                  />
                 </Pressable>
               </View>
               {entry.whatDid ? (
-                <ThemedText type="small" style={[styles.entryField, { color: theme.textSecondary }]}>
+                <ThemedText
+                  type="small"
+                  style={[styles.entryField, { color: theme.textSecondary }]}
+                >
                   What I did: {entry.whatDid}
                 </ThemedText>
               ) : null}
               {entry.howHarmed ? (
-                <ThemedText type="small" style={[styles.entryField, { color: theme.textSecondary }]}>
+                <ThemedText
+                  type="small"
+                  style={[styles.entryField, { color: theme.textSecondary }]}
+                >
                   How harmed: {entry.howHarmed}
                 </ThemedText>
               ) : null}
-              <ThemedText type="small" style={[styles.entryDate, { color: theme.textSecondary }]}>
+              <ThemedText
+                type="small"
+                style={[styles.entryDate, { color: theme.textSecondary }]}
+              >
                 {formatDate(entry.createdAt)}
               </ThemedText>
             </Card>
@@ -432,7 +618,9 @@ export default function FourthStepScreen() {
 
           {showForm ? (
             <Card elevation={2} style={styles.formCard}>
-              <ThemedText type="h4" style={styles.formTitle}>Add Harm Done</ThemedText>
+              <ThemedText type="h4" style={styles.formTitle}>
+                Add Harm Done
+              </ThemedText>
 
               <ThemedText style={labelStyle}>Who did you harm?</ThemedText>
               <TextInput
@@ -468,18 +656,30 @@ export default function FourthStepScreen() {
               <View style={styles.formActions}>
                 <Pressable
                   onPress={resetForms}
-                  style={({ pressed }) => [styles.cancelButton, { borderColor: theme.border, opacity: pressed ? 0.7 : 1 }]}
+                  style={({ pressed }) => [
+                    styles.cancelButton,
+                    { borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
+                  ]}
                 >
-                  <ThemedText style={{ color: theme.textSecondary }}>Cancel</ThemedText>
+                  <ThemedText style={{ color: theme.textSecondary }}>
+                    Cancel
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   onPress={handleSaveHarm}
                   style={({ pressed }) => [
                     styles.saveButton,
-                    { backgroundColor: hWhom.trim() ? theme.primary : theme.border, opacity: pressed ? 0.8 : 1 },
+                    {
+                      backgroundColor: hWhom.trim()
+                        ? theme.primary
+                        : theme.border,
+                      opacity: pressed ? 0.8 : 1,
+                    },
                   ]}
                 >
-                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Save</ThemedText>
+                  <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                    Save
+                  </ThemedText>
                 </Pressable>
               </View>
             </Card>
@@ -492,7 +692,11 @@ export default function FourthStepScreen() {
               ]}
             >
               <Feather name="plus" size={18} color={theme.primary} />
-              <ThemedText style={[styles.addButtonText, { color: theme.primary }]}>Add Harm Done</ThemedText>
+              <ThemedText
+                style={[styles.addButtonText, { color: theme.primary }]}
+              >
+                Add Harm Done
+              </ThemedText>
             </Pressable>
           )}
         </>

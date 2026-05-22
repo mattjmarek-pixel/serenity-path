@@ -45,7 +45,7 @@ export function useProfile() {
       setIsLoading(true);
       const storedProfile = await AsyncStorage.getItem(PROFILE_KEY);
       const legacyName = await AsyncStorage.getItem(USER_NAME_KEY);
-      
+
       if (storedProfile) {
         const parsed = JSON.parse(storedProfile);
         setProfile({ ...DEFAULT_PROFILE, ...parsed });
@@ -62,22 +62,27 @@ export function useProfile() {
     loadProfile();
   }, [loadProfile]);
 
-  const saveProfile = useCallback(async (updates: Partial<UserProfile>) => {
-    if (isLoading) {
-      return false;
-    }
-    try {
-      const currentProfile = await AsyncStorage.getItem(PROFILE_KEY);
-      const baseProfile = currentProfile ? { ...DEFAULT_PROFILE, ...JSON.parse(currentProfile) } : profile;
-      const newProfile = { ...baseProfile, ...updates };
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(newProfile));
-      await AsyncStorage.setItem(USER_NAME_KEY, newProfile.name);
-      setProfile(newProfile);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [isLoading, profile]);
+  const saveProfile = useCallback(
+    async (updates: Partial<UserProfile>) => {
+      if (isLoading) {
+        return false;
+      }
+      try {
+        const currentProfile = await AsyncStorage.getItem(PROFILE_KEY);
+        const baseProfile = currentProfile
+          ? { ...DEFAULT_PROFILE, ...JSON.parse(currentProfile) }
+          : profile;
+        const newProfile = { ...baseProfile, ...updates };
+        await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(newProfile));
+        await AsyncStorage.setItem(USER_NAME_KEY, newProfile.name);
+        setProfile(newProfile);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [isLoading, profile],
+  );
 
   const getSobrietyDays = useCallback(() => {
     if (!profile.sobrietyDate) return null;
@@ -92,12 +97,12 @@ export function useProfile() {
     const start = new Date(profile.sobrietyDate);
     const now = new Date();
     const diff = now.getTime() - start.getTime();
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
+
     return { days, hours, minutes, seconds };
   }, [profile.sobrietyDate]);
 

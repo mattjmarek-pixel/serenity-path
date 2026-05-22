@@ -2,7 +2,13 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { Platform, StyleSheet, View, Pressable, GestureResponderEvent } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  View,
+  Pressable,
+  GestureResponderEvent,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
@@ -28,15 +34,16 @@ function SupportPlaceholder() {
 }
 
 function SupportTabButton() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { theme } = useTheme();
-  
+
   return (
     <Pressable
       onPress={() => navigation.navigate("Support")}
       style={({ pressed }) => [
         styles.fabButton,
-        { 
+        {
           backgroundColor: theme.primary,
           opacity: pressed ? 0.8 : 1,
           transform: [{ scale: pressed ? 0.95 : 1 }],

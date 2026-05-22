@@ -67,9 +67,11 @@ async function scheduleNotification(
   title: string,
   body: string,
   hour: number,
-  minute: number
+  minute: number,
 ) {
-  await Notifications.cancelScheduledNotificationAsync(identifier).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(identifier).catch(
+    () => {},
+  );
 
   await Notifications.scheduleNotificationAsync({
     identifier,
@@ -87,7 +89,9 @@ async function scheduleNotification(
 }
 
 async function cancelNotification(identifier: string) {
-  await Notifications.cancelScheduledNotificationAsync(identifier).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(identifier).catch(
+    () => {},
+  );
 }
 
 export function useNotifications() {
@@ -131,71 +135,83 @@ export function useNotifications() {
     }
   }, []);
 
-  const savePrefs = useCallback(async (updates: Partial<NotificationPrefs>) => {
-    const newPrefs = { ...prefs, ...updates };
-    setPrefs(newPrefs);
-    await AsyncStorage.setItem(NOTIFICATION_PREFS_KEY, JSON.stringify(newPrefs));
-
-    if (newPrefs.reflectionEnabled) {
-      await scheduleNotification(
-        NOTIFICATION_IDS.reflection,
-        NOTIFICATION_CONTENT.reflection.title,
-        NOTIFICATION_CONTENT.reflection.body,
-        newPrefs.reflectionHour,
-        newPrefs.reflectionMinute
+  const savePrefs = useCallback(
+    async (updates: Partial<NotificationPrefs>) => {
+      const newPrefs = { ...prefs, ...updates };
+      setPrefs(newPrefs);
+      await AsyncStorage.setItem(
+        NOTIFICATION_PREFS_KEY,
+        JSON.stringify(newPrefs),
       );
-    } else {
-      await cancelNotification(NOTIFICATION_IDS.reflection);
-    }
 
-    if (newPrefs.checkInEnabled) {
-      await scheduleNotification(
-        NOTIFICATION_IDS.checkIn,
-        NOTIFICATION_CONTENT.checkIn.title,
-        NOTIFICATION_CONTENT.checkIn.body,
-        newPrefs.checkInHour,
-        newPrefs.checkInMinute
-      );
-    } else {
-      await cancelNotification(NOTIFICATION_IDS.checkIn);
-    }
+      if (newPrefs.reflectionEnabled) {
+        await scheduleNotification(
+          NOTIFICATION_IDS.reflection,
+          NOTIFICATION_CONTENT.reflection.title,
+          NOTIFICATION_CONTENT.reflection.body,
+          newPrefs.reflectionHour,
+          newPrefs.reflectionMinute,
+        );
+      } else {
+        await cancelNotification(NOTIFICATION_IDS.reflection);
+      }
 
-    if (newPrefs.gratitudeEnabled) {
-      await scheduleNotification(
-        NOTIFICATION_IDS.gratitude,
-        NOTIFICATION_CONTENT.gratitude.title,
-        NOTIFICATION_CONTENT.gratitude.body,
-        newPrefs.gratitudeHour,
-        newPrefs.gratitudeMinute
-      );
-    } else {
-      await cancelNotification(NOTIFICATION_IDS.gratitude);
-    }
-  }, [prefs]);
+      if (newPrefs.checkInEnabled) {
+        await scheduleNotification(
+          NOTIFICATION_IDS.checkIn,
+          NOTIFICATION_CONTENT.checkIn.title,
+          NOTIFICATION_CONTENT.checkIn.body,
+          newPrefs.checkInHour,
+          newPrefs.checkInMinute,
+        );
+      } else {
+        await cancelNotification(NOTIFICATION_IDS.checkIn);
+      }
 
-  const toggleReminder = useCallback(async (type: "reflection" | "checkIn" | "gratitude") => {
-    const key = `${type}Enabled` as keyof NotificationPrefs;
-    const currentValue = prefs[key];
+      if (newPrefs.gratitudeEnabled) {
+        await scheduleNotification(
+          NOTIFICATION_IDS.gratitude,
+          NOTIFICATION_CONTENT.gratitude.title,
+          NOTIFICATION_CONTENT.gratitude.body,
+          newPrefs.gratitudeHour,
+          newPrefs.gratitudeMinute,
+        );
+      } else {
+        await cancelNotification(NOTIFICATION_IDS.gratitude);
+      }
+    },
+    [prefs],
+  );
 
-    if (!currentValue) {
-      const granted = await requestPermission();
-      if (!granted) return false;
-    }
+  const toggleReminder = useCallback(
+    async (type: "reflection" | "checkIn" | "gratitude") => {
+      const key = `${type}Enabled` as keyof NotificationPrefs;
+      const currentValue = prefs[key];
 
-    await savePrefs({ [key]: !currentValue });
-    return true;
-  }, [prefs, requestPermission, savePrefs]);
+      if (!currentValue) {
+        const granted = await requestPermission();
+        if (!granted) return false;
+      }
 
-  const updateTime = useCallback(async (
-    type: "reflection" | "checkIn" | "gratitude",
-    hour: number,
-    minute: number
-  ) => {
-    await savePrefs({
-      [`${type}Hour`]: hour,
-      [`${type}Minute`]: minute,
-    } as Partial<NotificationPrefs>);
-  }, [savePrefs]);
+      await savePrefs({ [key]: !currentValue });
+      return true;
+    },
+    [prefs, requestPermission, savePrefs],
+  );
+
+  const updateTime = useCallback(
+    async (
+      type: "reflection" | "checkIn" | "gratitude",
+      hour: number,
+      minute: number,
+    ) => {
+      await savePrefs({
+        [`${type}Hour`]: hour,
+        [`${type}Minute`]: minute,
+      } as Partial<NotificationPrefs>);
+    },
+    [savePrefs],
+  );
 
   const formatTime = useCallback((hour: number, minute: number) => {
     const period = hour >= 12 ? "PM" : "AM";

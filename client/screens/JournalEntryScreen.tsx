@@ -23,7 +23,8 @@ const MOODS = [
 export default function JournalEntryScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, "JournalEntry">>();
   const { saveEntry, updateEntry, getEntry, deleteEntry } = useJournal();
 
@@ -58,7 +59,7 @@ export default function JournalEntryScreen() {
     }
 
     setIsSaving(true);
-    
+
     const entryData = {
       date: today,
       content: content.trim(),
@@ -83,7 +84,7 @@ export default function JournalEntryScreen() {
 
   const handleDelete = () => {
     if (!entryId) return;
-    
+
     Alert.alert(
       "Delete Entry",
       "Are you sure you want to delete this journal entry?",
@@ -99,14 +100,17 @@ export default function JournalEntryScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={() => navigation.goBack()} style={styles.headerButton}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.headerButton}
+        >
           <ThemedText style={{ color: theme.primary }}>Cancel</ThemedText>
         </Pressable>
       ),
@@ -117,19 +121,33 @@ export default function JournalEntryScreen() {
               <Feather name="trash-2" size={20} color={theme.emergency} />
             </Pressable>
           ) : null}
-          <Pressable 
-            onPress={handleSave} 
+          <Pressable
+            onPress={handleSave}
             style={styles.headerButton}
             disabled={isSaving}
           >
-            <ThemedText style={{ color: theme.primary, fontWeight: "600", opacity: isSaving ? 0.5 : 1 }}>
+            <ThemedText
+              style={{
+                color: theme.primary,
+                fontWeight: "600",
+                opacity: isSaving ? 0.5 : 1,
+              }}
+            >
               {isSaving ? "Saving..." : "Save"}
             </ThemedText>
           </Pressable>
         </View>
       ),
     });
-  }, [navigation, content, selectedMood, theme.primary, theme.emergency, isSaving, isEditing]);
+  }, [
+    navigation,
+    content,
+    selectedMood,
+    theme.primary,
+    theme.emergency,
+    isSaving,
+    isEditing,
+  ]);
 
   return (
     <KeyboardAwareScrollViewCompat
@@ -140,12 +158,17 @@ export default function JournalEntryScreen() {
         paddingHorizontal: Spacing.lg,
       }}
     >
-      <ThemedText type="small" style={[styles.date, { color: theme.textSecondary }]}>
+      <ThemedText
+        type="small"
+        style={[styles.date, { color: theme.textSecondary }]}
+      >
         {today}
       </ThemedText>
 
       <View style={styles.moodSection}>
-        <ThemedText type="h4" style={styles.sectionTitle}>How are you feeling?</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          How are you feeling?
+        </ThemedText>
         <View style={styles.moodGrid}>
           {MOODS.map((mood) => (
             <Pressable
@@ -154,12 +177,12 @@ export default function JournalEntryScreen() {
               style={({ pressed }) => [
                 styles.moodButton,
                 {
-                  backgroundColor: selectedMood === mood.id 
-                    ? theme.primary 
-                    : theme.backgroundDefault,
-                  borderColor: selectedMood === mood.id 
-                    ? theme.primary 
-                    : theme.border,
+                  backgroundColor:
+                    selectedMood === mood.id
+                      ? theme.primary
+                      : theme.backgroundDefault,
+                  borderColor:
+                    selectedMood === mood.id ? theme.primary : theme.border,
                   opacity: pressed ? 0.8 : 1,
                 },
               ]}
@@ -183,7 +206,9 @@ export default function JournalEntryScreen() {
       </View>
 
       <View style={styles.entrySection}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Write your thoughts</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Write your thoughts
+        </ThemedText>
         <TextInput
           style={[
             styles.textArea,
@@ -203,16 +228,28 @@ export default function JournalEntryScreen() {
       </View>
 
       <View style={styles.promptsSection}>
-        <ThemedText type="small" style={[styles.promptsTitle, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="small"
+          style={[styles.promptsTitle, { color: theme.textSecondary }]}
+        >
           Prompts to consider:
         </ThemedText>
-        <ThemedText type="small" style={[styles.prompt, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="small"
+          style={[styles.prompt, { color: theme.textSecondary }]}
+        >
           - What am I grateful for today?
         </ThemedText>
-        <ThemedText type="small" style={[styles.prompt, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="small"
+          style={[styles.prompt, { color: theme.textSecondary }]}
+        >
           - Did I reach out to someone in my support network?
         </ThemedText>
-        <ThemedText type="small" style={[styles.prompt, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="small"
+          style={[styles.prompt, { color: theme.textSecondary }]}
+        >
           - What step am I working on and how is it going?
         </ThemedText>
       </View>

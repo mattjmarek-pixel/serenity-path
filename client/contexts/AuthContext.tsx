@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -102,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const nonce = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
-        Math.random().toString()
+        Math.random().toString(),
       );
 
       const discovery = {
@@ -110,7 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tokenEndpoint: "https://oauth2.googleapis.com/token",
       };
 
-      const redirectUri = AuthSession.makeRedirectUri({ scheme: "serenitypath" });
+      const redirectUri = AuthSession.makeRedirectUri({
+        scheme: "serenitypath",
+      });
 
       const request = new AuthSession.AuthRequest({
         clientId: "google-client-id-placeholder",

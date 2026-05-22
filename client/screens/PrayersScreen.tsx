@@ -77,11 +77,15 @@ function ExpandablePrayerCard({ prayer }: { prayer: PrayerData }) {
   return (
     <Card style={styles.prayerCard} elevation={1}>
       <Pressable onPress={toggleExpanded} style={styles.prayerHeader}>
-        <View style={[styles.prayerIcon, { backgroundColor: theme.primary + "15" }]}>
+        <View
+          style={[styles.prayerIcon, { backgroundColor: theme.primary + "15" }]}
+        >
           <Feather name={prayer.icon as any} size={22} color={theme.primary} />
         </View>
         <View style={styles.prayerTitleContainer}>
-          <ThemedText type="h4" style={styles.prayerTitle}>{prayer.title}</ThemedText>
+          <ThemedText type="h4" style={styles.prayerTitle}>
+            {prayer.title}
+          </ThemedText>
           <ThemedText type="small" style={{ color: theme.textSecondary }}>
             {prayer.subtitle}
           </ThemedText>
@@ -115,12 +119,17 @@ export default function PrayersScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       <View style={styles.introSection}>
-        <View style={[styles.introIcon, { backgroundColor: theme.accent + "20" }]}>
+        <View
+          style={[styles.introIcon, { backgroundColor: theme.accent + "20" }]}
+        >
           <Feather name="book-open" size={28} color={theme.accent} />
         </View>
-        <ThemedText type="h3" style={styles.introTitle}>Daily Promises & Prayers</ThemedText>
+        <ThemedText type="h3" style={styles.introTitle}>
+          Daily Promises & Prayers
+        </ThemedText>
         <ThemedText style={[styles.introText, { color: theme.textSecondary }]}>
-          These prayers and promises are cornerstones of the recovery journey. Tap any card to read.
+          These prayers and promises are cornerstones of the recovery journey.
+          Tap any card to read.
         </ThemedText>
       </View>
 

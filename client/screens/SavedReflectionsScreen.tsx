@@ -17,8 +17,8 @@ export default function SavedReflectionsScreen() {
   const { theme } = useTheme();
   const { bookmarked, toggleBookmark, isBookmarked } = useBookmarks();
 
-  const savedReflections = DAILY_REFLECTIONS.filter(
-    (r) => isBookmarked(`reflection_${r.id}`)
+  const savedReflections = DAILY_REFLECTIONS.filter((r) =>
+    isBookmarked(`reflection_${r.id}`),
   );
 
   const renderReflection = ({ item }: { item: DailyReflection }) => (
@@ -32,10 +32,17 @@ export default function SavedReflectionsScreen() {
       <ThemedText type="h4" style={styles.reflectionTitle}>
         {item.title}
       </ThemedText>
-      <ThemedText type="body" style={styles.reflectionContent} numberOfLines={3}>
+      <ThemedText
+        type="body"
+        style={styles.reflectionContent}
+        numberOfLines={3}
+      >
         {item.content}
       </ThemedText>
-      <ThemedText type="small" style={[styles.author, { color: theme.textSecondary }]}>
+      <ThemedText
+        type="small"
+        style={[styles.author, { color: theme.textSecondary }]}
+      >
         - {item.author}
       </ThemedText>
     </Card>
@@ -57,9 +64,14 @@ export default function SavedReflectionsScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Feather name="heart" size={48} color={theme.textSecondary} />
-            <ThemedText type="h4" style={styles.emptyTitle}>No Saved Reflections</ThemedText>
-            <ThemedText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-              Save reflections you love by tapping the heart button on the Reflections page
+            <ThemedText type="h4" style={styles.emptyTitle}>
+              No Saved Reflections
+            </ThemedText>
+            <ThemedText
+              style={[styles.emptySubtext, { color: theme.textSecondary }]}
+            >
+              Save reflections you love by tapping the heart button on the
+              Reflections page
             </ThemedText>
           </View>
         }

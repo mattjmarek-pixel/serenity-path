@@ -36,8 +36,14 @@ export default function MoodHistoryScreen() {
   const { getCheckInsForRange, getAverageMood, checkIns } = useCheckIn();
   const [selectedRange, setSelectedRange] = useState(7);
 
-  const rangeData = useMemo(() => getCheckInsForRange(selectedRange), [getCheckInsForRange, selectedRange]);
-  const averageMood = useMemo(() => getAverageMood(selectedRange), [getAverageMood, selectedRange]);
+  const rangeData = useMemo(
+    () => getCheckInsForRange(selectedRange),
+    [getCheckInsForRange, selectedRange],
+  );
+  const averageMood = useMemo(
+    () => getAverageMood(selectedRange),
+    [getAverageMood, selectedRange],
+  );
 
   const maxBarHeight = 120;
 
@@ -59,8 +65,11 @@ export default function MoodHistoryScreen() {
               styles.rangeButton,
               {
                 backgroundColor:
-                  selectedRange === option.value ? theme.primary : theme.backgroundDefault,
-                borderColor: selectedRange === option.value ? theme.primary : theme.border,
+                  selectedRange === option.value
+                    ? theme.primary
+                    : theme.backgroundDefault,
+                borderColor:
+                  selectedRange === option.value ? theme.primary : theme.border,
               },
             ]}
           >
@@ -87,16 +96,27 @@ export default function MoodHistoryScreen() {
               {rangeData.length}
             </ThemedText>
           </View>
-          <View style={[styles.summaryDivider, { backgroundColor: theme.border }]} />
+          <View
+            style={[styles.summaryDivider, { backgroundColor: theme.border }]}
+          />
           <View style={styles.summaryItem}>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>
               Avg Mood
             </ThemedText>
-            <ThemedText type="h2" style={{ color: averageMood ? getMoodColor(Math.round(averageMood)) : theme.textSecondary }}>
+            <ThemedText
+              type="h2"
+              style={{
+                color: averageMood
+                  ? getMoodColor(Math.round(averageMood))
+                  : theme.textSecondary,
+              }}
+            >
               {averageMood ? averageMood.toFixed(1) : "--"}
             </ThemedText>
           </View>
-          <View style={[styles.summaryDivider, { backgroundColor: theme.border }]} />
+          <View
+            style={[styles.summaryDivider, { backgroundColor: theme.border }]}
+          />
           <View style={styles.summaryItem}>
             <ThemedText type="small" style={{ color: theme.textSecondary }}>
               Trend
@@ -116,7 +136,9 @@ export default function MoodHistoryScreen() {
                 }
               />
             ) : (
-              <ThemedText type="h2" style={{ color: theme.textSecondary }}>--</ThemedText>
+              <ThemedText type="h2" style={{ color: theme.textSecondary }}>
+                --
+              </ThemedText>
             )}
           </View>
         </View>
@@ -129,8 +151,15 @@ export default function MoodHistoryScreen() {
         <Card elevation={1} style={styles.chartCard}>
           {rangeData.length === 0 ? (
             <View style={styles.emptyChart}>
-              <Feather name="bar-chart-2" size={48} color={theme.textSecondary} />
-              <ThemedText type="body" style={[styles.emptyText, { color: theme.textSecondary }]}>
+              <Feather
+                name="bar-chart-2"
+                size={48}
+                color={theme.textSecondary}
+              />
+              <ThemedText
+                type="body"
+                style={[styles.emptyText, { color: theme.textSecondary }]}
+              >
                 No check-ins yet for this period
               </ThemedText>
             </View>
@@ -138,18 +167,28 @@ export default function MoodHistoryScreen() {
             <>
               <View style={styles.chartYAxis}>
                 {[5, 4, 3, 2, 1].map((val) => (
-                  <ThemedText key={val} type="small" style={[styles.yLabel, { color: theme.textSecondary }]}>
+                  <ThemedText
+                    key={val}
+                    type="small"
+                    style={[styles.yLabel, { color: theme.textSecondary }]}
+                  >
                     {getMoodLabel(val).substring(0, 3)}
                   </ThemedText>
                 ))}
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.chartScroll}
+              >
                 <View style={styles.barsContainer}>
                   {rangeData.map((checkIn) => {
                     const barHeight = (checkIn.mood / 5) * maxBarHeight;
                     return (
                       <View key={checkIn.id} style={styles.barColumn}>
-                        <View style={[styles.barWrapper, { height: maxBarHeight }]}>
+                        <View
+                          style={[styles.barWrapper, { height: maxBarHeight }]}
+                        >
                           <View
                             style={[
                               styles.bar,
@@ -161,7 +200,13 @@ export default function MoodHistoryScreen() {
                             ]}
                           />
                         </View>
-                        <ThemedText type="small" style={[styles.barLabel, { color: theme.textSecondary }]}>
+                        <ThemedText
+                          type="small"
+                          style={[
+                            styles.barLabel,
+                            { color: theme.textSecondary },
+                          ]}
+                        >
                           {formatDate(checkIn.date)}
                         </ThemedText>
                       </View>
@@ -180,7 +225,10 @@ export default function MoodHistoryScreen() {
         </ThemedText>
         {rangeData.length === 0 ? (
           <Card elevation={1}>
-            <ThemedText type="body" style={[styles.emptyText, { color: theme.textSecondary }]}>
+            <ThemedText
+              type="body"
+              style={[styles.emptyText, { color: theme.textSecondary }]}
+            >
               No check-ins recorded yet
             </ThemedText>
           </Card>
@@ -189,10 +237,16 @@ export default function MoodHistoryScreen() {
             <Card key={checkIn.id} elevation={1} style={styles.entryCard}>
               <View style={styles.entryRow}>
                 <View
-                  style={[styles.entryMoodDot, { backgroundColor: getMoodColor(checkIn.mood) }]}
+                  style={[
+                    styles.entryMoodDot,
+                    { backgroundColor: getMoodColor(checkIn.mood) },
+                  ]}
                 >
                   <Feather
-                    name={MOOD_OPTIONS.find((o) => o.value === checkIn.mood)?.icon ?? "circle"}
+                    name={
+                      MOOD_OPTIONS.find((o) => o.value === checkIn.mood)
+                        ?.icon ?? "circle"
+                    }
                     size={16}
                     color="#FFFFFF"
                   />
@@ -201,13 +255,19 @@ export default function MoodHistoryScreen() {
                   <ThemedText type="body" style={{ fontWeight: "600" }}>
                     {getMoodLabel(checkIn.mood)}
                   </ThemedText>
-                  <ThemedText type="small" style={{ color: theme.textSecondary }}>
+                  <ThemedText
+                    type="small"
+                    style={{ color: theme.textSecondary }}
+                  >
                     {formatDate(checkIn.date)}
                   </ThemedText>
                 </View>
               </View>
               {checkIn.note ? (
-                <ThemedText type="small" style={[styles.entryNote, { color: theme.textSecondary }]}>
+                <ThemedText
+                  type="small"
+                  style={[styles.entryNote, { color: theme.textSecondary }]}
+                >
                   {checkIn.note}
                 </ThemedText>
               ) : null}

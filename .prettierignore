@@ -1,0 +1,11 @@
+node_modules
+dist
+server_dist
+web-build
+.expo
+attached_assets
+assets
+android
+ios
+package-lock.json
+*.log

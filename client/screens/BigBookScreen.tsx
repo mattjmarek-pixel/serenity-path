@@ -9,7 +9,11 @@ import { useNavigation } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
-import { bigBookChapters, bigBookDisclaimer, BigBookChapter } from "@/data/bigBook";
+import {
+  bigBookChapters,
+  bigBookDisclaimer,
+  BigBookChapter,
+} from "@/data/bigBook";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -22,7 +26,7 @@ export default function BigBookScreen() {
   const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
 
   const toggleChapter = (chapterId: number) => {
-    setExpandedChapter(prev => prev === chapterId ? null : chapterId);
+    setExpandedChapter((prev) => (prev === chapterId ? null : chapterId));
   };
 
   const navigateToChapter = (chapter: BigBookChapter) => {
@@ -39,9 +43,16 @@ export default function BigBookScreen() {
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      <View style={[styles.disclaimerCard, { backgroundColor: theme.backgroundSecondary }]}>
+      <View
+        style={[
+          styles.disclaimerCard,
+          { backgroundColor: theme.backgroundSecondary },
+        ]}
+      >
         <Feather name="info" size={18} color={theme.textSecondary} />
-        <ThemedText style={[styles.disclaimerText, { color: theme.textSecondary }]}>
+        <ThemedText
+          style={[styles.disclaimerText, { color: theme.textSecondary }]}
+        >
           {bigBookDisclaimer}
         </ThemedText>
       </View>
@@ -53,24 +64,43 @@ export default function BigBookScreen() {
       {bigBookChapters.map((chapter) => (
         <View
           key={chapter.id}
-          style={[styles.chapterCard, { backgroundColor: theme.backgroundDefault }]}
+          style={[
+            styles.chapterCard,
+            { backgroundColor: theme.backgroundDefault },
+          ]}
         >
           <Pressable
             onPress={() => toggleChapter(chapter.id)}
-            style={({ pressed }) => [styles.chapterHeader, { opacity: pressed ? 0.7 : 1 }]}
+            style={({ pressed }) => [
+              styles.chapterHeader,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <View style={styles.chapterHeaderLeft}>
-              <View style={[styles.chapterNumber, { backgroundColor: theme.primary }]}>
-                <ThemedText style={styles.chapterNumberText}>{chapter.id}</ThemedText>
+              <View
+                style={[
+                  styles.chapterNumber,
+                  { backgroundColor: theme.primary },
+                ]}
+              >
+                <ThemedText style={styles.chapterNumberText}>
+                  {chapter.id}
+                </ThemedText>
               </View>
               <View style={styles.chapterInfo}>
-                <ThemedText type="h4" numberOfLines={2} style={styles.chapterTitle}>
+                <ThemedText
+                  type="h4"
+                  numberOfLines={2}
+                  style={styles.chapterTitle}
+                >
                   {chapter.title}
                 </ThemedText>
               </View>
             </View>
             <Feather
-              name={expandedChapter === chapter.id ? "chevron-up" : "chevron-down"}
+              name={
+                expandedChapter === chapter.id ? "chevron-up" : "chevron-down"
+              }
               size={20}
               color={theme.textSecondary}
             />
@@ -78,13 +108,27 @@ export default function BigBookScreen() {
 
           {expandedChapter === chapter.id ? (
             <View style={styles.chapterContent}>
-              <ThemedText style={[styles.summaryText, { color: theme.textSecondary }]}>
+              <ThemedText
+                style={[styles.summaryText, { color: theme.textSecondary }]}
+              >
                 {chapter.summary}
               </ThemedText>
 
-              <View style={[styles.quoteSection, { backgroundColor: theme.backgroundSecondary }]}>
-                <Feather name="bookmark" size={16} color={theme.accent} style={styles.quoteIcon} />
-                <ThemedText style={[styles.quoteLabel, { color: theme.accent }]}>
+              <View
+                style={[
+                  styles.quoteSection,
+                  { backgroundColor: theme.backgroundSecondary },
+                ]}
+              >
+                <Feather
+                  name="bookmark"
+                  size={16}
+                  color={theme.accent}
+                  style={styles.quoteIcon}
+                />
+                <ThemedText
+                  style={[styles.quoteLabel, { color: theme.accent }]}
+                >
                   Key Quote
                 </ThemedText>
                 <ThemedText style={[styles.quoteText, { fontStyle: "italic" }]}>
@@ -96,10 +140,15 @@ export default function BigBookScreen() {
                 onPress={() => navigateToChapter(chapter)}
                 style={({ pressed }) => [
                   styles.readButton,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  {
+                    backgroundColor: theme.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
               >
-                <ThemedText style={styles.readButtonText}>View Summary</ThemedText>
+                <ThemedText style={styles.readButtonText}>
+                  View Summary
+                </ThemedText>
                 <Feather name="arrow-right" size={18} color="#FFFFFF" />
               </Pressable>
             </View>

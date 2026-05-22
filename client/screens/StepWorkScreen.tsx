@@ -1,5 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { View, StyleSheet, Pressable, TextInput, ScrollView, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -140,18 +147,22 @@ export default function StepWorkScreen() {
 
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
 
-  const handleSave = useCallback(async (questionIndex: number) => {
-    const answer = answers[questionIndex] || "";
-    setSavingIndex(questionIndex);
-    await saveAnswer(stepNumber, questionIndex, answer);
-    setSavingIndex(null);
-  }, [answers, stepNumber, saveAnswer]);
+  const handleSave = useCallback(
+    async (questionIndex: number) => {
+      const answer = answers[questionIndex] || "";
+      setSavingIndex(questionIndex);
+      await saveAnswer(stepNumber, questionIndex, answer);
+      setSavingIndex(null);
+    },
+    [answers, stepNumber, saveAnswer],
+  );
 
   const handleChangeText = useCallback((index: number, text: string) => {
-    setAnswers(prev => ({ ...prev, [index]: text }));
+    setAnswers((prev) => ({ ...prev, [index]: text }));
   }, []);
 
-  const progressPercent = questions.length > 0 ? (progress.answered / progress.total) * 100 : 0;
+  const progressPercent =
+    questions.length > 0 ? (progress.answered / progress.total) * 100 : 0;
 
   return (
     <KeyboardAwareScrollViewCompat
@@ -172,20 +183,40 @@ export default function StepWorkScreen() {
         </ThemedText>
       </View>
 
-      <View style={[styles.progressCard, { backgroundColor: theme.backgroundDefault }]}>
+      <View
+        style={[
+          styles.progressCard,
+          { backgroundColor: theme.backgroundDefault },
+        ]}
+      >
         <View style={styles.progressHeader}>
           <ThemedText type="small" style={{ color: theme.textSecondary }}>
-            {"Progress: " + progress.answered + " of " + progress.total + " questions"}
+            {"Progress: " +
+              progress.answered +
+              " of " +
+              progress.total +
+              " questions"}
           </ThemedText>
-          <ThemedText type="small" style={{ color: theme.primary, fontWeight: "600" }}>
+          <ThemedText
+            type="small"
+            style={{ color: theme.primary, fontWeight: "600" }}
+          >
             {Math.round(progressPercent) + "%"}
           </ThemedText>
         </View>
-        <View style={[styles.progressBarBg, { backgroundColor: theme.backgroundSecondary }]}>
+        <View
+          style={[
+            styles.progressBarBg,
+            { backgroundColor: theme.backgroundSecondary },
+          ]}
+        >
           <View
             style={[
               styles.progressBarFill,
-              { backgroundColor: theme.primary, width: `${progressPercent}%` as any },
+              {
+                backgroundColor: theme.primary,
+                width: `${progressPercent}%` as any,
+              },
             ]}
           />
         </View>
@@ -193,14 +224,32 @@ export default function StepWorkScreen() {
 
       {questions.map((question, index) => {
         const currentAnswer = answers[index] || "";
-        const isSaved = stepData?.answers?.[index] !== undefined && stepData.answers[index] === currentAnswer && currentAnswer.trim().length > 0;
-        const hasUnsavedChanges = currentAnswer !== (stepData?.answers?.[index] || "") && currentAnswer.trim().length > 0;
+        const isSaved =
+          stepData?.answers?.[index] !== undefined &&
+          stepData.answers[index] === currentAnswer &&
+          currentAnswer.trim().length > 0;
+        const hasUnsavedChanges =
+          currentAnswer !== (stepData?.answers?.[index] || "") &&
+          currentAnswer.trim().length > 0;
 
         return (
-          <View key={index} style={[styles.questionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <View
+            key={index}
+            style={[
+              styles.questionCard,
+              { backgroundColor: theme.backgroundDefault },
+            ]}
+          >
             <View style={styles.questionHeader}>
-              <View style={[styles.questionNumber, { backgroundColor: theme.backgroundSecondary }]}>
-                <ThemedText style={[styles.questionNumberText, { color: theme.primary }]}>
+              <View
+                style={[
+                  styles.questionNumber,
+                  { backgroundColor: theme.backgroundSecondary },
+                ]}
+              >
+                <ThemedText
+                  style={[styles.questionNumberText, { color: theme.primary }]}
+                >
                   {index + 1}
                 </ThemedText>
               </View>
@@ -208,7 +257,10 @@ export default function StepWorkScreen() {
                 <Feather name="check-circle" size={18} color={theme.success} />
               ) : null}
             </View>
-            <ThemedText type="body" style={[styles.questionText, { color: theme.text }]}>
+            <ThemedText
+              type="body"
+              style={[styles.questionText, { color: theme.text }]}
+            >
               {question}
             </ThemedText>
             <TextInput
@@ -227,7 +279,10 @@ export default function StepWorkScreen() {
               value={currentAnswer}
               onChangeText={(text) => handleChangeText(index, text)}
               onBlur={() => {
-                if (currentAnswer.trim().length > 0 || stepData?.answers?.[index]) {
+                if (
+                  currentAnswer.trim().length > 0 ||
+                  stepData?.answers?.[index]
+                ) {
                   handleSave(index);
                 }
               }}
@@ -237,11 +292,16 @@ export default function StepWorkScreen() {
                 onPress={() => handleSave(index)}
                 style={({ pressed }) => [
                   styles.saveButton,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  {
+                    backgroundColor: theme.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
               >
                 {savingIndex === index ? (
-                  <ThemedText style={styles.saveButtonText}>Saving...</ThemedText>
+                  <ThemedText style={styles.saveButtonText}>
+                    Saving...
+                  </ThemedText>
                 ) : (
                   <ThemedText style={styles.saveButtonText}>Save</ThemedText>
                 )}

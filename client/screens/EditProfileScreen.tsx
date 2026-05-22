@@ -43,7 +43,10 @@ function makeCall(number: string) {
       if (supported) {
         Linking.openURL(phoneUrl);
       } else {
-        Alert.alert("Unable to make call", "Phone calling is not supported on this device.");
+        Alert.alert(
+          "Unable to make call",
+          "Phone calling is not supported on this device.",
+        );
       }
     })
     .catch(() => {
@@ -60,12 +63,22 @@ interface FormInputProps {
   multiline?: boolean;
 }
 
-function FormInput({ label, value, onChangeText, placeholder, keyboardType = "default", multiline = false }: FormInputProps) {
+function FormInput({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType = "default",
+  multiline = false,
+}: FormInputProps) {
   const { theme } = useTheme();
 
   return (
     <View style={styles.inputGroup}>
-      <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
+      <ThemedText
+        type="small"
+        style={[styles.inputLabel, { color: theme.textSecondary }]}
+      >
         {label}
       </ThemedText>
       <TextInput
@@ -111,10 +124,7 @@ function Chip({ label, selected, onPress }: ChipProps) {
       ]}
     >
       <ThemedText
-        style={[
-          styles.chipText,
-          { color: selected ? "#FFFFFF" : theme.text },
-        ]}
+        style={[styles.chipText, { color: selected ? "#FFFFFF" : theme.text }]}
       >
         {label}
       </ThemedText>
@@ -175,22 +185,35 @@ function CompassionModal({
             },
           ]}
         >
-          <View style={[styles.modalIconCircle, { backgroundColor: theme.primary + "18" }]}>
+          <View
+            style={[
+              styles.modalIconCircle,
+              { backgroundColor: theme.primary + "18" },
+            ]}
+          >
             <Feather name="heart" size={32} color={theme.primary} />
           </View>
 
-          <ThemedText type="h3" style={[styles.modalHeading, { color: theme.text }]}>
+          <ThemedText
+            type="h3"
+            style={[styles.modalHeading, { color: theme.text }]}
+          >
             You came back.
           </ThemedText>
 
-          <ThemedText style={[styles.modalBody, { color: theme.textSecondary }]}>
-            Coming back is the most courageous thing you can do. Relapse is part of many people's
-            recovery journey — it does not erase the strength you've already shown. You are still here,
-            and that matters.
+          <ThemedText
+            style={[styles.modalBody, { color: theme.textSecondary }]}
+          >
+            Coming back is the most courageous thing you can do. Relapse is part
+            of many people's recovery journey — it does not erase the strength
+            you've already shown. You are still here, and that matters.
           </ThemedText>
 
-          <ThemedText style={[styles.modalBodySmall, { color: theme.textSecondary }]}>
-            Whatever you need right now, this community and your tools are here for you.
+          <ThemedText
+            style={[styles.modalBodySmall, { color: theme.textSecondary }]}
+          >
+            Whatever you need right now, this community and your tools are here
+            for you.
           </ThemedText>
 
           <View style={styles.modalActions}>
@@ -202,7 +225,9 @@ function CompassionModal({
               ]}
             >
               <Feather name="phone" size={18} color="#FFFFFF" />
-              <ThemedText style={styles.modalActionText}>{callLabel}</ThemedText>
+              <ThemedText style={styles.modalActionText}>
+                {callLabel}
+              </ThemedText>
             </Pressable>
 
             <Pressable
@@ -218,7 +243,9 @@ function CompassionModal({
               ]}
             >
               <Feather name="map-pin" size={18} color={theme.accent} />
-              <ThemedText style={[styles.modalActionText, { color: theme.accent }]}>
+              <ThemedText
+                style={[styles.modalActionText, { color: theme.accent }]}
+              >
                 Find a Meeting
               </ThemedText>
             </Pressable>
@@ -236,16 +263,26 @@ function CompassionModal({
               ]}
             >
               <Feather name="book-open" size={18} color={theme.secondary} />
-              <ThemedText style={[styles.modalActionText, { color: theme.secondary }]}>
+              <ThemedText
+                style={[styles.modalActionText, { color: theme.secondary }]}
+              >
                 Read the Promises
               </ThemedText>
             </Pressable>
 
             <Pressable
               onPress={onDismiss}
-              style={({ pressed }) => [styles.modalDismiss, { opacity: pressed ? 0.6 : 1 }]}
+              style={({ pressed }) => [
+                styles.modalDismiss,
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
             >
-              <ThemedText style={[styles.modalDismissText, { color: theme.textSecondary }]}>
+              <ThemedText
+                style={[
+                  styles.modalDismissText,
+                  { color: theme.textSecondary },
+                ]}
+              >
                 I'm okay, continue
               </ThemedText>
             </Pressable>
@@ -260,7 +297,8 @@ export default function EditProfileScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, saveProfile, isLoading } = useProfile();
 
   const [formData, setFormData] = useState<UserProfile>({
@@ -290,20 +328,29 @@ export default function EditProfileScreen() {
     }
   }, [profile, isLoading]);
 
-  const updateField = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+  const updateField = <K extends keyof UserProfile>(
+    key: K,
+    value: UserProfile[K],
+  ) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleMeetingType = (typeId: string) => {
     const current = formData.preferredMeetingTypes;
     if (current.includes(typeId)) {
-      updateField("preferredMeetingTypes", current.filter(t => t !== typeId));
+      updateField(
+        "preferredMeetingTypes",
+        current.filter((t) => t !== typeId),
+      );
     } else {
       updateField("preferredMeetingTypes", [...current, typeId]);
     }
   };
 
-  const isRelapse = (oldDate: string | null, newDate: string | null): boolean => {
+  const isRelapse = (
+    oldDate: string | null,
+    newDate: string | null,
+  ): boolean => {
     if (!oldDate || !newDate) return false;
     return new Date(newDate).getTime() > new Date(oldDate).getTime();
   };
@@ -377,7 +424,12 @@ export default function EditProfileScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.backgroundRoot }]}>
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: theme.backgroundRoot },
+        ]}
+      >
         <ThemedText>Loading...</ThemedText>
       </View>
     );
@@ -419,17 +471,29 @@ export default function EditProfileScreen() {
             <ThemedText type="h4">Recovery Timeline</ThemedText>
           </View>
           <View style={styles.inputGroup}>
-            <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <ThemedText
+              type="small"
+              style={[styles.inputLabel, { color: theme.textSecondary }]}
+            >
               Sobriety Start Date
             </ThemedText>
             <Pressable
               onPress={() => setShowDatePicker(true)}
               style={[
                 styles.dateButton,
-                { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
+                {
+                  backgroundColor: theme.backgroundSecondary,
+                  borderColor: theme.border,
+                },
               ]}
             >
-              <ThemedText style={!formData.sobrietyDate ? { color: theme.textSecondary } : undefined}>
+              <ThemedText
+                style={
+                  !formData.sobrietyDate
+                    ? { color: theme.textSecondary }
+                    : undefined
+                }
+              >
                 {formatSobrietyDate()}
               </ThemedText>
               <Feather name="calendar" size={18} color={theme.primary} />
@@ -437,7 +501,11 @@ export default function EditProfileScreen() {
           </View>
           {showDatePicker ? (
             <DateTimePicker
-              value={formData.sobrietyDate ? new Date(formData.sobrietyDate) : new Date()}
+              value={
+                formData.sobrietyDate
+                  ? new Date(formData.sobrietyDate)
+                  : new Date()
+              }
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={handleDateChange}
@@ -458,7 +526,10 @@ export default function EditProfileScreen() {
             placeholder="For finding nearby meetings"
           />
           <View style={styles.inputGroup}>
-            <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <ThemedText
+              type="small"
+              style={[styles.inputLabel, { color: theme.textSecondary }]}
+            >
               Preferred Meeting Types
             </ThemedText>
             <View style={styles.chipsContainer}>
@@ -473,7 +544,10 @@ export default function EditProfileScreen() {
             </View>
           </View>
           <View style={styles.inputGroup}>
-            <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <ThemedText
+              type="small"
+              style={[styles.inputLabel, { color: theme.textSecondary }]}
+            >
               Default Search Radius: {formData.defaultRadius} miles
             </ThemedText>
             <View style={styles.radiusRow}>
@@ -484,14 +558,23 @@ export default function EditProfileScreen() {
                   style={[
                     styles.radiusOption,
                     {
-                      backgroundColor: formData.defaultRadius === radius ? theme.primary : theme.backgroundSecondary,
-                      borderColor: formData.defaultRadius === radius ? theme.primary : theme.border,
+                      backgroundColor:
+                        formData.defaultRadius === radius
+                          ? theme.primary
+                          : theme.backgroundSecondary,
+                      borderColor:
+                        formData.defaultRadius === radius
+                          ? theme.primary
+                          : theme.border,
                     },
                   ]}
                 >
                   <ThemedText
                     style={{
-                      color: formData.defaultRadius === radius ? "#FFFFFF" : theme.text,
+                      color:
+                        formData.defaultRadius === radius
+                          ? "#FFFFFF"
+                          : theme.text,
                       fontWeight: "600",
                     }}
                   >
@@ -524,14 +607,20 @@ export default function EditProfileScreen() {
           </View>
           {formData.reminderEnabled ? (
             <View style={styles.inputGroup}>
-              <ThemedText type="small" style={[styles.inputLabel, { color: theme.textSecondary }]}>
+              <ThemedText
+                type="small"
+                style={[styles.inputLabel, { color: theme.textSecondary }]}
+              >
                 Reminder Time
               </ThemedText>
               <Pressable
                 onPress={() => setShowTimePicker(true)}
                 style={[
                   styles.dateButton,
-                  { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
+                  {
+                    backgroundColor: theme.backgroundSecondary,
+                    borderColor: theme.border,
+                  },
                 ]}
               >
                 <ThemedText>{formatReminderTime()}</ThemedText>
@@ -602,14 +691,21 @@ export default function EditProfileScreen() {
           />
         </Card>
 
-        <View style={[styles.saveButtonContainer, { paddingBottom: insets.bottom + Spacing.lg }]}>
+        <View
+          style={[
+            styles.saveButtonContainer,
+            { paddingBottom: insets.bottom + Spacing.lg },
+          ]}
+        >
           <Pressable
             onPress={handleSave}
             disabled={!formData.name.trim() || isSaving}
             style={({ pressed }) => [
               styles.saveButton,
               {
-                backgroundColor: formData.name.trim() ? theme.primary : theme.backgroundSecondary,
+                backgroundColor: formData.name.trim()
+                  ? theme.primary
+                  : theme.backgroundSecondary,
                 opacity: pressed ? 0.8 : 1,
               },
             ]}
@@ -617,7 +713,9 @@ export default function EditProfileScreen() {
             <ThemedText
               style={[
                 styles.saveButtonText,
-                { color: formData.name.trim() ? "#FFFFFF" : theme.textSecondary },
+                {
+                  color: formData.name.trim() ? "#FFFFFF" : theme.textSecondary,
+                },
               ]}
             >
               {isSaving ? "Saving..." : "Save Profile"}

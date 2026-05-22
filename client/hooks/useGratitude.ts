@@ -30,40 +30,46 @@ export function useGratitude() {
     loadEntries();
   }, [loadEntries]);
 
-  const saveEntry = useCallback(async (items: string[]) => {
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      const newEntry: GratitudeEntry = {
-        id: Date.now().toString(),
-        date: today,
-        items,
-        createdAt: new Date().toISOString(),
-      };
-      const filtered = entries.filter((e) => e.date !== today);
-      const updated = [newEntry, ...filtered];
-      await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
-      setEntries(updated);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [entries]);
+  const saveEntry = useCallback(
+    async (items: string[]) => {
+      try {
+        const today = new Date().toISOString().split("T")[0];
+        const newEntry: GratitudeEntry = {
+          id: Date.now().toString(),
+          date: today,
+          items,
+          createdAt: new Date().toISOString(),
+        };
+        const filtered = entries.filter((e) => e.date !== today);
+        const updated = [newEntry, ...filtered];
+        await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
+        setEntries(updated);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [entries],
+  );
 
   const getTodayEntry = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
     return entries.find((e) => e.date === today) || null;
   }, [entries]);
 
-  const deleteEntry = useCallback(async (id: string) => {
-    try {
-      const updated = entries.filter((e) => e.id !== id);
-      await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
-      setEntries(updated);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [entries]);
+  const deleteEntry = useCallback(
+    async (id: string) => {
+      try {
+        const updated = entries.filter((e) => e.id !== id);
+        await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
+        setEntries(updated);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [entries],
+  );
 
   return {
     entries,

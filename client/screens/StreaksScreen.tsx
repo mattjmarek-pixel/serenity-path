@@ -24,7 +24,12 @@ function StreakCard({ title, icon, color, streak }: StreakCardProps) {
   return (
     <Card elevation={1} style={styles.streakCard}>
       <View style={styles.streakCardHeader}>
-        <View style={[styles.streakIconContainer, { backgroundColor: color + "20" }]}>
+        <View
+          style={[
+            styles.streakIconContainer,
+            { backgroundColor: color + "20" },
+          ]}
+        >
           <Feather name={icon} size={22} color={color} />
         </View>
         <View style={styles.streakCardInfo}>
@@ -45,7 +50,9 @@ function StreakCard({ title, icon, color, streak }: StreakCardProps) {
             />
             <ThemedText
               type="h2"
-              style={{ color: streak.current > 0 ? color : theme.textSecondary }}
+              style={{
+                color: streak.current > 0 ? color : theme.textSecondary,
+              }}
             >
               {streak.current}
             </ThemedText>
@@ -55,7 +62,9 @@ function StreakCard({ title, icon, color, streak }: StreakCardProps) {
           </ThemedText>
         </View>
 
-        <View style={[styles.streakDivider, { backgroundColor: theme.border }]} />
+        <View
+          style={[styles.streakDivider, { backgroundColor: theme.border }]}
+        />
 
         <View style={styles.streakStat}>
           <View style={styles.streakCountRow}>
@@ -86,12 +95,19 @@ export default function StreaksScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const { checkInStreak, journalStreak, gratitudeStreak, loadStreaks, totalActiveStreaks, bestCurrentStreak } = useStreaks();
+  const {
+    checkInStreak,
+    journalStreak,
+    gratitudeStreak,
+    loadStreaks,
+    totalActiveStreaks,
+    bestCurrentStreak,
+  } = useStreaks();
 
   useFocusEffect(
     React.useCallback(() => {
       loadStreaks();
-    }, [loadStreaks])
+    }, [loadStreaks]),
   );
 
   return (
@@ -105,7 +121,9 @@ export default function StreaksScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       <Card elevation={1} style={styles.summaryCard}>
-        <View style={[styles.summaryIcon, { backgroundColor: theme.accent + "20" }]}>
+        <View
+          style={[styles.summaryIcon, { backgroundColor: theme.accent + "20" }]}
+        >
           <Feather name="zap" size={32} color={theme.accent} />
         </View>
         <ThemedText type="h2" style={{ color: theme.accent }}>
@@ -115,17 +133,28 @@ export default function StreaksScreen() {
           Active Streak{totalActiveStreaks !== 1 ? "s" : ""}
         </ThemedText>
         {bestCurrentStreak > 0 ? (
-          <View style={[styles.bestStreakBadge, { backgroundColor: theme.accent + "15" }]}>
+          <View
+            style={[
+              styles.bestStreakBadge,
+              { backgroundColor: theme.accent + "15" },
+            ]}
+          >
             <Feather name="trending-up" size={14} color={theme.accent} />
-            <ThemedText type="small" style={{ color: theme.accent, fontWeight: "600" }}>
-              Best current: {bestCurrentStreak} day{bestCurrentStreak !== 1 ? "s" : ""}
+            <ThemedText
+              type="small"
+              style={{ color: theme.accent, fontWeight: "600" }}
+            >
+              Best current: {bestCurrentStreak} day
+              {bestCurrentStreak !== 1 ? "s" : ""}
             </ThemedText>
           </View>
         ) : null}
       </Card>
 
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>Your Streaks</ThemedText>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Your Streaks
+        </ThemedText>
 
         <StreakCard
           title="Daily Check-In"
@@ -154,8 +183,13 @@ export default function StreaksScreen() {
           <Feather name="info" size={18} color={theme.primary} />
           <ThemedText type="h4">Building Habits</ThemedText>
         </View>
-        <ThemedText type="small" style={{ color: theme.textSecondary, lineHeight: 20 }}>
-          Consistency is key in recovery. Check in daily, write in your journal, and practice gratitude to build healthy streaks that support your journey.
+        <ThemedText
+          type="small"
+          style={{ color: theme.textSecondary, lineHeight: 20 }}
+        >
+          Consistency is key in recovery. Check in daily, write in your journal,
+          and practice gratitude to build healthy streaks that support your
+          journey.
         </ThemedText>
       </Card>
     </ScrollView>

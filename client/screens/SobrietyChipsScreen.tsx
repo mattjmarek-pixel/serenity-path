@@ -20,25 +20,115 @@ import { useProfile } from "@/hooks/useProfile";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 const SOBRIETY_CHIPS = [
-  { days: 1, label: "24 Hours", description: "The most important day", color: "#C0C0C0", textColor: "#333333" },
-  { days: 7, label: "1 Week", description: "One week of courage", color: "#C0C0C0", textColor: "#333333" },
-  { days: 30, label: "30 Days", description: "A month of strength", color: "#DC3545", textColor: "#FFFFFF" },
-  { days: 60, label: "60 Days", description: "Two months of growth", color: "#DAA520", textColor: "#333333" },
-  { days: 90, label: "90 Days", description: "A quarter of dedication", color: "#228B22", textColor: "#FFFFFF" },
-  { days: 180, label: "6 Months", description: "Half a year of freedom", color: "#1B3A6B", textColor: "#FFFFFF" },
-  { days: 270, label: "9 Months", description: "Three quarters strong", color: "#6A0DAD", textColor: "#FFFFFF" },
-  { days: 365, label: "1 Year", description: "A full year of recovery", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 547, label: "18 Months", description: "Steady and strong", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 730, label: "2 Years", description: "Two years of new life", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 1095, label: "3 Years", description: "Three years of wisdom", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 1825, label: "5 Years", description: "Half a decade of courage", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 3650, label: "10 Years", description: "A decade of strength", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 7300, label: "20 Years", description: "Two decades of grace", color: "#CD7F32", textColor: "#FFFFFF" },
-  { days: 9125, label: "25 Years", description: "A quarter century of hope", color: "#CD7F32", textColor: "#FFFFFF" },
+  {
+    days: 1,
+    label: "24 Hours",
+    description: "The most important day",
+    color: "#C0C0C0",
+    textColor: "#333333",
+  },
+  {
+    days: 7,
+    label: "1 Week",
+    description: "One week of courage",
+    color: "#C0C0C0",
+    textColor: "#333333",
+  },
+  {
+    days: 30,
+    label: "30 Days",
+    description: "A month of strength",
+    color: "#DC3545",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 60,
+    label: "60 Days",
+    description: "Two months of growth",
+    color: "#DAA520",
+    textColor: "#333333",
+  },
+  {
+    days: 90,
+    label: "90 Days",
+    description: "A quarter of dedication",
+    color: "#228B22",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 180,
+    label: "6 Months",
+    description: "Half a year of freedom",
+    color: "#1B3A6B",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 270,
+    label: "9 Months",
+    description: "Three quarters strong",
+    color: "#6A0DAD",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 365,
+    label: "1 Year",
+    description: "A full year of recovery",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 547,
+    label: "18 Months",
+    description: "Steady and strong",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 730,
+    label: "2 Years",
+    description: "Two years of new life",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 1095,
+    label: "3 Years",
+    description: "Three years of wisdom",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 1825,
+    label: "5 Years",
+    description: "Half a decade of courage",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 3650,
+    label: "10 Years",
+    description: "A decade of strength",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 7300,
+    label: "20 Years",
+    description: "Two decades of grace",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
+  {
+    days: 9125,
+    label: "25 Years",
+    description: "A quarter century of hope",
+    color: "#CD7F32",
+    textColor: "#FFFFFF",
+  },
 ];
 
 interface ChipProps {
-  chip: typeof SOBRIETY_CHIPS[0];
+  chip: (typeof SOBRIETY_CHIPS)[0];
   earned: boolean;
   isNext: boolean;
   progress: number;
@@ -57,8 +147,8 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
         withRepeat(
           withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
           -1,
-          true
-        )
+          true,
+        ),
       );
     }
   }, [isNext]);
@@ -80,7 +170,11 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
           styles.chipContainer,
           {
             backgroundColor: theme.backgroundDefault,
-            borderColor: earned ? chip.color : isNext ? theme.primary + "60" : theme.border,
+            borderColor: earned
+              ? chip.color
+              : isNext
+                ? theme.primary + "60"
+                : theme.border,
             borderWidth: isNext ? 2 : 1,
           },
         ]}
@@ -100,7 +194,11 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
             {earned ? (
               <Feather name="award" size={24} color={chipTextColor} />
             ) : (
-              <Feather name="circle" size={24} color={theme.textSecondary + "40"} />
+              <Feather
+                name="circle"
+                size={24}
+                color={theme.textSecondary + "40"}
+              />
             )}
           </View>
 
@@ -116,7 +214,11 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
             </ThemedText>
             <ThemedText
               type="small"
-              style={{ color: earned ? theme.textSecondary : theme.textSecondary + "80" }}
+              style={{
+                color: earned
+                  ? theme.textSecondary
+                  : theme.textSecondary + "80",
+              }}
             >
               {chip.description}
             </ThemedText>
@@ -124,7 +226,12 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
 
           <View style={styles.chipStatus}>
             {earned ? (
-              <View style={[styles.earnedBadge, { backgroundColor: chip.color + "20" }]}>
+              <View
+                style={[
+                  styles.earnedBadge,
+                  { backgroundColor: chip.color + "20" },
+                ]}
+              >
                 <Feather name="check-circle" size={16} color={chip.color} />
                 <ThemedText
                   type="small"
@@ -137,11 +244,20 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
               <View style={styles.progressContainer}>
                 <ThemedText
                   type="small"
-                  style={{ color: theme.primary, fontWeight: "600", fontSize: 12 }}
+                  style={{
+                    color: theme.primary,
+                    fontWeight: "600",
+                    fontSize: 12,
+                  }}
                 >
                   {Math.round(progress * 100)}%
                 </ThemedText>
-                <View style={[styles.progressBar, { backgroundColor: theme.backgroundTertiary }]}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { backgroundColor: theme.backgroundTertiary },
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressFill,
@@ -154,7 +270,11 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
                 </View>
               </View>
             ) : (
-              <Feather name="lock" size={16} color={theme.textSecondary + "40"} />
+              <Feather
+                name="lock"
+                size={16}
+                color={theme.textSecondary + "40"}
+              />
             )}
           </View>
         </View>
@@ -177,7 +297,7 @@ export default function SobrietyChipsScreen() {
     return { earnedChips: earned, nextChip: next, totalEarned: earned.length };
   }, [sobrietyDays]);
 
-  const getProgress = (chip: typeof SOBRIETY_CHIPS[0]) => {
+  const getProgress = (chip: (typeof SOBRIETY_CHIPS)[0]) => {
     if (sobrietyDays >= chip.days) return 1;
     const prevChip = SOBRIETY_CHIPS[SOBRIETY_CHIPS.indexOf(chip) - 1];
     const prevDays = prevChip ? prevChip.days : 0;
@@ -197,7 +317,9 @@ export default function SobrietyChipsScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       <Card style={styles.summaryCard} elevation={1}>
-        <View style={[styles.summaryIcon, { backgroundColor: theme.accent + "20" }]}>
+        <View
+          style={[styles.summaryIcon, { backgroundColor: theme.accent + "20" }]}
+        >
           <Feather name="award" size={32} color={theme.accent} />
         </View>
         <ThemedText type="h2" style={styles.summaryCount}>
@@ -207,14 +329,24 @@ export default function SobrietyChipsScreen() {
           {totalEarned === 1 ? "Chip Earned" : "Chips Earned"}
         </ThemedText>
         {nextChip ? (
-          <View style={[styles.nextChipInfo, { backgroundColor: theme.primary + "15" }]}>
+          <View
+            style={[
+              styles.nextChipInfo,
+              { backgroundColor: theme.primary + "15" },
+            ]}
+          >
             <Feather name="target" size={14} color={theme.primary} />
             <ThemedText type="small" style={{ color: theme.primary }}>
               {nextChip.days - sobrietyDays} days until {nextChip.label} chip
             </ThemedText>
           </View>
         ) : (
-          <View style={[styles.nextChipInfo, { backgroundColor: theme.accent + "15" }]}>
+          <View
+            style={[
+              styles.nextChipInfo,
+              { backgroundColor: theme.accent + "15" },
+            ]}
+          >
             <Feather name="star" size={14} color={theme.accent} />
             <ThemedText type="small" style={{ color: theme.accent }}>
               All milestones achieved

@@ -23,25 +23,31 @@ export function useBookmarks() {
     loadBookmarks();
   }, [loadBookmarks]);
 
-  const toggleBookmark = useCallback(async (id: string) => {
-    try {
-      const newSet = new Set(bookmarked);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
+  const toggleBookmark = useCallback(
+    async (id: string) => {
+      try {
+        const newSet = new Set(bookmarked);
+        if (newSet.has(id)) {
+          newSet.delete(id);
+        } else {
+          newSet.add(id);
+        }
+        await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...newSet]));
+        setBookmarked(newSet);
+        return true;
+      } catch (error) {
+        return false;
       }
-      await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...newSet]));
-      setBookmarked(newSet);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [bookmarked]);
+    },
+    [bookmarked],
+  );
 
-  const isBookmarked = useCallback((id: string) => {
-    return bookmarked.has(id);
-  }, [bookmarked]);
+  const isBookmarked = useCallback(
+    (id: string) => {
+      return bookmarked.has(id);
+    },
+    [bookmarked],
+  );
 
   return {
     bookmarked,

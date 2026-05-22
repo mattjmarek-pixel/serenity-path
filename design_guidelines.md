@@ -3,7 +3,9 @@
 ## Architecture Decisions
 
 ### Authentication
+
 **Auth Required**: Yes
+
 - Users need accounts to save sobriety dates, journal entries, sponsor contacts, and track progress
 - **SSO Implementation**:
   - Apple Sign-In (required for iOS)
@@ -17,9 +19,11 @@
   - Delete account nested under Settings > Account > Delete with double confirmation and warning about data loss
 
 ### Navigation Architecture
+
 **Tab Navigation** (5 tabs with center action)
 
 **Tab Structure**:
+
 1. **Home** - Sobriety counter and daily overview
 2. **Reflections** - Daily AA meditations and readings
 3. **Support** (Center FAB) - Emergency resources and sponsor contacts
@@ -29,6 +33,7 @@
 ## Screen Specifications
 
 ### 1. Home Screen
+
 - **Purpose**: Display sobriety progress and motivational overview
 - **Layout**:
   - **Header**: Transparent, no title, right button (Settings gear icon)
@@ -42,6 +47,7 @@
 - **Components**: Large stat cards, progress rings, preview cards with right chevron
 
 ### 2. Reflections Screen
+
 - **Purpose**: Daily AA meditations and inspirational content
 - **Layout**:
   - **Header**: Transparent, title "Daily Reflections", right button (Bookmark icon)
@@ -55,6 +61,7 @@
 - **Components**: Date picker, reading card with serene background, bookmark toggle
 
 ### 3. Support Screen (Center FAB Modal)
+
 - **Purpose**: Emergency resources and quick access to support contacts
 - **Layout**:
   - **Header**: Modal header, "Support Resources", left button (Close X)
@@ -70,6 +77,7 @@
 - **Components**: Large CTA buttons with phone icons, contact cards, emergency alert styling (calm but noticeable)
 
 ### 4. Steps & Traditions Screen
+
 - **Purpose**: Reference library for 12 Steps and 12 Traditions
 - **Layout**:
   - **Header**: Default, title "Steps & Traditions", segmented control (Steps/Traditions)
@@ -82,6 +90,7 @@
 - **Components**: Segmented control, expandable list items, numbered badges, checkboxes
 
 ### 5. Profile Screen
+
 - **Purpose**: User settings, journal access, and progress tracking
 - **Layout**:
   - **Header**: Transparent, title "Profile"
@@ -99,6 +108,7 @@
 - **Components**: Avatar circle, editable fields, list of settings options, achievement badges
 
 ### 6. Journal Screen (Stack Navigation from Profile)
+
 - **Purpose**: Personal reflections and daily entries
 - **Layout**:
   - **Header**: Default, title "Journal", right button "+ New Entry"
@@ -110,6 +120,7 @@
 - **Components**: List items with date headers, floating "+ New Entry" button option
 
 ### 7. Journal Entry Screen (Modal from Journal)
+
 - **Purpose**: Create or edit journal entry
 - **Layout**:
   - **Header**: Modal header, title "New Entry" or date, left button (Cancel), right button (Save)
@@ -123,9 +134,11 @@
 ## Design System
 
 ### Color Palette
+
 **Primary Theme**: Official Recovery Colors - WCAG AAA Compliant
 
 #### Light Mode
+
 - **Primary**: `#7B3FF2` (Recovery Purple) - For primary actions, active tabs, and app identity
 - **Secondary**: `#3A9BD9` (Healthcare Blue) - For trust indicators and secondary actions
 - **Accent**: `#06D6A0` (Growth Green) - For success states, milestones, and positive progress
@@ -138,6 +151,7 @@
 - **Border**: `#E5E4EB` (Light Border) - Subtle card borders
 
 #### Dark Mode (Enhanced Vibrancy)
+
 - **Primary**: `#A581FF` (Soft Luminous Purple) - Brighter for dark backgrounds
 - **Secondary**: `#57B8F0` (Vibrant Sky Blue) - Enhanced visibility
 - **Accent**: `#34F0C3` (Vivid Mint Green) - Clear success states
@@ -150,11 +164,14 @@
 - **Border**: `#353555` (Dark Border) - Subtle card borders
 
 ### Typography
+
 **Font Families**:
+
 - **Headings**: Crimson Pro (Serif) - Elegant, calming aesthetic
 - **Body/UI**: Inter (Sans-serif) - Clean, accessible readability
 
 **Type Scale**:
+
 - **Hero**: Crimson Pro, Bold (700), 48pt - Sobriety counter display
 - **H1**: Crimson Pro, Semi-Bold (600), 32pt
 - **H2**: Crimson Pro, Semi-Bold (600), 24pt
@@ -168,6 +185,7 @@
 ### Component Specifications
 
 **Cards**:
+
 - Background: Surface color (#FFFFFF)
 - Border radius: 16px
 - Padding: Spacing.lg (16-20px)
@@ -175,6 +193,7 @@
 - Subtle border: 1px solid #E2E8F0
 
 **Floating Action Button (Support)**:
+
 - Size: 56x56px
 - Border radius: 28px
 - Background: Recovery Purple (#7B3FF2)
@@ -186,6 +205,7 @@
 - Press feedback: Scale animation (0.95)
 
 **Buttons**:
+
 - Primary: Background Recovery Purple (#7B3FF2), white text, 48px height, 16px border radius
 - Secondary: Border 2px Healthcare Blue (#3A9BD9), Blue text, transparent background
 - Success: Background Growth Green (#06D6A0), white text
@@ -193,12 +213,14 @@
 - Press feedback: Opacity 0.7
 
 **List Items**:
+
 - Height: 72px minimum
 - Separator: 1px solid #E2E8F0
 - Right chevron: Feather "chevron-right" icon
 - Press feedback: Background #F7FAFC
 
 **Tab Bar**:
+
 - Height: 64px (iOS safe area aware)
 - Background: White with subtle top border
 - Active icon color: Recovery Purple (#7B3FF2)
@@ -206,6 +228,7 @@
 - Center FAB elevates 8px above bar
 
 ### Icons
+
 - Use Feather icons from @expo/vector-icons
 - Standard icons:
   - Home: "home"
@@ -219,13 +242,16 @@
   - Bookmark: "heart"
 
 ### Visual Feedback
+
 - All touchable elements have press feedback (opacity or scale)
 - Haptic feedback on milestone achievements
 - Subtle animation when sobriety counter updates
 - Smooth transitions between screens (native stack default)
 
 ## Accessibility Requirements
+
 **WCAG AAA Compliance**:
+
 - Minimum touch target: 44x44px
 - Color contrast ratio: 7:1 minimum for normal text (AAA standard)
 - Color contrast ratio: 4.5:1 minimum for large text and UI components
@@ -237,7 +263,9 @@
 - Font sizes never below 14pt for readability
 
 ## Assets Required
+
 **Critical Assets** (to be generated):
+
 1. **Achievement Badges** (8 total): 24-hour, 7-day, 30-day, 90-day, 6-month, 1-year, 5-year, 10-year milestones - Circular badges with serene aesthetic matching app theme
 2. **App Icon**: Incorporating serene blue palette with subtle symbol of hope/growth (no AA logo due to trademark)
 3. **Sponsor Avatar Placeholder**: Neutral, calming silhouette in app colors

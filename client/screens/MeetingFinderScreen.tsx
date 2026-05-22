@@ -69,7 +69,15 @@ const MEETING_TIPS = [
   },
 ];
 
-const DAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAY_FULL = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 const MEETING_TYPE_LABELS: Record<string, string> = {
   O: "Open",
@@ -141,26 +149,36 @@ function openMapsNearby(lat: number, lng: number) {
       if (supported) return Linking.openURL(url);
       return Linking.openURL(`https://maps.google.com/?q=AA+meeting+near+me`);
     })
-    .catch(() => Linking.openURL(`https://maps.google.com/?q=AA+meeting+near+me`));
+    .catch(() =>
+      Linking.openURL(`https://maps.google.com/?q=AA+meeting+near+me`),
+    );
 }
 
 function openMapsForAddress(address: string, lat?: number, lng?: number) {
   let url: string;
   if (Platform.OS === "ios") {
-    url = lat && lng
-      ? `maps://maps.apple.com/?q=${encodeURIComponent(address)}&ll=${lat},${lng}`
-      : `maps://maps.apple.com/?q=${encodeURIComponent(address)}`;
+    url =
+      lat && lng
+        ? `maps://maps.apple.com/?q=${encodeURIComponent(address)}&ll=${lat},${lng}`
+        : `maps://maps.apple.com/?q=${encodeURIComponent(address)}`;
   } else {
-    url = lat && lng
-      ? `geo:${lat},${lng}?q=${encodeURIComponent(address)}`
-      : `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+    url =
+      lat && lng
+        ? `geo:${lat},${lng}?q=${encodeURIComponent(address)}`
+        : `https://maps.google.com/?q=${encodeURIComponent(address)}`;
   }
   Linking.canOpenURL(url)
     .then((supported) => {
       if (supported) return Linking.openURL(url);
-      return Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(address)}`);
+      return Linking.openURL(
+        `https://maps.google.com/?q=${encodeURIComponent(address)}`,
+      );
     })
-    .catch(() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(address)}`));
+    .catch(() =>
+      Linking.openURL(
+        `https://maps.google.com/?q=${encodeURIComponent(address)}`,
+      ),
+    );
 }
 
 interface MeetingCardProps {
@@ -184,12 +202,13 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
   const { theme } = useTheme();
   const hasSchedule =
     typeof meeting.day === "number" && meeting.day >= 0 && !!meeting.time;
-  const dayLabel = hasSchedule ? DAY_FULL[meeting.day as number] ?? "" : "";
+  const dayLabel = hasSchedule ? (DAY_FULL[meeting.day as number] ?? "") : "";
   const timeLabel = hasSchedule ? formatTime(meeting.time as string) : "";
   const distLabel = formatDistance(meeting.distance);
-  const typeLabel = meeting.types && meeting.types.length > 0
-    ? getMeetingTypeLabel(meeting.types)
-    : "";
+  const typeLabel =
+    meeting.types && meeting.types.length > 0
+      ? getMeetingTypeLabel(meeting.types)
+      : "";
   const modality: MeetingModality = meeting.modality ?? "In-Person";
   const modalityColor = MODALITY_COLOR[modality];
   const modalityIcon = MODALITY_ICON[modality];
@@ -198,7 +217,10 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
     <Card style={styles.meetingCard}>
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [styles.meetingPressable, { opacity: pressed ? 0.7 : 1 }]}
+        style={({ pressed }) => [
+          styles.meetingPressable,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
       >
         <View style={styles.meetingMain}>
           <View style={styles.meetingHeader}>
@@ -206,29 +228,52 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
               {meeting.name}
             </ThemedText>
             {distLabel ? (
-              <ThemedText style={[styles.meetingDistance, { color: theme.primary }]}>
+              <ThemedText
+                style={[styles.meetingDistance, { color: theme.primary }]}
+              >
                 {distLabel}
               </ThemedText>
             ) : null}
           </View>
           <View style={styles.meetingMeta}>
             {hasSchedule ? (
-              <View style={[styles.metaBadge, { backgroundColor: theme.primary + "15" }]}>
+              <View
+                style={[
+                  styles.metaBadge,
+                  { backgroundColor: theme.primary + "15" },
+                ]}
+              >
                 <Feather name="clock" size={11} color={theme.primary} />
-                <ThemedText style={[styles.metaBadgeText, { color: theme.primary }]}>
+                <ThemedText
+                  style={[styles.metaBadgeText, { color: theme.primary }]}
+                >
                   {dayLabel} {timeLabel}
                 </ThemedText>
               </View>
             ) : null}
-            <View style={[styles.metaBadge, { backgroundColor: modalityColor + "20" }]}>
+            <View
+              style={[
+                styles.metaBadge,
+                { backgroundColor: modalityColor + "20" },
+              ]}
+            >
               <Feather name={modalityIcon} size={11} color={modalityColor} />
-              <ThemedText style={[styles.metaBadgeText, { color: modalityColor }]}>
+              <ThemedText
+                style={[styles.metaBadgeText, { color: modalityColor }]}
+              >
                 {modality}
               </ThemedText>
             </View>
             {typeLabel ? (
-              <View style={[styles.metaBadge, { backgroundColor: theme.accent + "15" }]}>
-                <ThemedText style={[styles.metaBadgeText, { color: theme.accent }]}>
+              <View
+                style={[
+                  styles.metaBadge,
+                  { backgroundColor: theme.accent + "15" },
+                ]}
+              >
+                <ThemedText
+                  style={[styles.metaBadgeText, { color: theme.accent }]}
+                >
                   {typeLabel}
                 </ThemedText>
               </View>
@@ -244,7 +289,10 @@ function MeetingCard({ meeting, onPress }: MeetingCardProps) {
           ) : null}
           {!hasSchedule ? (
             <ThemedText
-              style={[styles.meetingAddress, { color: theme.textSecondary, fontStyle: "italic" }]}
+              style={[
+                styles.meetingAddress,
+                { color: theme.textSecondary, fontStyle: "italic" },
+              ]}
               numberOfLines={1}
             >
               Tap for directions and meeting times
@@ -266,7 +314,10 @@ interface MeetingFetchResult {
   failed: boolean;
 }
 
-async function tryFetchMeetings(lat: number, lng: number): Promise<MeetingFetchResult> {
+async function tryFetchMeetings(
+  lat: number,
+  lng: number,
+): Promise<MeetingFetchResult> {
   const url = new URL("/api/meetings", getApiUrl());
   url.searchParams.set("lat", String(lat));
   url.searchParams.set("lng", String(lng));
@@ -282,7 +333,9 @@ async function tryFetchMeetings(lat: number, lng: number): Promise<MeetingFetchR
     clearTimeout(timeout);
     if (!response.ok) return { meetings: [], failed: true };
     const data = await response.json();
-    const list: NearbyMeeting[] = Array.isArray(data?.meetings) ? data.meetings : [];
+    const list: NearbyMeeting[] = Array.isArray(data?.meetings)
+      ? data.meetings
+      : [];
     return { meetings: list.slice(0, 30), failed: false };
   } catch {
     clearTimeout(timeout);
@@ -294,14 +347,16 @@ export default function MeetingFinderScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [permission, requestPermission] = Location.useForegroundPermissions();
 
   const [meetings, setMeetings] = useState<NearbyMeeting[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [apiError, setApiError] = useState(false);
-  const [detectedLocation, setDetectedLocation] = useState<DetectedLocation | null>(null);
+  const [detectedLocation, setDetectedLocation] =
+    useState<DetectedLocation | null>(null);
 
   const fetchNearbyMeetings = useCallback(async () => {
     setIsSearching(true);
@@ -319,7 +374,10 @@ export default function MeetingFinderScreen() {
       let region = "";
       let postalCode = "";
       try {
-        const geocode = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+        const geocode = await Location.reverseGeocodeAsync({
+          latitude: lat,
+          longitude: lng,
+        });
         if (geocode.length > 0) {
           city = geocode[0].city ?? geocode[0].district ?? "";
           region = geocode[0].region ?? "";
@@ -354,7 +412,10 @@ export default function MeetingFinderScreen() {
 
   const handleMeetingPress = (meeting: NearbyMeeting) => {
     if (meeting.url) {
-      navigation.navigate("WebViewScreen", { url: meeting.url, title: meeting.name });
+      navigation.navigate("WebViewScreen", {
+        url: meeting.url,
+        title: meeting.name,
+      });
     } else if (meeting.formatted_address) {
       openMapsForAddress(meeting.formatted_address, meeting.lat, meeting.lng);
     } else if (detectedLocation) {
@@ -366,11 +427,11 @@ export default function MeetingFinderScreen() {
     let url = "https://www.aa.org/find-aa/";
     if (detectedLocation?.postalCode) {
       url = `https://www.aa.org/find-aa/?address=${encodeURIComponent(
-        detectedLocation.postalCode + " USA"
+        detectedLocation.postalCode + " USA",
       )}`;
     } else if (detectedLocation?.city && detectedLocation?.region) {
       url = `https://www.aa.org/find-aa/?address=${encodeURIComponent(
-        detectedLocation.city + " " + detectedLocation.region
+        detectedLocation.city + " " + detectedLocation.region,
       )}`;
     }
     navigation.navigate("WebViewScreen", { url, title: "Find AA Meetings" });
@@ -381,7 +442,9 @@ export default function MeetingFinderScreen() {
   };
 
   const locationLabel = detectedLocation
-    ? [detectedLocation.city, detectedLocation.region].filter(Boolean).join(", ") ||
+    ? [detectedLocation.city, detectedLocation.region]
+        .filter(Boolean)
+        .join(", ") ||
       detectedLocation.postalCode ||
       "Your Location"
     : "Your Location";
@@ -394,9 +457,11 @@ export default function MeetingFinderScreen() {
           <ThemedText type="h4" style={styles.locationTitle}>
             Find Nearby Meetings
           </ThemedText>
-          <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-            GPS-based meeting search is available in the Expo Go app. Use the AA Meeting Finder
-            below or scan the QR code to use your device.
+          <ThemedText
+            style={[styles.locationText, { color: theme.textSecondary }]}
+          >
+            GPS-based meeting search is available in the Expo Go app. Use the AA
+            Meeting Finder below or scan the QR code to use your device.
           </ThemedText>
           <Pressable
             onPress={() =>
@@ -411,7 +476,9 @@ export default function MeetingFinderScreen() {
             ]}
           >
             <Feather name="compass" size={16} color="#FFFFFF" />
-            <ThemedText style={styles.locationButtonText}>Open Meeting Finder</ThemedText>
+            <ThemedText style={styles.locationButtonText}>
+              Open Meeting Finder
+            </ThemedText>
           </Pressable>
         </Card>
       );
@@ -429,9 +496,11 @@ export default function MeetingFinderScreen() {
             <ThemedText type="h4" style={styles.locationTitle}>
               Find Nearby Meetings
             </ThemedText>
-            <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-              Location access is turned off. Enable it in your device settings to search for
-              meetings near you, or use the Meeting Finder below.
+            <ThemedText
+              style={[styles.locationText, { color: theme.textSecondary }]}
+            >
+              Location access is turned off. Enable it in your device settings
+              to search for meetings near you, or use the Meeting Finder below.
             </ThemedText>
             <View style={styles.locationButtons}>
               <Pressable
@@ -442,11 +511,16 @@ export default function MeetingFinderScreen() {
                 }}
                 style={({ pressed }) => [
                   styles.locationButton,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  {
+                    backgroundColor: theme.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
               >
                 <Feather name="settings" size={16} color="#FFFFFF" />
-                <ThemedText style={styles.locationButtonText}>Open Settings</ThemedText>
+                <ThemedText style={styles.locationButtonText}>
+                  Open Settings
+                </ThemedText>
               </Pressable>
               <Pressable
                 onPress={() =>
@@ -466,7 +540,9 @@ export default function MeetingFinderScreen() {
                 ]}
               >
                 <Feather name="compass" size={16} color={theme.text} />
-                <ThemedText style={[styles.locationButtonText, { color: theme.text }]}>
+                <ThemedText
+                  style={[styles.locationButtonText, { color: theme.text }]}
+                >
                   Meeting Finder
                 </ThemedText>
               </Pressable>
@@ -481,8 +557,11 @@ export default function MeetingFinderScreen() {
           <ThemedText type="h4" style={styles.locationTitle}>
             Find Nearby Meetings
           </ThemedText>
-          <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-            Share your location to search for AA meetings happening near you right now.
+          <ThemedText
+            style={[styles.locationText, { color: theme.textSecondary }]}
+          >
+            Share your location to search for AA meetings happening near you
+            right now.
           </ThemedText>
           <Pressable
             onPress={handleRequestAndSearch}
@@ -492,7 +571,9 @@ export default function MeetingFinderScreen() {
             ]}
           >
             <Feather name="map-pin" size={16} color="#FFFFFF" />
-            <ThemedText style={styles.locationButtonText}>Find Meetings Near Me</ThemedText>
+            <ThemedText style={styles.locationButtonText}>
+              Find Meetings Near Me
+            </ThemedText>
           </Pressable>
         </Card>
       );
@@ -505,7 +586,9 @@ export default function MeetingFinderScreen() {
           <ThemedText type="h4" style={styles.locationTitle}>
             Find Nearby Meetings
           </ThemedText>
-          <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.locationText, { color: theme.textSecondary }]}
+          >
             Search for AA meetings near your current location.
           </ThemedText>
           <Pressable
@@ -516,7 +599,9 @@ export default function MeetingFinderScreen() {
             ]}
           >
             <Feather name="search" size={16} color="#FFFFFF" />
-            <ThemedText style={styles.locationButtonText}>Find Meetings Near Me</ThemedText>
+            <ThemedText style={styles.locationButtonText}>
+              Find Meetings Near Me
+            </ThemedText>
           </Pressable>
         </Card>
       );
@@ -524,12 +609,18 @@ export default function MeetingFinderScreen() {
 
     if (isSearching) {
       return (
-        <Card style={[styles.locationCard, { paddingVertical: Spacing["3xl"] }]}>
+        <Card
+          style={[styles.locationCard, { paddingVertical: Spacing["3xl"] }]}
+        >
           <ActivityIndicator size="large" color={theme.primary} />
           <ThemedText
             style={[
               styles.locationText,
-              { color: theme.textSecondary, marginTop: Spacing.lg, marginBottom: 0 },
+              {
+                color: theme.textSecondary,
+                marginTop: Spacing.lg,
+                marginBottom: 0,
+              },
             ]}
           >
             Searching for meetings near you...
@@ -545,9 +636,11 @@ export default function MeetingFinderScreen() {
           <ThemedText type="h4" style={styles.locationTitle}>
             Connection Problem
           </ThemedText>
-          <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-            Could not reach the meeting directory right now. Use the Meeting Finder below to
-            search for meetings, or try again.
+          <ThemedText
+            style={[styles.locationText, { color: theme.textSecondary }]}
+          >
+            Could not reach the meeting directory right now. Use the Meeting
+            Finder below to search for meetings, or try again.
           </ThemedText>
           <View style={styles.locationButtons}>
             <Pressable
@@ -558,7 +651,9 @@ export default function MeetingFinderScreen() {
               ]}
             >
               <Feather name="refresh-cw" size={16} color="#FFFFFF" />
-              <ThemedText style={styles.locationButtonText}>Try Again</ThemedText>
+              <ThemedText style={styles.locationButtonText}>
+                Try Again
+              </ThemedText>
             </Pressable>
             <Pressable
               onPress={handleOpenMeetingFinder}
@@ -573,7 +668,9 @@ export default function MeetingFinderScreen() {
               ]}
             >
               <Feather name="compass" size={16} color={theme.text} />
-              <ThemedText style={[styles.locationButtonText, { color: theme.text }]}>
+              <ThemedText
+                style={[styles.locationButtonText, { color: theme.text }]}
+              >
                 Meeting Finder
               </ThemedText>
             </Pressable>
@@ -590,24 +687,33 @@ export default function MeetingFinderScreen() {
             <ThemedText type="h4" style={styles.locationTitle}>
               {locationLabel}
             </ThemedText>
-            <ThemedText style={[styles.locationText, { color: theme.textSecondary }]}>
-              No meetings found nearby in our directory. Open the AA Meeting Finder to search
-              directly, or try Maps.
+            <ThemedText
+              style={[styles.locationText, { color: theme.textSecondary }]}
+            >
+              No meetings found nearby in our directory. Open the AA Meeting
+              Finder to search directly, or try Maps.
             </ThemedText>
             <View style={styles.locationButtons}>
               <Pressable
                 onPress={handleOpenMeetingFinder}
                 style={({ pressed }) => [
                   styles.locationButton,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  {
+                    backgroundColor: theme.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
               >
                 <Feather name="compass" size={16} color="#FFFFFF" />
-                <ThemedText style={styles.locationButtonText}>Open Meeting Finder</ThemedText>
+                <ThemedText style={styles.locationButtonText}>
+                  Open Meeting Finder
+                </ThemedText>
               </Pressable>
               {detectedLocation ? (
                 <Pressable
-                  onPress={() => openMapsNearby(detectedLocation.lat, detectedLocation.lng)}
+                  onPress={() =>
+                    openMapsNearby(detectedLocation.lat, detectedLocation.lng)
+                  }
                   style={({ pressed }) => [
                     styles.locationButton,
                     {
@@ -619,7 +725,9 @@ export default function MeetingFinderScreen() {
                   ]}
                 >
                   <Feather name="map" size={16} color={theme.text} />
-                  <ThemedText style={[styles.locationButtonText, { color: theme.text }]}>
+                  <ThemedText
+                    style={[styles.locationButtonText, { color: theme.text }]}
+                  >
                     Open in Maps
                   </ThemedText>
                 </Pressable>
@@ -627,9 +735,14 @@ export default function MeetingFinderScreen() {
             </View>
             <Pressable
               onPress={fetchNearbyMeetings}
-              style={({ pressed }) => [styles.retryLink, { opacity: pressed ? 0.6 : 1 }]}
+              style={({ pressed }) => [
+                styles.retryLink,
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
             >
-              <ThemedText style={[styles.retryLinkText, { color: theme.textSecondary }]}>
+              <ThemedText
+                style={[styles.retryLinkText, { color: theme.textSecondary }]}
+              >
                 Try again
               </ThemedText>
             </Pressable>
@@ -643,9 +756,16 @@ export default function MeetingFinderScreen() {
         <View style={styles.meetingResultsSection}>
           <View style={styles.meetingResultsHeader}>
             <View>
-              <ThemedText type="h4">{meetings.length} Meetings Near You</ThemedText>
+              <ThemedText type="h4">
+                {meetings.length} Meetings Near You
+              </ThemedText>
               {locationLabel ? (
-                <ThemedText style={[styles.locationSubLabel, { color: theme.textSecondary }]}>
+                <ThemedText
+                  style={[
+                    styles.locationSubLabel,
+                    { color: theme.textSecondary },
+                  ]}
+                >
                   {locationLabel}
                 </ThemedText>
               ) : null}
@@ -656,7 +776,10 @@ export default function MeetingFinderScreen() {
                   onPress={handleOpenMeetingFinder}
                   style={({ pressed }) => [
                     styles.mapButton,
-                    { backgroundColor: theme.backgroundSecondary, opacity: pressed ? 0.8 : 1 },
+                    {
+                      backgroundColor: theme.backgroundSecondary,
+                      opacity: pressed ? 0.8 : 1,
+                    },
                   ]}
                 >
                   <Feather name="compass" size={15} color={theme.primary} />
@@ -664,7 +787,10 @@ export default function MeetingFinderScreen() {
               ) : null}
               <Pressable
                 onPress={fetchNearbyMeetings}
-                style={({ pressed }) => [styles.refreshButton, { opacity: pressed ? 0.6 : 1 }]}
+                style={({ pressed }) => [
+                  styles.refreshButton,
+                  { opacity: pressed ? 0.6 : 1 },
+                ]}
               >
                 <Feather name="refresh-cw" size={16} color={theme.primary} />
               </Pressable>
@@ -693,12 +819,19 @@ export default function MeetingFinderScreen() {
           { opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <View style={[styles.resourceIconContainer, { backgroundColor: theme.primary + "15" }]}>
+        <View
+          style={[
+            styles.resourceIconContainer,
+            { backgroundColor: theme.primary + "15" },
+          ]}
+        >
           <Feather name={resource.icon} size={24} color={theme.primary} />
         </View>
         <View style={styles.resourceTextContainer}>
           <ThemedText type="h4">{resource.title}</ThemedText>
-          <ThemedText style={[styles.resourceDescription, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.resourceDescription, { color: theme.textSecondary }]}
+          >
             {resource.description}
           </ThemedText>
         </View>
@@ -722,22 +855,36 @@ export default function MeetingFinderScreen() {
       <ThemedText type="h3" style={styles.sectionTitle}>
         Meeting Resources
       </ThemedText>
-      <ThemedText style={[styles.sectionSubtitle, { color: theme.textSecondary }]}>
+      <ThemedText
+        style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
+      >
         Find in-person and online meetings through these trusted resources
       </ThemedText>
       {MEETING_RESOURCES.map(renderResourceCard)}
 
-      <ThemedText type="h3" style={[styles.sectionTitle, { marginTop: Spacing["2xl"] }]}>
+      <ThemedText
+        type="h3"
+        style={[styles.sectionTitle, { marginTop: Spacing["2xl"] }]}
+      >
         Meeting Tips
       </ThemedText>
-      <ThemedText style={[styles.sectionSubtitle, { color: theme.textSecondary }]}>
+      <ThemedText
+        style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
+      >
         Helpful information for finding the right meeting
       </ThemedText>
       {MEETING_TIPS.map((tip, index) => (
         <Card key={index} style={styles.tipCard}>
           <View style={styles.tipHeader}>
-            <View style={[styles.tipNumber, { backgroundColor: theme.primary + "15" }]}>
-              <ThemedText style={[styles.tipNumberText, { color: theme.primary }]}>
+            <View
+              style={[
+                styles.tipNumber,
+                { backgroundColor: theme.primary + "15" },
+              ]}
+            >
+              <ThemedText
+                style={[styles.tipNumberText, { color: theme.primary }]}
+              >
                 {index + 1}
               </ThemedText>
             </View>
@@ -745,7 +892,9 @@ export default function MeetingFinderScreen() {
               {tip.title}
             </ThemedText>
           </View>
-          <ThemedText style={[styles.tipContent, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.tipContent, { color: theme.textSecondary }]}
+          >
             {tip.content}
           </ThemedText>
         </Card>

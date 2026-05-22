@@ -31,49 +31,61 @@ export function useJournal() {
     loadEntries();
   }, [loadEntries]);
 
-  const saveEntry = useCallback(async (entry: Omit<JournalEntry, "id" | "createdAt">) => {
-    try {
-      const newEntry: JournalEntry = {
-        ...entry,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-      };
-      const updated = [newEntry, ...entries];
-      await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
-      setEntries(updated);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [entries]);
+  const saveEntry = useCallback(
+    async (entry: Omit<JournalEntry, "id" | "createdAt">) => {
+      try {
+        const newEntry: JournalEntry = {
+          ...entry,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+        };
+        const updated = [newEntry, ...entries];
+        await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
+        setEntries(updated);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [entries],
+  );
 
-  const updateEntry = useCallback(async (id: string, updates: Partial<JournalEntry>) => {
-    try {
-      const updated = entries.map(entry => 
-        entry.id === id ? { ...entry, ...updates } : entry
-      );
-      await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
-      setEntries(updated);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [entries]);
+  const updateEntry = useCallback(
+    async (id: string, updates: Partial<JournalEntry>) => {
+      try {
+        const updated = entries.map((entry) =>
+          entry.id === id ? { ...entry, ...updates } : entry,
+        );
+        await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
+        setEntries(updated);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [entries],
+  );
 
-  const deleteEntry = useCallback(async (id: string) => {
-    try {
-      const updated = entries.filter(entry => entry.id !== id);
-      await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
-      setEntries(updated);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, [entries]);
+  const deleteEntry = useCallback(
+    async (id: string) => {
+      try {
+        const updated = entries.filter((entry) => entry.id !== id);
+        await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
+        setEntries(updated);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [entries],
+  );
 
-  const getEntry = useCallback((id: string) => {
-    return entries.find(entry => entry.id === id);
-  }, [entries]);
+  const getEntry = useCallback(
+    (id: string) => {
+      return entries.find((entry) => entry.id === id);
+    },
+    [entries],
+  );
 
   return {
     entries,

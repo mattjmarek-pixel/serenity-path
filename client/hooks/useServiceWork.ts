@@ -51,8 +51,10 @@ export function useServiceWork() {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed: ServiceEntry[] = JSON.parse(raw);
-        const sorted = [...parsed].sort((a, b) =>
-          b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)
+        const sorted = [...parsed].sort(
+          (a, b) =>
+            b.date.localeCompare(a.date) ||
+            b.createdAt.localeCompare(a.createdAt),
         );
         setEntries(sorted);
       } else {
@@ -79,14 +81,16 @@ export function useServiceWork() {
         createdAt: new Date().toISOString(),
       };
       const updated = [newEntry, ...entries].sort(
-        (a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)
+        (a, b) =>
+          b.date.localeCompare(a.date) ||
+          b.createdAt.localeCompare(a.createdAt),
       );
       setEntries(updated);
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       } catch {}
     },
-    [entries]
+    [entries],
   );
 
   const deleteEntry = useCallback(
@@ -97,11 +101,11 @@ export function useServiceWork() {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       } catch {}
     },
-    [entries]
+    [entries],
   );
 
   const thisMonthCount = entries.filter(
-    (e) => getMonthString(e.date) === getCurrentMonthString()
+    (e) => getMonthString(e.date) === getCurrentMonthString(),
   ).length;
 
   const allTimeCount = entries.length;

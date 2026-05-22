@@ -12,7 +12,12 @@ export interface CheckIn {
 }
 
 export const MOOD_OPTIONS = [
-  { value: 1, label: "Crisis", icon: "alert-circle" as const, color: "#C62828" },
+  {
+    value: 1,
+    label: "Crisis",
+    icon: "alert-circle" as const,
+    color: "#C62828",
+  },
   { value: 2, label: "Tough", icon: "cloud-rain" as const, color: "#E65100" },
   { value: 3, label: "Okay", icon: "cloud" as const, color: "#F9A825" },
   { value: 4, label: "Good", icon: "sun" as const, color: "#2E7D4A" },
@@ -58,7 +63,9 @@ export function useCheckIn() {
 
         if (existing >= 0) {
           updated = checkIns.map((c, i) =>
-            i === existing ? { ...c, mood, note, createdAt: new Date().toISOString() } : c
+            i === existing
+              ? { ...c, mood, note, createdAt: new Date().toISOString() }
+              : c,
           );
         } else {
           const newCheckIn: CheckIn = {
@@ -78,7 +85,7 @@ export function useCheckIn() {
         return false;
       }
     },
-    [checkIns]
+    [checkIns],
   );
 
   const getCheckInsForRange = useCallback(
@@ -89,7 +96,7 @@ export function useCheckIn() {
         .filter((c) => new Date(c.date) >= cutoff)
         .sort((a, b) => a.date.localeCompare(b.date));
     },
-    [checkIns]
+    [checkIns],
   );
 
   const getAverageMood = useCallback(
@@ -99,7 +106,7 @@ export function useCheckIn() {
       const sum = rangeCheckIns.reduce((acc, c) => acc + c.mood, 0);
       return sum / rangeCheckIns.length;
     },
-    [getCheckInsForRange]
+    [getCheckInsForRange],
   );
 
   return {

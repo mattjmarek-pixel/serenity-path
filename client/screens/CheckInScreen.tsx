@@ -19,7 +19,9 @@ export default function CheckInScreen() {
   const { saveCheckIn, getTodayCheckIn } = useCheckIn();
 
   const todayCheckIn = getTodayCheckIn();
-  const [selectedMood, setSelectedMood] = useState<number | null>(todayCheckIn?.mood ?? null);
+  const [selectedMood, setSelectedMood] = useState<number | null>(
+    todayCheckIn?.mood ?? null,
+  );
   const [note, setNote] = useState(todayCheckIn?.note ?? "");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -54,7 +56,10 @@ export default function CheckInScreen() {
         <ThemedText type="h2" style={styles.title}>
           How are you feeling today?
         </ThemedText>
-        <ThemedText type="body" style={[styles.subtitle, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="body"
+          style={[styles.subtitle, { color: theme.textSecondary }]}
+        >
           Take a moment to check in with yourself
         </ThemedText>
       </View>
@@ -69,7 +74,9 @@ export default function CheckInScreen() {
               style={[
                 styles.moodOption,
                 {
-                  backgroundColor: isSelected ? option.color + "20" : theme.backgroundDefault,
+                  backgroundColor: isSelected
+                    ? option.color + "20"
+                    : theme.backgroundDefault,
                   borderColor: isSelected ? option.color : theme.border,
                   borderWidth: isSelected ? 2 : 1,
                 },
@@ -78,7 +85,11 @@ export default function CheckInScreen() {
               <View
                 style={[
                   styles.moodIconCircle,
-                  { backgroundColor: isSelected ? option.color : option.color + "30" },
+                  {
+                    backgroundColor: isSelected
+                      ? option.color
+                      : option.color + "30",
+                  },
                 ]}
               >
                 <Feather
@@ -89,7 +100,10 @@ export default function CheckInScreen() {
               </View>
               <ThemedText
                 type="h4"
-                style={[styles.moodLabel, { color: isSelected ? option.color : theme.text }]}
+                style={[
+                  styles.moodLabel,
+                  { color: isSelected ? option.color : theme.text },
+                ]}
               >
                 {option.label}
               </ThemedText>
@@ -127,7 +141,8 @@ export default function CheckInScreen() {
         style={[
           styles.saveButton,
           {
-            backgroundColor: selectedMood !== null ? theme.primary : theme.border,
+            backgroundColor:
+              selectedMood !== null ? theme.primary : theme.border,
             opacity: isSaving ? 0.6 : 1,
           },
         ]}

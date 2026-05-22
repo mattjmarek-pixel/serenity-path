@@ -38,7 +38,9 @@ export default function ReflectionsScreen() {
     toggleBookmark(`reflection_${currentReflection.id}`);
   };
 
-  const isCurrentBookmarked = isBookmarked(`reflection_${currentReflection.id}`);
+  const isCurrentBookmarked = isBookmarked(
+    `reflection_${currentReflection.id}`,
+  );
 
   return (
     <ScrollView
@@ -66,7 +68,13 @@ export default function ReflectionsScreen() {
           onPress={goToNext}
           style={({ pressed }) => [
             styles.navButton,
-            { opacity: pressed ? 0.6 : currentIndex === DAILY_REFLECTIONS.length - 1 ? 0.3 : 1 },
+            {
+              opacity: pressed
+                ? 0.6
+                : currentIndex === DAILY_REFLECTIONS.length - 1
+                  ? 0.3
+                  : 1,
+            },
           ]}
           disabled={currentIndex === DAILY_REFLECTIONS.length - 1}
         >
@@ -81,7 +89,10 @@ export default function ReflectionsScreen() {
         <ThemedText type="body" style={styles.reflectionContent}>
           {currentReflection.content}
         </ThemedText>
-        <ThemedText type="small" style={[styles.author, { color: theme.textSecondary }]}>
+        <ThemedText
+          type="small"
+          style={[styles.author, { color: theme.textSecondary }]}
+        >
           - {currentReflection.author}
         </ThemedText>
       </Card>
@@ -90,9 +101,9 @@ export default function ReflectionsScreen() {
         onPress={handleToggleBookmark}
         style={({ pressed }) => [
           styles.bookmarkButton,
-          { 
-            backgroundColor: isCurrentBookmarked 
-              ? theme.accent 
+          {
+            backgroundColor: isCurrentBookmarked
+              ? theme.accent
               : theme.backgroundDefault,
             opacity: pressed ? 0.8 : 1,
           },

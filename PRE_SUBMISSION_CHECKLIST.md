@@ -1,6 +1,7 @@
 # Pre-Submission Checklist — Serenity Path
 
 ## Environment & Config
+
 - [ ] DATABASE_URL set in production environment
 - [ ] STRIPE_SECRET_KEY set in production environment (server only)
 - [ ] EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY set (client-safe)
@@ -10,6 +11,7 @@
 - [ ] App Store Connect App ID set in eas.json
 
 ## App Store Connect (Apple)
+
 - [ ] App record created at appstoreconnect.apple.com
 - [ ] Bundle ID com.serenitypath.app registered in Apple Developer portal
 - [ ] Sign In with Apple capability enabled
@@ -21,6 +23,7 @@
 - [ ] Encryption question answered (Yes, HTTPS, select exemption)
 
 ## Google Play Console
+
 - [ ] App created at play.google.com/console
 - [ ] Package name com.serenitypath.app registered
 - [ ] Data safety form completed
@@ -31,12 +34,14 @@
 - [ ] Internal test track set up
 
 ## Legal
+
 - [ ] Privacy Policy live at your domain
 - [ ] Terms of Service live at your domain
 - [ ] AA/NA disclaimer on WelcomeScreen and Profile
 - [ ] No AA or NA logos used in icon or screenshots
 
 ## Final Build Checks
+
 - [ ] npm run lint passes
 - [ ] npm run check:types passes
 - [ ] npm test passes

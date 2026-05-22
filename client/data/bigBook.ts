@@ -10,7 +10,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 1,
     title: "Bill's Story",
-    summary: "Bill Wilson, co-founder of AA, shares his personal journey from a successful businessman to the depths of alcoholism, and his eventual path to recovery.",
+    summary:
+      "Bill Wilson, co-founder of AA, shares his personal journey from a successful businessman to the depths of alcoholism, and his eventual path to recovery.",
     content: [
       "Bill W. describes his early life and how his drinking progressed from social drinking to severe alcoholism. Despite professional success, alcohol became his master.",
       "He recounts his struggles, hospitalizations, and the despair that came with repeated failed attempts to stop drinking.",
@@ -26,7 +27,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 2,
     title: "There Is a Solution",
-    summary: "This chapter explains that alcoholism is more than just a moral failing—it's an illness—and presents the program of recovery as the solution.",
+    summary:
+      "This chapter explains that alcoholism is more than just a moral failing—it's an illness—and presents the program of recovery as the solution.",
     content: [
       "The chapter opens by acknowledging that the reader may be skeptical, but assures them that those in AA were once in the same position.",
       "Alcoholism is described as a physical allergy combined with a mental obsession. The alcoholic cannot safely drink in moderation.",
@@ -42,7 +44,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 3,
     title: "More About Alcoholism",
-    summary: "A deeper look at the nature of alcoholism, emphasizing the mental obsession that drives alcoholics to drink despite knowing the consequences.",
+    summary:
+      "A deeper look at the nature of alcoholism, emphasizing the mental obsession that drives alcoholics to drink despite knowing the consequences.",
     content: [
       "This chapter dispels the idea that willpower alone can overcome alcoholism. The alcoholic's mind plays tricks that lead back to drinking.",
       "Examples are given of alcoholics who convinced themselves they could drink safely, only to find themselves in the grip of alcohol again.",
@@ -58,7 +61,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 4,
     title: "We Agnostics",
-    summary: "Addresses those who struggle with the spiritual aspects of the program, showing that faith doesn't require traditional religious beliefs.",
+    summary:
+      "Addresses those who struggle with the spiritual aspects of the program, showing that faith doesn't require traditional religious beliefs.",
     content: [
       "Many newcomers to AA struggle with the idea of relying on a 'Higher Power.' This chapter addresses those concerns directly.",
       "The chapter argues that even the most skeptical person can find a conception of a power greater than themselves that works for them.",
@@ -74,7 +78,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 5,
     title: "How It Works",
-    summary: "The heart of the program—introducing the Twelve Steps as the path to recovery and outlining how to work them.",
+    summary:
+      "The heart of the program—introducing the Twelve Steps as the path to recovery and outlining how to work them.",
     content: [
       "This chapter presents the Twelve Steps in detail, explaining each one and its purpose in the recovery process.",
       "Honesty is emphasized as essential—those who are unwilling to be honest with themselves cannot recover.",
@@ -90,7 +95,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 6,
     title: "Into Action",
-    summary: "Practical guidance on working the Steps, including how to do a Fourth Step inventory, Fifth Step confession, and make amends.",
+    summary:
+      "Practical guidance on working the Steps, including how to do a Fourth Step inventory, Fifth Step confession, and make amends.",
     content: [
       "The chapter provides detailed instructions on how to take a personal inventory, examining resentments, fears, and harms done to others.",
       "The Fifth Step—admitting our wrongs to God, ourselves, and another person—is explained as a liberating experience.",
@@ -106,7 +112,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 7,
     title: "Working with Others",
-    summary: "The importance of carrying the message to other alcoholics and how to approach those who are still suffering.",
+    summary:
+      "The importance of carrying the message to other alcoholics and how to approach those who are still suffering.",
     content: [
       "Helping other alcoholics is presented as vital to one's own recovery. The message must be carried to those who still suffer.",
       "Practical advice is given on how to approach someone who may be alcoholic, emphasizing attraction rather than promotion.",
@@ -122,7 +129,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 8,
     title: "To Wives",
-    summary: "Written for the wives of alcoholics, offering understanding, hope, and practical suggestions for supporting recovery.",
+    summary:
+      "Written for the wives of alcoholics, offering understanding, hope, and practical suggestions for supporting recovery.",
     content: [
       "This chapter addresses the unique challenges faced by those married to alcoholics.",
       "It acknowledges the fear, frustration, and despair that family members experience.",
@@ -138,7 +146,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 9,
     title: "The Family Afterward",
-    summary: "Guidance for families adjusting to life after alcoholism, addressing the challenges and rewards of rebuilding relationships.",
+    summary:
+      "Guidance for families adjusting to life after alcoholism, addressing the challenges and rewards of rebuilding relationships.",
     content: [
       "Recovery affects the entire family, and adjustments must be made by everyone, not just the alcoholic.",
       "Old patterns of behavior and resentments need to be addressed for the family to heal together.",
@@ -154,7 +163,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 10,
     title: "To Employers",
-    summary: "Information for employers about alcoholism as a treatable illness and how to handle alcoholic employees constructively.",
+    summary:
+      "Information for employers about alcoholism as a treatable illness and how to handle alcoholic employees constructively.",
     content: [
       "Many employers have written off alcoholic employees as hopeless, but this chapter offers another perspective.",
       "Alcoholism is presented as an illness that can be treated, and many alcoholics become exemplary employees when they recover.",
@@ -170,7 +180,8 @@ export const bigBookChapters: BigBookChapter[] = [
   {
     id: 11,
     title: "A Vision for You",
-    summary: "The book concludes with a vision of hope—that anyone can recover and join a fellowship of those who have found freedom from alcohol.",
+    summary:
+      "The book concludes with a vision of hope—that anyone can recover and join a fellowship of those who have found freedom from alcohol.",
     content: [
       "The final chapter paints a picture of the life that awaits those who embrace the program fully.",
       "Stories are shared of transformed lives, restored families, and newfound purpose.",
@@ -185,4 +196,5 @@ export const bigBookChapters: BigBookChapter[] = [
   },
 ];
 
-export const bigBookDisclaimer = "This app provides chapter summaries and key insights for educational purposes only. The complete text of 'Alcoholics Anonymous' is copyrighted. To read the full chapters, please obtain a copy from Alcoholics Anonymous World Services, Inc. or aa.org. This app is not affiliated with or endorsed by AA World Services, Inc.";
+export const bigBookDisclaimer =
+  "This app provides chapter summaries and key insights for educational purposes only. The complete text of 'Alcoholics Anonymous' is copyrighted. To read the full chapters, please obtain a copy from Alcoholics Anonymous World Services, Inc. or aa.org. This app is not affiliated with or endorsed by AA World Services, Inc.";

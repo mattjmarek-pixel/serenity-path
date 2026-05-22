@@ -10,14 +10,27 @@ export const RECOVERY_PALETTE = {
   red: "#C62828",
 } as const;
 
-const COMMUNITY_ROLES: Record<CommunityType, {
-  primary: keyof typeof RECOVERY_PALETTE;
-  secondary: keyof typeof RECOVERY_PALETTE;
-  accent: keyof typeof RECOVERY_PALETTE;
-  highlight: keyof typeof RECOVERY_PALETTE;
-}> = {
-  AA: { primary: "purple", secondary: "blue", accent: "green", highlight: "orange" },
-  NA: { primary: "green", secondary: "orange", accent: "purple", highlight: "blue" },
+const COMMUNITY_ROLES: Record<
+  CommunityType,
+  {
+    primary: keyof typeof RECOVERY_PALETTE;
+    secondary: keyof typeof RECOVERY_PALETTE;
+    accent: keyof typeof RECOVERY_PALETTE;
+    highlight: keyof typeof RECOVERY_PALETTE;
+  }
+> = {
+  AA: {
+    primary: "purple",
+    secondary: "blue",
+    accent: "green",
+    highlight: "orange",
+  },
+  NA: {
+    primary: "green",
+    secondary: "orange",
+    accent: "purple",
+    highlight: "blue",
+  },
 };
 
 const BASE_LIGHT = {
@@ -69,7 +82,7 @@ export interface ThemeColors {
 
 export function getThemeColors(
   scheme: "light" | "dark",
-  community: CommunityType = "AA"
+  community: CommunityType = "AA",
 ): ThemeColors {
   const base = scheme === "dark" ? BASE_DARK : BASE_LIGHT;
   const roles = COMMUNITY_ROLES[community];

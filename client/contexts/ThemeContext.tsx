@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { useColorScheme as useDeviceColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -22,7 +28,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((storedTheme: string | null) => {
-        if (storedTheme === "light" || storedTheme === "dark" || storedTheme === "system") {
+        if (
+          storedTheme === "light" ||
+          storedTheme === "dark" ||
+          storedTheme === "system"
+        ) {
           setThemeModeState(storedTheme);
         }
       })
@@ -36,9 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const colorScheme: "light" | "dark" =
-    themeMode === "system"
-      ? deviceColorScheme ?? "light"
-      : themeMode;
+    themeMode === "system" ? (deviceColorScheme ?? "light") : themeMode;
 
   if (!isLoaded) {
     return null;

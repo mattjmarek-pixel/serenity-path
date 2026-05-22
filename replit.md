@@ -13,6 +13,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
+
 - **Framework**: React Native with Expo SDK 54
 - **Navigation**: React Navigation v7 with a hybrid structure:
   - Root stack navigator for modal screens (Support, Journal)
@@ -38,6 +39,7 @@ Preferred communication style: Simple, everyday language.
 - **Note**: App.tsx loading screen uses hardcoded colors (#7B3FF2) because context is unavailable during initial load.
 
 ### Backend Architecture
+
 - **Framework**: Express.js with TypeScript
 - **API Design**: REST endpoints prefixed with `/api`
 - **Database**: PostgreSQL with Drizzle ORM
@@ -45,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - **Current Storage**: In-memory storage (`MemStorage`) as placeholder, ready for PostgreSQL integration
 
 ### Project Structure
+
 ```
 client/           # React Native app code
   ├── components/ # Reusable UI components
@@ -64,6 +67,7 @@ shared/           # Shared code between client/server
 ```
 
 ### Community Path Selection
+
 - **Onboarding Step**: After authentication (or guest), users land on `PathSelectionScreen` where they pick AA, NA, or Both. Selection gates entry to the main app.
 - **Path Persistence**: `CommunityContext` (`client/contexts/CommunityContext.tsx`) stores `{path, activeView}` to AsyncStorage (`@serenity_path_community`).
 - **Both Mode**: When `path === "Both"`, a small AA/NA toggle pill appears in every screen header (injected via `useScreenOptions` -> `CommunityToggle`). Tapping flips `activeView`, instantly retinting all themed UI.
@@ -71,6 +75,7 @@ shared/           # Shared code between client/server
 - **Change Anytime**: Profile > Settings > Community Path opens an alert allowing users to switch between AA/NA/Both.
 
 ### Authentication
+
 - **Apple Sign-In**: Native iOS via `expo-apple-authentication` (iOS only)
 - **Google Sign-In**: Cross-platform via `expo-auth-session`
 - **Guest Mode**: "Continue without an account" option — all features available
@@ -80,6 +85,7 @@ shared/           # Shared code between client/server
 - All data remains local (AsyncStorage) — auth is opt-in identity for future cloud backup
 
 ### Data Persistence
+
 - **Journal Entries**: Stored locally via AsyncStorage (`@serenity_path_journal_entries`)
 - **Reflection Bookmarks**: Stored locally via AsyncStorage (`@serenity_path_bookmarks`)
 - **Profile Data**: Persisted via AsyncStorage for offline-first experience
@@ -88,6 +94,7 @@ shared/           # Shared code between client/server
 - **4th Step Inventory**: Persisted via AsyncStorage (`@serenity_path_fourth_step`)
 
 ### Notifications
+
 - **Local Push Notifications**: Via `expo-notifications` (mobile only, graceful web fallback)
 - **Daily Reflection Reminder**: Configurable time (default 8:00 AM)
 - **Daily Check-In Reminder**: Configurable time (default 8:00 PM)
@@ -96,19 +103,22 @@ shared/           # Shared code between client/server
 - **Hook**: `client/hooks/useNotifications.ts` manages scheduling, permissions, and preferences
 
 ### Payment System
+
 - **Web**: Stripe integration for subscription payments ($1.99/month or $19.99/year)
 - **iOS/Android**: Shows "Always Free" messaging with option to share the app; no misleading IAP references
-- **Stripe Routes**: 
+- **Stripe Routes**:
   - `GET /api/stripe/prices` - Fetch subscription prices
   - `POST /api/stripe/create-checkout-session` - Create checkout session
 
 ### Legal Compliance
+
 - **Privacy Policy**: Available at `/privacy`
 - **Terms of Service**: Available at `/terms`
 - **AA Disclaimer**: Displayed in Profile screen footer
 - **Support Contact**: Mattjmarek@gmail.com
 
 ### Key Features
+
 1. **Sobriety Counter**: Real-time days/hours/minutes tracking with milestone indicators
 2. **Sobriety Chips**: Traditional AA chip system with 15 milestone levels (24h through 25 years), progress tracking, animated entrance, and earned/locked states
 3. **Daily Check-In**: "How are you feeling?" mood check-in (5 levels: Crisis to Great) with optional notes, persisted via AsyncStorage (`@serenity_path_checkins`)
@@ -132,10 +142,12 @@ shared/           # Shared code between client/server
 ## External Dependencies
 
 ### Third-Party Services
+
 - **Expo Services**: Build, updates, and development tooling
 - **PostgreSQL**: Primary database (via `pg` package and Drizzle ORM)
 
 ### Key Libraries
+
 - **expo-blur**: Glass effect headers on iOS
 - **expo-haptics**: Tactile feedback for interactions
 - **expo-image**: Optimized image loading
@@ -148,6 +160,7 @@ shared/           # Shared code between client/server
 - **zod**: Runtime type validation for API requests/responses
 
 ### Development Tools
+
 - **drizzle-kit**: Database migration tooling
 - **tsx**: TypeScript execution for server
 - **ESLint + Prettier**: Code quality and formatting

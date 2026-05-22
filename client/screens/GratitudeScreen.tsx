@@ -30,7 +30,7 @@ export default function GratitudeScreen() {
   useFocusEffect(
     useCallback(() => {
       loadEntries();
-    }, [loadEntries])
+    }, [loadEntries]),
   );
 
   useFocusEffect(
@@ -40,7 +40,7 @@ export default function GratitudeScreen() {
         setItem2(todayEntry.items[1] || "");
         setItem3(todayEntry.items[2] || "");
       }
-    }, [todayEntry])
+    }, [todayEntry]),
   );
 
   const handleSave = async () => {
@@ -48,7 +48,10 @@ export default function GratitudeScreen() {
     const filledItems = items.filter((i) => i.length > 0);
 
     if (filledItems.length === 0) {
-      Alert.alert("Hold On", "Please write at least one thing you're grateful for.");
+      Alert.alert(
+        "Hold On",
+        "Please write at least one thing you're grateful for.",
+      );
       return;
     }
 
@@ -67,7 +70,9 @@ export default function GratitudeScreen() {
     }
   };
 
-  const pastEntries = entries.filter((e) => e.date !== new Date().toISOString().split("T")[0]);
+  const pastEntries = entries.filter(
+    (e) => e.date !== new Date().toISOString().split("T")[0],
+  );
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr + "T12:00:00");
@@ -80,15 +85,20 @@ export default function GratitudeScreen() {
 
   const renderPastEntry = ({ item }: { item: GratitudeEntry }) => (
     <Card style={styles.pastEntryCard} elevation={1}>
-      <ThemedText type="small" style={{ color: theme.textSecondary, marginBottom: Spacing.sm }}>
+      <ThemedText
+        type="small"
+        style={{ color: theme.textSecondary, marginBottom: Spacing.sm }}
+      >
         {formatDate(item.date)}
       </ThemedText>
-      {item.items.filter((i) => i.length > 0).map((gratitudeItem, index) => (
-        <View key={index} style={styles.pastItemRow}>
-          <Feather name="heart" size={12} color={theme.accent} />
-          <ThemedText style={styles.pastItemText}>{gratitudeItem}</ThemedText>
-        </View>
-      ))}
+      {item.items
+        .filter((i) => i.length > 0)
+        .map((gratitudeItem, index) => (
+          <View key={index} style={styles.pastItemRow}>
+            <Feather name="heart" size={12} color={theme.accent} />
+            <ThemedText style={styles.pastItemText}>{gratitudeItem}</ThemedText>
+          </View>
+        ))}
     </Card>
   );
 
@@ -103,7 +113,9 @@ export default function GratitudeScreen() {
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
       <View style={styles.headerSection}>
-        <View style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}>
+        <View
+          style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}
+        >
           <Feather name="sun" size={32} color={theme.accent} />
         </View>
         <ThemedText type="h3" style={styles.title}>
@@ -118,13 +130,36 @@ export default function GratitudeScreen() {
 
       <View style={styles.inputsSection}>
         {[
-          { value: item1, setter: setItem1, placeholder: "I'm grateful for...", num: "1" },
-          { value: item2, setter: setItem2, placeholder: "I'm also grateful for...", num: "2" },
-          { value: item3, setter: setItem3, placeholder: "And I appreciate...", num: "3" },
+          {
+            value: item1,
+            setter: setItem1,
+            placeholder: "I'm grateful for...",
+            num: "1",
+          },
+          {
+            value: item2,
+            setter: setItem2,
+            placeholder: "I'm also grateful for...",
+            num: "2",
+          },
+          {
+            value: item3,
+            setter: setItem3,
+            placeholder: "And I appreciate...",
+            num: "3",
+          },
         ].map(({ value, setter, placeholder, num }) => (
           <View key={num} style={styles.inputRow}>
-            <View style={[styles.inputNumber, { backgroundColor: theme.accent + "20" }]}>
-              <ThemedText type="small" style={{ color: theme.accent, fontWeight: "600" }}>
+            <View
+              style={[
+                styles.inputNumber,
+                { backgroundColor: theme.accent + "20" },
+              ]}
+            >
+              <ThemedText
+                type="small"
+                style={{ color: theme.accent, fontWeight: "600" }}
+              >
                 {num}
               </ThemedText>
             </View>
@@ -161,7 +196,11 @@ export default function GratitudeScreen() {
           style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 16 }}
           onPress={isSaving ? undefined : handleSave}
         >
-          {isSaving ? "Saving..." : todayEntry ? "Update Gratitude" : "Save Gratitude"}
+          {isSaving
+            ? "Saving..."
+            : todayEntry
+              ? "Update Gratitude"
+              : "Save Gratitude"}
         </ThemedText>
       </View>
 
@@ -171,9 +210,7 @@ export default function GratitudeScreen() {
             Past Gratitude
           </ThemedText>
           {pastEntries.slice(0, 30).map((entry) => (
-            <View key={entry.id}>
-              {renderPastEntry({ item: entry })}
-            </View>
+            <View key={entry.id}>{renderPastEntry({ item: entry })}</View>
           ))}
         </View>
       ) : null}

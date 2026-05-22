@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, Switch, Platform, Linking, Modal } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Switch,
+  Platform,
+  Linking,
+  Modal,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
@@ -41,12 +49,21 @@ function ReminderCard({
   return (
     <Card style={styles.reminderCard}>
       <View style={styles.reminderHeader}>
-        <View style={[styles.reminderIcon, { backgroundColor: theme.primary + "15" }]}>
+        <View
+          style={[
+            styles.reminderIcon,
+            { backgroundColor: theme.primary + "15" },
+          ]}
+        >
           <Feather name={icon as any} size={20} color={theme.primary} />
         </View>
         <View style={styles.reminderInfo}>
-          <ThemedText type="body" style={{ fontWeight: "600" }}>{title}</ThemedText>
-          <ThemedText type="small" style={{ color: theme.textSecondary }}>{description}</ThemedText>
+          <ThemedText type="body" style={{ fontWeight: "600" }}>
+            {title}
+          </ThemedText>
+          <ThemedText type="small" style={{ color: theme.textSecondary }}>
+            {description}
+          </ThemedText>
         </View>
         <Switch
           value={enabled}
@@ -58,7 +75,10 @@ function ReminderCard({
       {enabled ? (
         <Pressable
           onPress={() => setShowTimePicker(true)}
-          style={[styles.timeButton, { backgroundColor: theme.backgroundSecondary }]}
+          style={[
+            styles.timeButton,
+            { backgroundColor: theme.backgroundSecondary },
+          ]}
         >
           <Feather name="clock" size={16} color={theme.primary} />
           <ThemedText style={{ color: theme.primary, fontWeight: "500" }}>
@@ -79,15 +99,29 @@ function ReminderCard({
           onPress={() => setShowTimePicker(false)}
         >
           <Pressable
-            style={[styles.modalContent, { backgroundColor: theme.backgroundDefault }]}
+            style={[
+              styles.modalContent,
+              { backgroundColor: theme.backgroundDefault },
+            ]}
             onPress={(e) => e.stopPropagation()}
           >
-            <ThemedText type="h4" style={{ marginBottom: Spacing.lg, textAlign: "center" }}>
+            <ThemedText
+              type="h4"
+              style={{ marginBottom: Spacing.lg, textAlign: "center" }}
+            >
               Set Reminder Time
             </ThemedText>
             <View style={styles.timePickerRow}>
               <View style={styles.timeColumn}>
-                <ThemedText type="small" style={{ color: theme.textSecondary, marginBottom: Spacing.sm }}>Hour</ThemedText>
+                <ThemedText
+                  type="small"
+                  style={{
+                    color: theme.textSecondary,
+                    marginBottom: Spacing.sm,
+                  }}
+                >
+                  Hour
+                </ThemedText>
                 <View style={styles.timeOptions}>
                   {HOURS.map((h) => {
                     const period = h >= 12 ? "PM" : "AM";
@@ -99,13 +133,19 @@ function ReminderCard({
                         style={[
                           styles.timeOption,
                           {
-                            backgroundColor: h === hour ? theme.primary : theme.backgroundSecondary,
+                            backgroundColor:
+                              h === hour
+                                ? theme.primary
+                                : theme.backgroundSecondary,
                           },
                         ]}
                       >
                         <ThemedText
                           type="small"
-                          style={{ color: h === hour ? "#FFFFFF" : theme.text, fontWeight: h === hour ? "600" : "400" }}
+                          style={{
+                            color: h === hour ? "#FFFFFF" : theme.text,
+                            fontWeight: h === hour ? "600" : "400",
+                          }}
                         >
                           {displayH} {period}
                         </ThemedText>
@@ -115,7 +155,15 @@ function ReminderCard({
                 </View>
               </View>
               <View style={styles.timeColumn}>
-                <ThemedText type="small" style={{ color: theme.textSecondary, marginBottom: Spacing.sm }}>Minute</ThemedText>
+                <ThemedText
+                  type="small"
+                  style={{
+                    color: theme.textSecondary,
+                    marginBottom: Spacing.sm,
+                  }}
+                >
+                  Minute
+                </ThemedText>
                 <View style={styles.timeOptions}>
                   {MINUTES.map((m) => (
                     <Pressable
@@ -124,13 +172,19 @@ function ReminderCard({
                       style={[
                         styles.timeOption,
                         {
-                          backgroundColor: m === minute ? theme.primary : theme.backgroundSecondary,
+                          backgroundColor:
+                            m === minute
+                              ? theme.primary
+                              : theme.backgroundSecondary,
                         },
                       ]}
                     >
                       <ThemedText
                         type="small"
-                        style={{ color: m === minute ? "#FFFFFF" : theme.text, fontWeight: m === minute ? "600" : "400" }}
+                        style={{
+                          color: m === minute ? "#FFFFFF" : theme.text,
+                          fontWeight: m === minute ? "600" : "400",
+                        }}
                       >
                         :{m.toString().padStart(2, "0")}
                       </ThemedText>
@@ -143,7 +197,9 @@ function ReminderCard({
               onPress={() => setShowTimePicker(false)}
               style={[styles.doneButton, { backgroundColor: theme.primary }]}
             >
-              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Done</ThemedText>
+              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                Done
+              </ThemedText>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -169,9 +225,7 @@ export default function NotificationSettingsScreen() {
   const isDeniedPermanently = permissionStatus === "denied" && !canAskAgain;
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       <View
         style={[
           styles.content,
@@ -185,21 +239,44 @@ export default function NotificationSettingsScreen() {
         {isWeb ? (
           <Card style={styles.webNotice}>
             <Feather name="smartphone" size={32} color={theme.primary} />
-            <ThemedText type="h4" style={{ marginTop: Spacing.md, textAlign: "center" }}>
+            <ThemedText
+              type="h4"
+              style={{ marginTop: Spacing.md, textAlign: "center" }}
+            >
               Notifications on Mobile
             </ThemedText>
-            <ThemedText style={{ color: theme.textSecondary, textAlign: "center", lineHeight: 22, marginTop: Spacing.sm }}>
-              Push notifications are available when using Serenity Path on your mobile device. Open the app in Expo Go to configure daily reminders.
+            <ThemedText
+              style={{
+                color: theme.textSecondary,
+                textAlign: "center",
+                lineHeight: 22,
+                marginTop: Spacing.sm,
+              }}
+            >
+              Push notifications are available when using Serenity Path on your
+              mobile device. Open the app in Expo Go to configure daily
+              reminders.
             </ThemedText>
           </Card>
         ) : isDeniedPermanently ? (
           <Card style={styles.permissionCard}>
             <Feather name="bell-off" size={32} color={theme.textSecondary} />
-            <ThemedText type="h4" style={{ marginTop: Spacing.md, textAlign: "center" }}>
+            <ThemedText
+              type="h4"
+              style={{ marginTop: Spacing.md, textAlign: "center" }}
+            >
               Notifications Disabled
             </ThemedText>
-            <ThemedText style={{ color: theme.textSecondary, textAlign: "center", lineHeight: 22, marginTop: Spacing.sm }}>
-              To receive daily reminders, please enable notifications in your device settings.
+            <ThemedText
+              style={{
+                color: theme.textSecondary,
+                textAlign: "center",
+                lineHeight: 22,
+                marginTop: Spacing.sm,
+              }}
+            >
+              To receive daily reminders, please enable notifications in your
+              device settings.
             </ThemedText>
             {Platform.OS !== "web" ? (
               <Pressable
@@ -208,31 +285,55 @@ export default function NotificationSettingsScreen() {
                     await Linking.openSettings();
                   } catch (e) {}
                 }}
-                style={[styles.settingsButton, { backgroundColor: theme.primary }]}
+                style={[
+                  styles.settingsButton,
+                  { backgroundColor: theme.primary },
+                ]}
               >
-                <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Open Settings</ThemedText>
+                <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                  Open Settings
+                </ThemedText>
               </Pressable>
             ) : null}
           </Card>
         ) : permissionStatus === "denied" && canAskAgain ? (
           <Card style={styles.permissionCard}>
             <Feather name="bell" size={32} color={theme.primary} />
-            <ThemedText type="h4" style={{ marginTop: Spacing.md, textAlign: "center" }}>
+            <ThemedText
+              type="h4"
+              style={{ marginTop: Spacing.md, textAlign: "center" }}
+            >
               Enable Notifications
             </ThemedText>
-            <ThemedText style={{ color: theme.textSecondary, textAlign: "center", lineHeight: 22, marginTop: Spacing.sm }}>
-              Allow notifications to receive daily reminders for reflections, check-ins, and gratitude practice.
+            <ThemedText
+              style={{
+                color: theme.textSecondary,
+                textAlign: "center",
+                lineHeight: 22,
+                marginTop: Spacing.sm,
+              }}
+            >
+              Allow notifications to receive daily reminders for reflections,
+              check-ins, and gratitude practice.
             </ThemedText>
             <Pressable
               onPress={requestPermission}
-              style={[styles.settingsButton, { backgroundColor: theme.primary }]}
+              style={[
+                styles.settingsButton,
+                { backgroundColor: theme.primary },
+              ]}
             >
-              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Enable Notifications</ThemedText>
+              <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+                Enable Notifications
+              </ThemedText>
             </Pressable>
           </Card>
         ) : (
           <>
-            <ThemedText type="small" style={[styles.sectionLabel, { color: theme.textSecondary }]}>
+            <ThemedText
+              type="small"
+              style={[styles.sectionLabel, { color: theme.textSecondary }]}
+            >
               Set daily reminders to support your recovery practice
             </ThemedText>
 

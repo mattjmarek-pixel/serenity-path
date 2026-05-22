@@ -25,13 +25,14 @@ export default function JournalScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { entries, loadEntries } = useJournal();
 
   useFocusEffect(
     React.useCallback(() => {
       loadEntries();
-    }, [loadEntries])
+    }, [loadEntries]),
   );
 
   const formatDate = (dateString: string) => {
@@ -58,9 +59,11 @@ export default function JournalScreen() {
           {formatDate(item.createdAt)}
         </ThemedText>
         {item.mood ? (
-          <View style={[styles.moodBadge, { backgroundColor: theme.accent + "30" }]}>
+          <View
+            style={[styles.moodBadge, { backgroundColor: theme.accent + "30" }]}
+          >
             <Feather
-              name={MOOD_ICONS[item.mood] as any || "circle"}
+              name={(MOOD_ICONS[item.mood] as any) || "circle"}
               size={14}
               color={theme.primary}
             />
@@ -89,8 +92,12 @@ export default function JournalScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Feather name="edit-3" size={48} color={theme.textSecondary} />
-            <ThemedText type="h4" style={styles.emptyTitle}>No Journal Entries</ThemedText>
-            <ThemedText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
+            <ThemedText type="h4" style={styles.emptyTitle}>
+              No Journal Entries
+            </ThemedText>
+            <ThemedText
+              style={[styles.emptySubtext, { color: theme.textSecondary }]}
+            >
               Start documenting your recovery journey
             </ThemedText>
           </View>

@@ -41,7 +41,11 @@ export class DbStorage implements IStorage {
   constructor(private db: NodePgDatabase) {}
 
   async getUser(id: string): Promise<User | undefined> {
-    const rows = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    const rows = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
     return rows[0];
   }
 

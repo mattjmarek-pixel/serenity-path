@@ -2,7 +2,10 @@ function dayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function calculateCurrentStreak(entryDates: string[], today: Date = new Date()): number {
+function calculateCurrentStreak(
+  entryDates: string[],
+  today: Date = new Date(),
+): number {
   const set = new Set(entryDates);
   let streak = 0;
   const cursor = new Date(today);
@@ -39,10 +42,7 @@ describe("streak calculation", () => {
 
   it("counts only consecutive days back from today", () => {
     expect(
-      calculateCurrentStreak(
-        ["2024-06-10", "2024-06-14", "2024-06-15"],
-        today,
-      ),
+      calculateCurrentStreak(["2024-06-10", "2024-06-14", "2024-06-15"], today),
     ).toBe(2);
   });
 });

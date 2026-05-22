@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommunityType } from "@/constants/theme";
 
@@ -40,7 +47,9 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
           try {
             const parsed = JSON.parse(stored) as Partial<CommunityState>;
             const validPath: CommunityPath | null =
-              parsed.path === "AA" || parsed.path === "NA" || parsed.path === "Both"
+              parsed.path === "AA" ||
+              parsed.path === "NA" ||
+              parsed.path === "Both"
                 ? parsed.path
                 : null;
             setState({
@@ -61,14 +70,21 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  const setPath = useCallback(async (path: CommunityPath) => {
-    const activeView: CommunityType = path === "NA" ? "NA" : path === "AA" ? "AA" : state.activeView;
-    await persist({ path, activeView });
-  }, [persist, state.activeView]);
+  const setPath = useCallback(
+    async (path: CommunityPath) => {
+      const activeView: CommunityType =
+        path === "NA" ? "NA" : path === "AA" ? "AA" : state.activeView;
+      await persist({ path, activeView });
+    },
+    [persist, state.activeView],
+  );
 
-  const setActiveView = useCallback(async (view: CommunityType) => {
-    await persist({ ...state, activeView: view });
-  }, [persist, state]);
+  const setActiveView = useCallback(
+    async (view: CommunityType) => {
+      await persist({ ...state, activeView: view });
+    },
+    [persist, state],
+  );
 
   const toggleActiveView = useCallback(async () => {
     const next: CommunityType = state.activeView === "AA" ? "NA" : "AA";
@@ -82,9 +98,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
   // For pure AA or NA paths, activeCommunity is the path itself.
   // For "Both", it follows the user's toggle (activeView).
   const activeCommunity: CommunityType =
-    state.path === "AA" ? "AA" :
-    state.path === "NA" ? "NA" :
-    state.activeView;
+    state.path === "AA" ? "AA" : state.path === "NA" ? "NA" : state.activeView;
 
   return (
     <CommunityContext.Provider

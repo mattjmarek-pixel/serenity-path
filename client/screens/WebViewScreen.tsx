@@ -21,19 +21,40 @@ export default function WebViewScreen() {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.errorContainer, { backgroundColor: theme.backgroundRoot }]}>
+      <View
+        style={[
+          styles.container,
+          styles.errorContainer,
+          { backgroundColor: theme.backgroundRoot },
+        ]}
+      >
         <Feather name="wifi-off" size={48} color={theme.textSecondary} />
-        <ThemedText type="subtitle" style={{ textAlign: "center", marginTop: Spacing.lg }}>
+        <ThemedText
+          type="h3"
+          style={{ textAlign: "center", marginTop: Spacing.lg }}
+        >
           Unable to load this page
         </ThemedText>
-        <ThemedText type="small" style={{ color: theme.textSecondary, textAlign: "center", marginTop: Spacing.sm }}>
+        <ThemedText
+          type="small"
+          style={{
+            color: theme.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.sm,
+          }}
+        >
           Check your internet connection and try again.
         </ThemedText>
         <Pressable
-          onPress={() => { setError(false); setLoading(true); }}
+          onPress={() => {
+            setError(false);
+            setLoading(true);
+          }}
           style={[styles.retryButton, { backgroundColor: theme.primary }]}
         >
-          <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Try Again</ThemedText>
+          <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>
+            Try Again
+          </ThemedText>
         </Pressable>
         <Pressable onPress={() => navigation.goBack()} style={styles.backLink}>
           <ThemedText style={{ color: theme.primary }}>Go Back</ThemedText>

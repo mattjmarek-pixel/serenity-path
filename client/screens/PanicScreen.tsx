@@ -1,5 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, StyleSheet, Pressable, ScrollView, Linking, Platform, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Linking,
+  Platform,
+  Alert,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -26,12 +34,13 @@ import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type BreathPhase = "inhale" | "hold" | "exhale" | "rest";
 
-const BREATH_PHASES: { phase: BreathPhase; duration: number; label: string }[] = [
-  { phase: "inhale", duration: 4000, label: "Breathe In" },
-  { phase: "hold", duration: 4000, label: "Hold" },
-  { phase: "exhale", duration: 6000, label: "Breathe Out" },
-  { phase: "rest", duration: 2000, label: "Rest" },
-];
+const BREATH_PHASES: { phase: BreathPhase; duration: number; label: string }[] =
+  [
+    { phase: "inhale", duration: 4000, label: "Breathe In" },
+    { phase: "hold", duration: 4000, label: "Hold" },
+    { phase: "exhale", duration: 6000, label: "Breathe Out" },
+    { phase: "rest", duration: 2000, label: "Rest" },
+  ];
 
 const GROUNDING_EXERCISES = [
   {
@@ -73,7 +82,8 @@ export default function PanicScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile } = useProfile();
 
   const [breathingActive, setBreathingActive] = useState(false);
@@ -86,7 +96,7 @@ export default function PanicScreen() {
   useFocusEffect(
     useCallback(() => {
       loadProfile();
-    }, [loadProfile])
+    }, [loadProfile]),
   );
 
   const hasSponsor = profile.sponsorName && profile.sponsorPhone;
@@ -98,7 +108,10 @@ export default function PanicScreen() {
         if (supported) {
           Linking.openURL(phoneUrl);
         } else {
-          Alert.alert("Unable to make call", "Phone calling is not supported on this device.");
+          Alert.alert(
+            "Unable to make call",
+            "Phone calling is not supported on this device.",
+          );
         }
       })
       .catch(() => {
@@ -106,10 +119,13 @@ export default function PanicScreen() {
       });
   };
 
-  const advancePhase = useCallback((index: number) => {
-    if (!breathingActive) return;
-    setCurrentPhaseIndex(index);
-  }, [breathingActive]);
+  const advancePhase = useCallback(
+    (index: number) => {
+      if (!breathingActive) return;
+      setCurrentPhaseIndex(index);
+    },
+    [breathingActive],
+  );
 
   useEffect(() => {
     if (!breathingActive) {
@@ -130,18 +146,33 @@ export default function PanicScreen() {
       setCurrentPhaseIndex(phaseIndex);
 
       if (phase.phase === "inhale") {
-        breathScale.value = withTiming(1, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
-        breathOpacity.value = withTiming(0.8, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
+        breathScale.value = withTiming(1, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
+        breathOpacity.value = withTiming(0.8, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
       } else if (phase.phase === "exhale") {
-        breathScale.value = withTiming(0.6, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
-        breathOpacity.value = withTiming(0.4, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
+        breathScale.value = withTiming(0.6, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
+        breathOpacity.value = withTiming(0.4, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
       }
 
       phaseIndex = (phaseIndex + 1) % BREATH_PHASES.length;
     };
 
     runBreathCycle();
-    const totalCycleDuration = BREATH_PHASES.reduce((sum, p) => sum + p.duration, 0);
+    const totalCycleDuration = BREATH_PHASES.reduce(
+      (sum, p) => sum + p.duration,
+      0,
+    );
     let elapsed = 0;
     let currentPhase = 0;
 
@@ -153,11 +184,23 @@ export default function PanicScreen() {
       setCurrentPhaseIndex(currentPhase);
 
       if (phase.phase === "inhale") {
-        breathScale.value = withTiming(1, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
-        breathOpacity.value = withTiming(0.8, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
+        breathScale.value = withTiming(1, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
+        breathOpacity.value = withTiming(0.8, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
       } else if (phase.phase === "exhale") {
-        breathScale.value = withTiming(0.6, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
-        breathOpacity.value = withTiming(0.4, { duration: phase.duration, easing: Easing.inOut(Easing.ease) });
+        breathScale.value = withTiming(0.6, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
+        breathOpacity.value = withTiming(0.4, {
+          duration: phase.duration,
+          easing: Easing.inOut(Easing.ease),
+        });
       }
     }, BREATH_PHASES[currentPhase]?.duration || 4000);
 
@@ -188,7 +231,10 @@ export default function PanicScreen() {
         paddingHorizontal: Spacing.lg,
       }}
     >
-      <ThemedText type="body" style={[styles.subtitle, { color: theme.textSecondary }]}>
+      <ThemedText
+        type="body"
+        style={[styles.subtitle, { color: theme.textSecondary }]}
+      >
         You are not alone. Take a breath. Help is here.
       </ThemedText>
 
@@ -207,7 +253,9 @@ export default function PanicScreen() {
             <Feather name="user" size={24} color="#FFFFFF" />
             <View style={styles.callButtonText}>
               <ThemedText style={styles.callLabel}>Call Sponsor</ThemedText>
-              <ThemedText style={styles.callName}>{profile.sponsorName}</ThemedText>
+              <ThemedText style={styles.callName}>
+                {profile.sponsorName}
+              </ThemedText>
             </View>
             <Feather name="phone" size={20} color="#FFFFFF" />
           </Pressable>
@@ -225,7 +273,9 @@ export default function PanicScreen() {
         >
           <Feather name="phone" size={24} color="#FFFFFF" />
           <View style={styles.callButtonText}>
-            <ThemedText style={styles.callLabel}>988 Crisis Lifeline</ThemedText>
+            <ThemedText style={styles.callLabel}>
+              988 Crisis Lifeline
+            </ThemedText>
             <ThemedText style={styles.callSubtext}>Available 24/7</ThemedText>
           </View>
           <Feather name="chevron-right" size={20} color="#FFFFFF" />
@@ -265,8 +315,13 @@ export default function PanicScreen() {
               ]}
             />
             <View style={styles.breathLabelOverlay}>
-              <ThemedText type="h3" style={{ color: "#FFFFFF", textAlign: "center" }}>
-                {breathingActive ? BREATH_PHASES[currentPhaseIndex].label : "Start"}
+              <ThemedText
+                type="h3"
+                style={{ color: "#FFFFFF", textAlign: "center" }}
+              >
+                {breathingActive
+                  ? BREATH_PHASES[currentPhaseIndex].label
+                  : "Start"}
               </ThemedText>
             </View>
           </View>
@@ -275,7 +330,9 @@ export default function PanicScreen() {
             style={({ pressed }) => [
               styles.breathToggle,
               {
-                backgroundColor: breathingActive ? theme.emergency + "20" : theme.primary + "20",
+                backgroundColor: breathingActive
+                  ? theme.emergency + "20"
+                  : theme.primary + "20",
                 opacity: pressed ? 0.8 : 1,
               },
             ]}
@@ -309,10 +366,17 @@ export default function PanicScreen() {
           onPress={() => toggleExercise(index)}
         >
           <View style={styles.exerciseHeader}>
-            <View style={[styles.exerciseIcon, { backgroundColor: theme.primary + "20" }]}>
+            <View
+              style={[
+                styles.exerciseIcon,
+                { backgroundColor: theme.primary + "20" },
+              ]}
+            >
               <Feather name={exercise.icon} size={20} color={theme.primary} />
             </View>
-            <ThemedText type="h4" style={styles.exerciseTitle}>{exercise.title}</ThemedText>
+            <ThemedText type="h4" style={styles.exerciseTitle}>
+              {exercise.title}
+            </ThemedText>
             <Feather
               name={expandedExercise === index ? "chevron-up" : "chevron-down"}
               size={20}
@@ -323,10 +387,19 @@ export default function PanicScreen() {
             <View style={styles.exerciseSteps}>
               {exercise.steps.map((step, stepIndex) => (
                 <View key={stepIndex} style={styles.exerciseStep}>
-                  <View style={[styles.stepNumber, { backgroundColor: theme.primary }]}>
-                    <ThemedText style={styles.stepNumberText}>{stepIndex + 1}</ThemedText>
+                  <View
+                    style={[
+                      styles.stepNumber,
+                      { backgroundColor: theme.primary },
+                    ]}
+                  >
+                    <ThemedText style={styles.stepNumberText}>
+                      {stepIndex + 1}
+                    </ThemedText>
                   </View>
-                  <ThemedText type="body" style={styles.stepText}>{step}</ThemedText>
+                  <ThemedText type="body" style={styles.stepText}>
+                    {step}
+                  </ThemedText>
                 </View>
               ))}
             </View>
@@ -345,7 +418,9 @@ export default function PanicScreen() {
       >
         <View style={styles.resourceRow}>
           <Feather name="map-pin" size={20} color={theme.primary} />
-          <ThemedText style={styles.resourceText}>Find a nearby meeting</ThemedText>
+          <ThemedText style={styles.resourceText}>
+            Find a nearby meeting
+          </ThemedText>
           <Feather name="chevron-right" size={20} color={theme.textSecondary} />
         </View>
       </Card>
@@ -357,15 +432,20 @@ export default function PanicScreen() {
       >
         <View style={styles.resourceRow}>
           <Feather name="heart" size={20} color={theme.emergency} />
-          <ThemedText style={styles.resourceText}>All support resources</ThemedText>
+          <ThemedText style={styles.resourceText}>
+            All support resources
+          </ThemedText>
           <Feather name="chevron-right" size={20} color={theme.textSecondary} />
         </View>
       </Card>
 
-      <View style={[styles.reminder, { backgroundColor: theme.primary + "10" }]}>
+      <View
+        style={[styles.reminder, { backgroundColor: theme.primary + "10" }]}
+      >
         <Feather name="info" size={16} color={theme.primary} />
         <ThemedText type="small" style={{ color: theme.primary, flex: 1 }}>
-          This too shall pass. Every moment of strength builds a lifetime of recovery.
+          This too shall pass. Every moment of strength builds a lifetime of
+          recovery.
         </ThemedText>
       </View>
     </ScrollView>

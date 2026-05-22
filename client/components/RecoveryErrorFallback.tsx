@@ -7,7 +7,10 @@ import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import type { ErrorFallbackProps } from "@/components/ErrorFallback";
 
-export function RecoveryErrorFallback({ error, resetError }: ErrorFallbackProps) {
+export function RecoveryErrorFallback({
+  error,
+  resetError,
+}: ErrorFallbackProps) {
   const { theme } = useTheme();
 
   React.useEffect(() => {
@@ -17,7 +20,9 @@ export function RecoveryErrorFallback({ error, resetError }: ErrorFallbackProps)
   }, [error]);
 
   const callCrisisLine = () => {
-    Linking.openURL(Platform.OS === "web" ? "tel:988" : "tel://988").catch(() => {});
+    Linking.openURL(Platform.OS === "web" ? "tel:988" : "tel://988").catch(
+      () => {},
+    );
   };
 
   return (
@@ -25,7 +30,9 @@ export function RecoveryErrorFallback({ error, resetError }: ErrorFallbackProps)
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
       accessibilityRole="alert"
     >
-      <View style={[styles.iconWrap, { backgroundColor: theme.primary + "15" }]}>
+      <View
+        style={[styles.iconWrap, { backgroundColor: theme.primary + "15" }]}
+      >
         <Feather name="heart" size={36} color={theme.primary} />
       </View>
 

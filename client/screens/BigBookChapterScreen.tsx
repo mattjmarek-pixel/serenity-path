@@ -22,9 +22,11 @@ export default function BigBookChapterScreen() {
   const { theme } = useTheme();
   const route = useRoute<BigBookChapterRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  
+
   const chapterId = route.params?.chapterId;
-  const chapter = chapterId ? bigBookChapters.find(c => c.id === chapterId) : null;
+  const chapter = chapterId
+    ? bigBookChapters.find((c) => c.id === chapterId)
+    : null;
 
   useLayoutEffect(() => {
     if (!chapter) {
@@ -48,20 +50,29 @@ export default function BigBookChapterScreen() {
     >
       <View style={styles.headerSection}>
         <View style={[styles.chapterBadge, { backgroundColor: theme.primary }]}>
-          <ThemedText style={styles.chapterBadgeText}>Chapter {chapter.id}</ThemedText>
+          <ThemedText style={styles.chapterBadgeText}>
+            Chapter {chapter.id}
+          </ThemedText>
         </View>
         <ThemedText type="h2" style={styles.chapterTitle}>
           {chapter.title}
         </ThemedText>
       </View>
 
-      <View style={[styles.summaryCard, { backgroundColor: theme.backgroundSecondary }]}>
+      <View
+        style={[
+          styles.summaryCard,
+          { backgroundColor: theme.backgroundSecondary },
+        ]}
+      >
         <Feather name="file-text" size={18} color={theme.accent} />
         <View style={styles.summaryContent}>
           <ThemedText style={[styles.summaryLabel, { color: theme.accent }]}>
             Chapter Summary
           </ThemedText>
-          <ThemedText style={[styles.summaryText, { color: theme.textSecondary }]}>
+          <ThemedText
+            style={[styles.summaryText, { color: theme.textSecondary }]}
+          >
             {chapter.summary}
           </ThemedText>
         </View>
@@ -73,9 +84,7 @@ export default function BigBookChapterScreen() {
 
       {chapter.content.map((paragraph, index) => (
         <View key={index} style={styles.paragraphContainer}>
-          <ThemedText style={styles.paragraphText}>
-            {paragraph}
-          </ThemedText>
+          <ThemedText style={styles.paragraphText}>{paragraph}</ThemedText>
         </View>
       ))}
 
@@ -86,9 +95,17 @@ export default function BigBookChapterScreen() {
         {chapter.keyQuotes.map((quote, index) => (
           <View
             key={index}
-            style={[styles.quoteCard, { backgroundColor: theme.backgroundDefault }]}
+            style={[
+              styles.quoteCard,
+              { backgroundColor: theme.backgroundDefault },
+            ]}
           >
-            <Feather name="bookmark" size={16} color={theme.accent} style={styles.quoteIcon} />
+            <Feather
+              name="bookmark"
+              size={16}
+              color={theme.accent}
+              style={styles.quoteIcon}
+            />
             <ThemedText style={[styles.quoteText, { fontStyle: "italic" }]}>
               "{quote}"
             </ThemedText>
@@ -96,10 +113,19 @@ export default function BigBookChapterScreen() {
         ))}
       </View>
 
-      <View style={[styles.reminderCard, { backgroundColor: theme.backgroundSecondary }]}>
+      <View
+        style={[
+          styles.reminderCard,
+          { backgroundColor: theme.backgroundSecondary },
+        ]}
+      >
         <Feather name="heart" size={20} color={theme.primary} />
-        <ThemedText style={[styles.reminderText, { color: theme.textSecondary }]}>
-          Take time to reflect on how this chapter applies to your own journey. Consider discussing your thoughts with a sponsor or trusted friend in recovery.
+        <ThemedText
+          style={[styles.reminderText, { color: theme.textSecondary }]}
+        >
+          Take time to reflect on how this chapter applies to your own journey.
+          Consider discussing your thoughts with a sponsor or trusted friend in
+          recovery.
         </ThemedText>
       </View>
     </ScrollView>

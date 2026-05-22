@@ -41,7 +41,9 @@ function calculateStreak(dates: string[]): StreakData {
     for (let i = 1; i < uniqueDates.length; i++) {
       const curr = new Date(uniqueDates[i - 1]);
       const prev = new Date(uniqueDates[i]);
-      const diffDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+      const diffDays = Math.round(
+        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
+      );
       if (diffDays === 1) {
         currentStreak++;
       } else {
@@ -54,7 +56,9 @@ function calculateStreak(dates: string[]): StreakData {
   for (let i = 1; i < uniqueDates.length; i++) {
     const curr = new Date(uniqueDates[i - 1]);
     const prev = new Date(uniqueDates[i]);
-    const diffDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round(
+      (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
+    );
     if (diffDays === 1) {
       tempStreak++;
     } else {
@@ -72,9 +76,21 @@ function calculateStreak(dates: string[]): StreakData {
 }
 
 export function useStreaks() {
-  const [checkInStreak, setCheckInStreak] = useState<StreakData>({ current: 0, longest: 0, lastDate: null });
-  const [journalStreak, setJournalStreak] = useState<StreakData>({ current: 0, longest: 0, lastDate: null });
-  const [gratitudeStreak, setGratitudeStreak] = useState<StreakData>({ current: 0, longest: 0, lastDate: null });
+  const [checkInStreak, setCheckInStreak] = useState<StreakData>({
+    current: 0,
+    longest: 0,
+    lastDate: null,
+  });
+  const [journalStreak, setJournalStreak] = useState<StreakData>({
+    current: 0,
+    longest: 0,
+    lastDate: null,
+  });
+  const [gratitudeStreak, setGratitudeStreak] = useState<StreakData>({
+    current: 0,
+    longest: 0,
+    lastDate: null,
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   const loadStreaks = useCallback(async () => {
@@ -124,7 +140,11 @@ export function useStreaks() {
   }, [checkInStreak, journalStreak, gratitudeStreak]);
 
   const bestCurrentStreak = useMemo(() => {
-    return Math.max(checkInStreak.current, journalStreak.current, gratitudeStreak.current);
+    return Math.max(
+      checkInStreak.current,
+      journalStreak.current,
+      gratitudeStreak.current,
+    );
   }, [checkInStreak, journalStreak, gratitudeStreak]);
 
   return {
