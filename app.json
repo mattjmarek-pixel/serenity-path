@@ -8,11 +8,6 @@
     "scheme": "serenitypath",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#7B3FF2"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.serenitypath.app",
@@ -24,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#5B7C99",
+        "backgroundColor": "#7B3FF2",
         "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
