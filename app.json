@@ -62,8 +62,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+        "projectId": "a80c20d0-b3b4-42c7-9df9-e9bf90d6ce8a"
       }
-    }
+    },
+    "owner": "mattjmarek"
   }
 }
