@@ -1,0 +1,60 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Replit agent and private upload files
+.agents/
+.local/
+attached_assets/
+
+# Expo
+.expo/
+dist/
+web-build/
+build/
+server_dist/
+static-build/
+expo-env.d.ts
+
+# caches
+.cache/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+AuthKey_*.p8
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+Thumbs.db
+*.pem
+
+# env files
+.env*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+
+app-example
+
+# generated native folders
+/ios
+/android
+
+# store submission credentials
+google-play-key.json

@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Serenity Path",
+    "slug": "serenity-path",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "serenitypath",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.serenitypath.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Serenity Path uses your location to find nearby AA/NA meetings.",
+        "NSUserNotificationsUsageDescription": "Serenity Path sends daily reminders for reflections, check-ins, and gratitude practice."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#7B3FF2",
+        "foregroundImage": "./assets/images/icon.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.serenitypath.app",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#7B3FF2",
+          "dark": {
+            "backgroundColor": "#0D1520"
+          }
+        }
+      ],
+      "expo-web-browser",
+      "@react-native-community/datetimepicker",
+      "expo-font"
+    ],
+    "experiments": {
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a80c20d0-b3b4-42c7-9df9-e9bf90d6ce8a"
+      }
+    },
+    "owner": "mattjmarek"
+  }
+}
