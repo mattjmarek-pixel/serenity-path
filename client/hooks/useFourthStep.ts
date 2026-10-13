@@ -55,7 +55,7 @@ export function useFourthStep() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const persist = useCallback(async (updated: FourthStepData) => {

@@ -28,7 +28,7 @@ export function useJournal() {
   }, []);
 
   useEffect(() => {
-    loadEntries();
+    void Promise.resolve().then(loadEntries);
   }, [loadEntries]);
 
   const saveEntry = useCallback(

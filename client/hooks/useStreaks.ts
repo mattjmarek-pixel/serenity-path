@@ -128,7 +128,7 @@ export function useStreaks() {
   }, []);
 
   useEffect(() => {
-    loadStreaks();
+    void Promise.resolve().then(loadStreaks);
   }, [loadStreaks]);
 
   const totalActiveStreaks = useMemo(() => {

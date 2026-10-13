@@ -20,7 +20,7 @@ export function useBookmarks() {
   }, []);
 
   useEffect(() => {
-    loadBookmarks();
+    void Promise.resolve().then(loadBookmarks);
   }, [loadBookmarks]);
 
   const toggleBookmark = useCallback(

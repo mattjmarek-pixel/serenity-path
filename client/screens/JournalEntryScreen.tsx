@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -35,15 +35,14 @@ export default function JournalEntryScreen() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (entryId) {
-      const existingEntry = getEntry(entryId);
-      if (existingEntry) {
-        setContent(existingEntry.content);
-        setSelectedMood(existingEntry.mood || null);
-      }
-    }
-  }, [entryId, getEntry]);
+  const existingEntry = entryId ? getEntry(entryId) : undefined;
+  const [loadedEntry, setLoadedEntry] =
+    useState<typeof existingEntry>(undefined);
+  if (existingEntry !== loadedEntry) {
+    setLoadedEntry(existingEntry);
+    setContent(existingEntry?.content ?? "");
+    setSelectedMood(existingEntry?.mood ?? null);
+  }
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",

@@ -3,7 +3,7 @@
   "main": "client/index.js",
   "version": "1.0.0",
   "scripts": {
-    "expo:dev": "EXPO_OFFLINE=1 EXPO_PACKAGER_PROXY_URL=https://${EXPO_PACKAGER_PROXY_URL_HOST:-$REPLIT_DEV_DOMAIN} REACT_NATIVE_PACKAGER_HOSTNAME=${REACT_NATIVE_PACKAGER_HOSTNAME:-$REPLIT_DEV_DOMAIN} EXPO_PUBLIC_DOMAIN=${EXPO_PUBLIC_DOMAIN:-$REPLIT_DEV_DOMAIN:5000} npx expo start --localhost",
+    "expo:dev": "node scripts/expo-login.cjs && EXPO_PACKAGER_PROXY_URL=https://${EXPO_PACKAGER_PROXY_URL_HOST:-$REPLIT_DEV_DOMAIN} REACT_NATIVE_PACKAGER_HOSTNAME=${REACT_NATIVE_PACKAGER_HOSTNAME:-$REPLIT_DEV_DOMAIN} EXPO_PUBLIC_DOMAIN=${EXPO_PUBLIC_DOMAIN:-$REPLIT_DEV_DOMAIN:5000} npx expo start --localhost",
     "expo:dev:local": "EXPO_PUBLIC_DOMAIN=${EXPO_PUBLIC_DOMAIN:-localhost:5000} npx expo start --localhost",
     "server:dev": "NODE_ENV=development tsx server/index.ts",
     "all:dev": "npm run expo:dev & npm run server:dev",
@@ -107,6 +107,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "~19.2.4",
     "babel-plugin-module-resolver": "^5.0.2",
+    "create-launch": "0.4.1",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~57.0.2",

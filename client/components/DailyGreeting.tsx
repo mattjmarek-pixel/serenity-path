@@ -36,34 +36,34 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
   const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    checkAndShowGreeting();
-  }, []);
+    const checkAndShowGreeting = async () => {
+      try {
+        const lastGreetingDate = await AsyncStorage.getItem(
+          STORAGE_KEYS.LAST_GREETING_DATE,
+        );
+        const today = getTodayDateString();
 
-  const checkAndShowGreeting = async () => {
-    try {
-      const lastGreetingDate = await AsyncStorage.getItem(
-        STORAGE_KEYS.LAST_GREETING_DATE,
-      );
-      const today = getTodayDateString();
+        if (lastGreetingDate === today) {
+          onDismiss();
+          return;
+        }
 
-      if (lastGreetingDate === today) {
+        const storedName = await AsyncStorage.getItem(STORAGE_KEYS.USER_NAME);
+        if (storedName) {
+          setUserName(storedName);
+          setShouldShow(true);
+          await AsyncStorage.setItem(STORAGE_KEYS.LAST_GREETING_DATE, today);
+        } else {
+          setIsEditingName(true);
+          setShouldShow(true);
+        }
+      } catch (error) {
         onDismiss();
-        return;
       }
+    };
 
-      const storedName = await AsyncStorage.getItem(STORAGE_KEYS.USER_NAME);
-      if (storedName) {
-        setUserName(storedName);
-        setShouldShow(true);
-        await AsyncStorage.setItem(STORAGE_KEYS.LAST_GREETING_DATE, today);
-      } else {
-        setIsEditingName(true);
-        setShouldShow(true);
-      }
-    } catch (error) {
-      onDismiss();
-    }
-  };
+    void Promise.resolve().then(checkAndShowGreeting);
+  }, [onDismiss]);
 
   const saveName = async () => {
     if (nameInput.trim()) {

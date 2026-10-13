@@ -346,9 +346,8 @@ interface TimeElapsed {
   seconds: number;
 }
 
-function calculateTimeElapsed(startDate: Date): TimeElapsed {
-  const now = new Date();
-  const diff = now.getTime() - startDate.getTime();
+function calculateTimeElapsed(startDate: Date, now: number): TimeElapsed {
+  const diff = now - startDate.getTime();
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -375,7 +374,7 @@ function HomeScreenInner() {
   const { checkInStreak, journalStreak, gratitudeStreak, loadStreaks } =
     useStreaks();
 
-  const [timeElapsed, setTimeElapsed] = useState<TimeElapsed | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   useFocusEffect(
     useCallback(() => {
@@ -392,17 +391,16 @@ function HomeScreenInner() {
   }, [profile.sobrietyDate]);
 
   useEffect(() => {
-    if (!sobrietyDate) {
-      setTimeElapsed(null);
-      return;
-    }
-
-    setTimeElapsed(calculateTimeElapsed(sobrietyDate));
+    if (!sobrietyDate) return;
     const interval = setInterval(() => {
-      setTimeElapsed(calculateTimeElapsed(sobrietyDate));
+      setNow(Date.now());
     }, 1000);
     return () => clearInterval(interval);
   }, [sobrietyDate]);
+
+  const timeElapsed = sobrietyDate
+    ? calculateTimeElapsed(sobrietyDate, now)
+    : null;
 
   const nextMilestone = timeElapsed ? getNextMilestone(timeElapsed.days) : null;
   const daysToNextMilestone =

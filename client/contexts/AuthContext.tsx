@@ -49,20 +49,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadAuth();
-  }, []);
-
-  const loadAuth = async () => {
-    try {
-      const stored = await AsyncStorage.getItem(AUTH_KEY);
-      if (stored) {
-        setAuthState(JSON.parse(stored));
+    const loadAuth = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(AUTH_KEY);
+        if (stored) {
+          setAuthState(JSON.parse(stored));
+        }
+      } catch (e) {
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    void Promise.resolve().then(loadAuth);
+  }, []);
 
   const saveAuth = useCallback(async (state: AuthState) => {
     setAuthState(state);

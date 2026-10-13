@@ -100,11 +100,6 @@ export function useNotifications() {
   const [canAskAgain, setCanAskAgain] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadPrefs();
-    checkPermission();
-  }, []);
-
   const checkPermission = useCallback(async () => {
     if (Platform.OS === "web") {
       setPermissionStatus("web");
@@ -134,6 +129,11 @@ export function useNotifications() {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    void Promise.resolve().then(loadPrefs);
+    void Promise.resolve().then(checkPermission);
+  }, [loadPrefs, checkPermission]);
 
   const savePrefs = useCallback(
     async (updates: Partial<NotificationPrefs>) => {

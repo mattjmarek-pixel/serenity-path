@@ -46,7 +46,7 @@ export function useCheckIn() {
   }, []);
 
   useEffect(() => {
-    loadCheckIns();
+    void Promise.resolve().then(loadCheckIns);
   }, [loadCheckIns]);
 
   const getTodayCheckIn = useCallback((): CheckIn | undefined => {

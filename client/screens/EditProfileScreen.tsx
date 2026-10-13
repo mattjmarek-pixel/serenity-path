@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -322,11 +322,11 @@ export default function EditProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [showCompassionModal, setShowCompassionModal] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading) {
-      setFormData(profile);
-    }
-  }, [profile, isLoading]);
+  const [loadedProfile, setLoadedProfile] = useState<UserProfile | null>(null);
+  if (!isLoading && profile !== loadedProfile) {
+    setLoadedProfile(profile);
+    setFormData(profile);
+  }
 
   const updateField = <K extends keyof UserProfile>(
     key: K,

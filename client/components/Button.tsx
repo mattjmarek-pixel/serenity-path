@@ -43,13 +43,13 @@ export function Button({
 
   const handlePressIn = () => {
     if (!disabled) {
-      scale.value = withSpring(0.98, springConfig);
+      scale.set(withSpring(0.98, springConfig));
     }
   };
 
   const handlePressOut = () => {
     if (!disabled) {
-      scale.value = withSpring(1, springConfig);
+      scale.set(withSpring(1, springConfig));
     }
   };
 

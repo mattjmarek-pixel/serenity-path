@@ -27,7 +27,7 @@ export function useGratitude() {
   }, []);
 
   useEffect(() => {
-    loadEntries();
+    void Promise.resolve().then(loadEntries);
   }, [loadEntries]);
 
   const saveEntry = useCallback(

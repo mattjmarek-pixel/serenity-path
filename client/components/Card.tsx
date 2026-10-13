@@ -64,11 +64,11 @@ export function Card({
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.98, springConfig);
+    scale.set(withSpring(0.98, springConfig));
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, springConfig);
+    scale.set(withSpring(1, springConfig));
   };
 
   return (

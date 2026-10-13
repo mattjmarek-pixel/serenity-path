@@ -59,7 +59,7 @@ export function useProfile() {
   }, []);
 
   useEffect(() => {
-    loadProfile();
+    void Promise.resolve().then(loadProfile);
   }, [loadProfile]);
 
   const saveProfile = useCallback(

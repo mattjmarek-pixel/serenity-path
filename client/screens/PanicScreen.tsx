@@ -137,13 +137,11 @@ export default function PanicScreen() {
     }
 
     let phaseIndex = 0;
-    setCurrentPhaseIndex(0);
 
     const runBreathCycle = () => {
       if (!breathingActive) return;
 
       const phase = BREATH_PHASES[phaseIndex];
-      setCurrentPhaseIndex(phaseIndex);
 
       if (phase.phase === "inhale") {
         breathScale.value = withTiming(1, {
@@ -214,6 +212,7 @@ export default function PanicScreen() {
 
   const toggleBreathing = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (!breathingActive) setCurrentPhaseIndex(0);
     setBreathingActive((prev) => !prev);
   };
 

@@ -13,6 +13,9 @@ module.exports = defineConfig([
       "android/*",
       "ios/*",
       ".expo/*",
+      ".cache/**",
+      ".local/**",
+      ".agents/**",
     ],
   },
   {

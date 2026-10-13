@@ -26,7 +26,7 @@ export function useStepWork() {
   }, []);
 
   useEffect(() => {
-    loadData();
+    void Promise.resolve().then(loadData);
   }, [loadData]);
 
   const saveAnswer = useCallback(

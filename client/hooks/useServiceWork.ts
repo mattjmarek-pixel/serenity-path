@@ -68,7 +68,7 @@ export function useServiceWork() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const addEntry = useCallback(
