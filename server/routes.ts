@@ -3,6 +3,7 @@ import { createServer, type Server } from "node:http";
 import { sql } from "drizzle-orm";
 import path from "node:path";
 import { z } from "zod";
+import { rateLimit } from "express-rate-limit";
 import {
   getUncachableStripeClient,
   getStripePublishableKey,
@@ -10,10 +11,6 @@ import {
 
 const createCheckoutSessionSchema = z.object({
   priceId: z.string().min(1, "priceId is required").max(255),
-});
-
-const createPortalSessionSchema = z.object({
-  customerId: z.string().min(1, "customerId is required").max(255),
 });
 
 type MeetingModality = "In-Person" | "Online" | "Hybrid";
@@ -170,6 +167,11 @@ function getBaseUrl(): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.use("/api/meetings", rateLimit({ windowMs: 60_000, limit: 30 }));
+  app.use(
+    "/api/stripe/create-checkout-session",
+    rateLimit({ windowMs: 60_000, limit: 10 }),
+  );
   app.get("/api/meetings", async (req, res) => {
     const lat = parseFloat(String(req.query.lat ?? ""));
     const lng = parseFloat(String(req.query.lng ?? ""));
@@ -202,6 +204,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/privacy", (req, res) => {
     res.sendFile(path.join(process.cwd(), "server/pages/privacy-policy.html"));
+  });
+
+  app.get("/checkout/success", (req, res) => {
+    res.sendFile(
+      path.join(process.cwd(), "server/pages/checkout-success.html"),
+    );
+  });
+
+  app.get("/checkout/cancel", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "server/pages/checkout-cancel.html"));
   });
 
   app.get("/terms", (req, res) => {
@@ -302,32 +314,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: unknown) {
       console.error("Error creating checkout session:", error);
       res.status(500).json({ error: "Failed to create checkout session" });
-    }
-  });
-
-  app.post("/api/stripe/create-portal-session", async (req, res) => {
-    try {
-      const parsed = createPortalSessionSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({
-          error: "Invalid request body",
-          details: parsed.error.flatten(),
-        });
-      }
-      const { customerId } = parsed.data;
-
-      const stripe = await getUncachableStripeClient();
-      const baseUrl = getBaseUrl();
-
-      const session = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: baseUrl,
-      });
-
-      res.json({ url: session.url });
-    } catch (error: unknown) {
-      console.error("Error creating portal session:", error);
-      res.status(500).json({ error: "Failed to create portal session" });
     }
   });
 

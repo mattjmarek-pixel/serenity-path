@@ -284,7 +284,7 @@ export default function PanicScreen() {
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            makeCall("18004574673");
+            makeCall("18006624357");
           }}
           style={({ pressed }) => [
             styles.callButton,
@@ -293,8 +293,11 @@ export default function PanicScreen() {
         >
           <Feather name="phone-call" size={24} color="#FFFFFF" />
           <View style={styles.callButtonText}>
-            <ThemedText style={styles.callLabel}>AA Helpline</ThemedText>
-            <ThemedText style={styles.callSubtext}>1-800-457-4673</ThemedText>
+            <ThemedText style={styles.callLabel}>SAMHSA Helpline</ThemedText>
+            <ThemedText style={styles.callSubtext}>1-800-662-4357</ThemedText>
+            <ThemedText style={styles.callSubtext}>
+              Free, confidential, 24/7
+            </ThemedText>
           </View>
           <Feather name="chevron-right" size={20} color="#FFFFFF" />
         </Pressable>

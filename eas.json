@@ -6,10 +6,12 @@
       "distribution": "internal"
     },
     "preview": {
+      "env": { "EXPO_PUBLIC_DOMAIN": "REPLACE_WITH_PRODUCTION_DOMAIN" },
       "distribution": "internal",
       "ios": { "simulator": false }
     },
     "production": {
+      "env": { "EXPO_PUBLIC_DOMAIN": "REPLACE_WITH_PRODUCTION_DOMAIN" },
       "autoIncrement": true,
       "ios": { "buildConfiguration": "Release" },
       "android": { "buildType": "app-bundle" }

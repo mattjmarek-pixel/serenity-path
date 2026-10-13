@@ -34,7 +34,7 @@ const MEETING_TYPES = [
   { id: "step", label: "Step Study" },
 ];
 
-const AA_HELPLINE = "18004574673";
+const SAMHSA_HELPLINE = "18006624357";
 
 function makeCall(number: string) {
   const phoneUrl = `tel:${number}`;
@@ -154,13 +154,13 @@ function CompassionModal({
 
   const handleCallSponsor = () => {
     const cleanPhone = sponsorPhone.replace(/\D/g, "");
-    makeCall(cleanPhone.length > 0 ? cleanPhone : AA_HELPLINE);
+    makeCall(cleanPhone.length > 0 ? cleanPhone : SAMHSA_HELPLINE);
   };
 
   const hasSponsor = sponsorPhone.trim().length > 0;
   const callLabel = hasSponsor
     ? `Call ${sponsorName.trim() || "My Sponsor"}`
-    : "Call AA Helpline";
+    : "Call SAMHSA Helpline";
 
   return (
     <Modal

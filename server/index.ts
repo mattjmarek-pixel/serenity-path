@@ -8,14 +8,9 @@ import * as fs from "fs";
 import * as path from "path";
 
 const app = express();
+app.set("trust proxy", 1);
 const isProduction = process.env.NODE_ENV === "production";
 const log = isProduction ? () => {} : console.log;
-
-if (isProduction && !process.env.STRIPE_SECRET_KEY) {
-  throw new Error(
-    "STRIPE_SECRET_KEY is required when NODE_ENV=production. Refusing to start.",
-  );
-}
 
 declare module "http" {
   interface IncomingMessage {
@@ -52,7 +47,7 @@ async function initStripe() {
         log("Webhook setup completed (no URL returned)");
       }
     } catch (webhookError) {
-      log("Webhook setup skipped:", webhookError);
+      console.error("Webhook setup skipped:", webhookError);
     }
 
     log("Syncing Stripe data...");
@@ -62,10 +57,10 @@ async function initStripe() {
         log("Stripe data synced");
       })
       .catch((err: Error) => {
-        log("Error syncing Stripe data:", err);
+        console.error("Error syncing Stripe data:", err);
       });
   } catch (error) {
-    log("Failed to initialize Stripe:", error);
+    console.error("Failed to initialize Stripe:", error);
   }
 }
 
@@ -269,11 +264,12 @@ function setupErrorHandler(app: express.Application) {
     };
 
     const status = error.status || error.statusCode || 500;
-    const message = error.message || "Internal Server Error";
-
+    const message =
+      status === 500
+        ? "Internal Server Error"
+        : error.message || "Internal Server Error";
+    console.error(err);
     res.status(status).json({ message });
-
-    throw err;
   });
 }
 
@@ -298,7 +294,7 @@ function setupErrorHandler(app: express.Application) {
 
         if (!Buffer.isBuffer(req.body)) {
           const errorMsg = "STRIPE WEBHOOK ERROR: req.body is not a Buffer.";
-          log(errorMsg);
+          console.error(errorMsg);
           return res.status(500).json({ error: "Webhook processing error" });
         }
 
@@ -306,7 +302,7 @@ function setupErrorHandler(app: express.Application) {
 
         res.status(200).json({ received: true });
       } catch (error: any) {
-        log("Webhook error:", error.message);
+        console.error("Webhook error:", error.message);
         res.status(400).json({ error: "Webhook processing error" });
       }
     },

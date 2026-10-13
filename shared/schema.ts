@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const users = pgTable("users", {
   id: varchar("id")

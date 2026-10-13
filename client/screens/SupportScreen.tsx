@@ -117,7 +117,7 @@ function SupportScreenInner() {
       </Pressable>
 
       <Pressable
-        onPress={() => makeCall("18004574673")}
+        onPress={() => makeCall("18006624357")}
         style={({ pressed }) => [
           styles.hotlineCard,
           { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 },
@@ -128,9 +128,12 @@ function SupportScreenInner() {
         </View>
         <View style={styles.emergencyContent}>
           <ThemedText style={styles.hotlineTitle}>
-            National AA Helpline
+            SAMHSA National Helpline
           </ThemedText>
-          <ThemedText style={styles.hotlineNumber}>1-800-457-4673</ThemedText>
+          <ThemedText style={styles.hotlineNumber}>1-800-662-4357</ThemedText>
+          <ThemedText style={styles.hotlineNumber}>
+            Free, confidential, 24/7
+          </ThemedText>
           <ThemedText style={styles.hotlineSubtext}>Tap to call</ThemedText>
         </View>
       </Pressable>

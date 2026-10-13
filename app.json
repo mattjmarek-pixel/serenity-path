@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "usesAppleSignIn": true,
       "supportsTablet": false,
       "bundleIdentifier": "com.serenitypath.app",
       "buildNumber": "1",
@@ -38,6 +39,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {

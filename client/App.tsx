@@ -35,11 +35,10 @@ export default function App() {
   const [showGreeting, setShowGreeting] = useState(true);
 
   useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+    if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
 
     const iosApiKey = Constants.expoConfig?.extra?.revenueCatIosApiKey;
-    const androidApiKey =
-      Constants.expoConfig?.extra?.revenueCatAndroidApiKey;
+    const androidApiKey = Constants.expoConfig?.extra?.revenueCatAndroidApiKey;
 
     if (Platform.OS === "ios" && iosApiKey) {
       Purchases.configure({ apiKey: iosApiKey });

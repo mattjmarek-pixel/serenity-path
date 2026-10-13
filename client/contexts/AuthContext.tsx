@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 
 const AUTH_KEY = "@serenity_path_auth";
 
@@ -36,7 +37,6 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   signInWithApple: () => Promise<boolean>;
-  signInWithGoogle: () => Promise<boolean>;
   continueAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -99,53 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [saveAuth]);
 
-  const signInWithGoogle = useCallback(async () => {
-    try {
-      const AuthSession = await import("expo-auth-session");
-      const WebBrowser = await import("expo-web-browser");
-      const Crypto = await import("expo-crypto");
-
-      WebBrowser.maybeCompleteAuthSession();
-
-      const nonce = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        Math.random().toString(),
-      );
-
-      const discovery = {
-        authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-        tokenEndpoint: "https://oauth2.googleapis.com/token",
-      };
-
-      const redirectUri = AuthSession.makeRedirectUri({
-        scheme: "serenitypath",
-      });
-
-      const request = new AuthSession.AuthRequest({
-        clientId: "google-client-id-placeholder",
-        scopes: ["openid", "profile", "email"],
-        redirectUri,
-        codeChallenge: nonce,
-      });
-
-      const result = await request.promptAsync(discovery);
-
-      if (result.type === "success") {
-        const user: AuthUser = {
-          id: `google_${Date.now()}`,
-          name: "Google User",
-          email: "",
-          provider: "google",
-        };
-        await saveAuth({ user, isGuest: false, hasCompletedOnboarding: true });
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }, [saveAuth]);
-
   const continueAsGuest = useCallback(async () => {
     await saveAuth({
       user: null,
@@ -159,17 +112,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [saveAuth]);
 
   const deleteAccount = useCallback(async () => {
-    const keysToDelete = [
-      AUTH_KEY,
-      "@serenity_path_profile",
-      "@serenity_path_journal_entries",
-      "@serenity_path_bookmarks",
-      "@serenity_path_checkins",
-      "@serenity_path_gratitude",
-      "@serenity_path_stepwork",
-      "@serenity_path_notifications",
-    ];
+    const keysToDelete = (await AsyncStorage.getAllKeys()).filter((key) =>
+      key.startsWith("@serenity_path_"),
+    );
     await AsyncStorage.multiRemove(keysToDelete);
+    if (Platform.OS !== "web") {
+      try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+      } catch (error) {
+        console.warn("Unable to cancel scheduled reminders:", error);
+      }
+    }
     setAuthState(DEFAULT_STATE);
   }, []);
 
@@ -181,7 +134,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: authState.hasCompletedOnboarding,
         isLoading,
         signInWithApple,
-        signInWithGoogle,
         continueAsGuest,
         logout,
         deleteAccount,

@@ -11,9 +11,8 @@ import { Spacing, BorderRadius } from "@/constants/theme";
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-  const { signInWithApple, signInWithGoogle, continueAsGuest } = useAuth();
+  const { signInWithApple, continueAsGuest } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
 
   const isIOS = Platform.OS === "ios";
@@ -34,25 +33,6 @@ export default function WelcomeScreen() {
       );
     } finally {
       setLoadingApple(false);
-    }
-  };
-
-  const handleSignInWithGoogle = async () => {
-    setErrorMessage(null);
-    setLoadingGoogle(true);
-    try {
-      const success = await signInWithGoogle();
-      if (!success) {
-        setErrorMessage(
-          "Google Sign-In isn't fully set up yet. Please continue without an account for now — all features are available either way.",
-        );
-      }
-    } catch {
-      setErrorMessage(
-        "Google Sign-In is not available right now. Please continue without an account.",
-      );
-    } finally {
-      setLoadingGoogle(false);
     }
   };
 
@@ -129,25 +109,6 @@ export default function WelcomeScreen() {
               </ThemedText>
             </Pressable>
           ) : null}
-
-          <Pressable
-            onPress={handleSignInWithGoogle}
-            disabled={loadingGoogle}
-            style={({ pressed }) => [
-              styles.authButton,
-              {
-                backgroundColor: theme.backgroundDefault,
-                borderColor: theme.border,
-                borderWidth: 1,
-                opacity: pressed || loadingGoogle ? 0.7 : 1,
-              },
-            ]}
-          >
-            <Feather name="mail" size={20} color={theme.text} />
-            <ThemedText style={[styles.authButtonText, { color: theme.text }]}>
-              {loadingGoogle ? "Signing in..." : "Sign in with Google"}
-            </ThemedText>
-          </Pressable>
 
           {errorMessage ? (
             <View
