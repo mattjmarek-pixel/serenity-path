@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   View,
+  ScrollView,
   StyleSheet,
   Pressable,
   useWindowDimensions,
@@ -133,95 +134,114 @@ export default function PathSelectionScreen() {
         styles.container,
         {
           backgroundColor: palette.backgroundRoot,
-          paddingTop: insets.top + Spacing.xl,
-          paddingBottom: insets.bottom + Spacing.lg,
         },
       ]}
     >
-      <View style={styles.header}>
-        <ThemedText
-          type="h1"
-          style={{ color: palette.text, textAlign: "center" }}
-        >
-          Choose Your Path
-        </ThemedText>
-        <ThemedText
-          type="small"
-          style={{
-            color: palette.textSecondary,
-            textAlign: "center",
-            marginTop: Spacing.sm,
-            paddingHorizontal: Spacing.xl,
-          }}
-        >
-          Pick the fellowship that fits your recovery. You can change this
-          anytime in Settings.
-        </ThemedText>
-      </View>
-
-      <View
-        style={[
-          styles.panelsContainer,
-          isStacked ? styles.panelsStacked : styles.panelsSideBySide,
-        ]}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingTop: insets.top + Spacing.xl,
+          paddingBottom: Spacing.lg,
+        }}
       >
-        <CommunityPanel
-          community="AA"
-          title="Alcoholics Anonymous"
-          subtitle="A fellowship for those recovering from alcohol"
-          tagline="One day at a time"
-          selected={selected === "AA"}
-          onPress={() => choose("AA")}
-          isStacked={isStacked}
-        />
+        <View style={styles.header}>
+          <ThemedText
+            type="h1"
+            style={{ color: palette.text, textAlign: "center" }}
+          >
+            Choose Your Path
+          </ThemedText>
+          <ThemedText
+            type="small"
+            style={{
+              color: palette.textSecondary,
+              textAlign: "center",
+              marginTop: Spacing.sm,
+              paddingHorizontal: Spacing.xl,
+            }}
+          >
+            Pick the fellowship that fits your recovery. You can change this
+            anytime in Settings.
+          </ThemedText>
+        </View>
 
-        <Pressable
-          onPress={() => choose("Both")}
-          style={({ pressed }) => [
-            styles.bothButton,
-            isStacked ? styles.bothButtonStacked : styles.bothButtonSide,
-            {
-              backgroundColor:
-                selected === "Both" ? palette.text : palette.backgroundDefault,
-              borderColor: selected === "Both" ? palette.text : palette.border,
-              opacity: pressed ? 0.85 : 1,
-            },
+        <View
+          style={[
+            styles.panelsContainer,
+            isStacked ? styles.panelsStacked : styles.panelsSideBySide,
           ]}
         >
-          <Feather
-            name="repeat"
-            size={18}
-            color={
-              selected === "Both" ? palette.backgroundDefault : palette.text
-            }
+          <CommunityPanel
+            community="AA"
+            title="Alcoholics Anonymous"
+            subtitle="A fellowship for those recovering from alcohol"
+            tagline="One day at a time"
+            selected={selected === "AA"}
+            onPress={() => choose("AA")}
+            isStacked={isStacked}
           />
-          <ThemedText
-            style={[
-              styles.bothButtonText,
+
+          <Pressable
+            onPress={() => choose("Both")}
+            style={({ pressed }) => [
+              styles.bothButton,
+              isStacked ? styles.bothButtonStacked : styles.bothButtonSide,
               {
-                color:
+                backgroundColor:
                   selected === "Both"
-                    ? palette.backgroundDefault
-                    : palette.text,
+                    ? palette.text
+                    : palette.backgroundDefault,
+                borderColor:
+                  selected === "Both" ? palette.text : palette.border,
+                opacity: pressed ? 0.85 : 1,
               },
             ]}
           >
-            Both
-          </ThemedText>
-        </Pressable>
+            <Feather
+              name="repeat"
+              size={18}
+              color={
+                selected === "Both" ? palette.backgroundDefault : palette.text
+              }
+            />
+            <ThemedText
+              style={[
+                styles.bothButtonText,
+                {
+                  color:
+                    selected === "Both"
+                      ? palette.backgroundDefault
+                      : palette.text,
+                },
+              ]}
+            >
+              Both
+            </ThemedText>
+          </Pressable>
 
-        <CommunityPanel
-          community="NA"
-          title="Narcotics Anonymous"
-          subtitle="A fellowship for those recovering from addiction"
-          tagline="Just for today"
-          selected={selected === "NA"}
-          onPress={() => choose("NA")}
-          isStacked={isStacked}
-        />
-      </View>
+          <CommunityPanel
+            community="NA"
+            title="Narcotics Anonymous"
+            subtitle="A fellowship for those recovering from addiction"
+            tagline="Just for today"
+            selected={selected === "NA"}
+            onPress={() => choose("NA")}
+            isStacked={isStacked}
+          />
+        </View>
+      </ScrollView>
 
-      <View style={[styles.footer, { paddingHorizontal: Spacing.xl }]}>
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingHorizontal: Spacing.xl,
+            paddingBottom: insets.bottom + Spacing.lg,
+            backgroundColor: palette.backgroundRoot,
+          },
+        ]}
+      >
         <Pressable
           onPress={confirm}
           disabled={!selected || submitting}
@@ -278,10 +298,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xl,
   },
   panelsContainer: {
-    flex: 1,
     gap: Spacing.md,
   },
   panelsSideBySide: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "stretch",
   },
