@@ -102,11 +102,7 @@ shared/           # Shared code between client/server
 
 ### Payment System
 
-- **Web**: Stripe integration for subscription payments ($1.99/month or $19.99/year)
 - **iOS/Android**: Shows "Always Free" messaging with option to share the app; no misleading IAP references
-- **Stripe Routes**:
-  - `GET /api/stripe/prices` - Fetch subscription prices
-  - `POST /api/stripe/create-checkout-session` - Create checkout session
 
 ### Legal Compliance
 
@@ -130,7 +126,7 @@ shared/           # Shared code between client/server
 11. **12 Steps & Traditions**: Expandable reference library with reflection tracking and step work progress
 12. **Journal**: Mood-tagged personal entries (persisted to AsyncStorage)
 13. **Support Resources**: Emergency contacts, sponsor management, crisis hotlines
-14. **Support Us**: Platform-aware donation page (Stripe for web, "Always Free" + Share on native)
+14. **Support Us**: "Always Free" messaging, Contact Us, and Share
 15. **Meeting Finder**: GPS-based search for nearby AA meeting venues using Google Places API, plus resource hub linking to AA Meeting Guide, Online Intergroup, and InTheRooms with meeting tips for newcomers. Native cards show venue name, address, and distance; tapping opens Google Maps for directions and meeting times. Falls back to WebView (aa.org) on connection failures or when the API key is missing.
 16. **Push Notifications**: Configurable daily reminders for reflections, check-ins, and gratitude (mobile only)
 17. **Audio Resources**: Colorful resource hub linking to Big Book audio, 12 Steps & 12 Traditions audio, Joe and Charlie Big Book Study, and Living Sober audio on official AA and community sites

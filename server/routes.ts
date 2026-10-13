@@ -1,17 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "node:http";
-import { sql } from "drizzle-orm";
 import path from "node:path";
-import { z } from "zod";
 import { rateLimit } from "express-rate-limit";
-import {
-  getUncachableStripeClient,
-  getStripePublishableKey,
-} from "./stripeClient";
-
-const createCheckoutSessionSchema = z.object({
-  priceId: z.string().min(1, "priceId is required").max(255),
-});
 
 type MeetingModality = "In-Person" | "Online" | "Hybrid";
 
@@ -159,19 +149,8 @@ async function fetchMeetingsFromPlaces(
   }
 }
 
-function getBaseUrl(): string {
-  return (
-    process.env.APP_URL ||
-    `https://${process.env.REPLIT_DOMAINS?.split(",")[0]}`
-  );
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/meetings", rateLimit({ windowMs: 60_000, limit: 30 }));
-  app.use(
-    "/api/stripe/create-checkout-session",
-    rateLimit({ windowMs: 60_000, limit: 10 }),
-  );
   app.get("/api/meetings", async (req, res) => {
     const lat = parseFloat(String(req.query.lat ?? ""));
     const lng = parseFloat(String(req.query.lng ?? ""));
@@ -206,117 +185,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), "server/pages/privacy-policy.html"));
   });
 
-  app.get("/checkout/success", (req, res) => {
-    res.sendFile(
-      path.join(process.cwd(), "server/pages/checkout-success.html"),
-    );
-  });
-
-  app.get("/checkout/cancel", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "server/pages/checkout-cancel.html"));
-  });
-
   app.get("/terms", (req, res) => {
     res.sendFile(
       path.join(process.cwd(), "server/pages/terms-of-service.html"),
     );
   });
-  app.get("/api/stripe/publishable-key", async (req, res) => {
-    try {
-      const publishableKey = await getStripePublishableKey();
-      res.json({ publishableKey });
-    } catch (error: unknown) {
-      console.error("Error getting publishable key:", error);
-      res.status(500).json({ error: "Failed to get Stripe configuration" });
-    }
-  });
-
-  app.get("/api/stripe/prices", async (req, res) => {
-    try {
-      const stripe = await getUncachableStripeClient();
-
-      const products = await stripe.products.search({
-        query: "name:'Serenity Path Supporter'",
-      });
-
-      if (products.data.length === 0) {
-        return res.json({ prices: [] });
-      }
-
-      const product = products.data[0];
-      const prices = await stripe.prices.list({
-        product: product.id,
-        active: true,
-      });
-
-      const formattedPrices = prices.data.map((price) => ({
-        id: price.id,
-        unitAmount: price.unit_amount,
-        currency: price.currency,
-        interval: price.recurring?.interval,
-        productId: product.id,
-        productName: product.name,
-      }));
-
-      res.json({ prices: formattedPrices });
-    } catch (error: unknown) {
-      console.error("Error fetching prices:", error);
-      res.status(500).json({ error: "Failed to fetch prices" });
-    }
-  });
-
-  app.post("/api/stripe/create-checkout-session", async (req, res) => {
-    try {
-      const parsed = createCheckoutSessionSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({
-          error: "Invalid request body",
-          details: parsed.error.flatten(),
-        });
-      }
-      const { priceId } = parsed.data;
-
-      const stripe = await getUncachableStripeClient();
-
-      const price = await stripe.prices.retrieve(priceId, {
-        expand: ["product"],
-      });
-      const product = price.product as {
-        name?: string;
-        metadata?: Record<string, string>;
-      };
-
-      if (!product || product.name !== "Serenity Path Supporter") {
-        return res.status(400).json({ error: "Invalid price selected" });
-      }
-
-      if (!price.active) {
-        return res.status(400).json({ error: "Price is no longer available" });
-      }
-
-      const baseUrl = getBaseUrl();
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        mode: "subscription",
-        success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/checkout/cancel`,
-        allow_promotion_codes: true,
-      });
-
-      res.json({ url: session.url });
-    } catch (error: unknown) {
-      console.error("Error creating checkout session:", error);
-      res.status(500).json({ error: "Failed to create checkout session" });
-    }
-  });
-
   const httpServer = createServer(app);
 
   return httpServer;

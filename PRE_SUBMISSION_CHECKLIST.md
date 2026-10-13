@@ -3,8 +3,6 @@
 ## Environment & Config
 
 - [ ] DATABASE_URL set in production environment
-- [ ] STRIPE_SECRET_KEY set in production environment (server only)
-- [ ] EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY set (client-safe)
 - [ ] Google Places API key restricted to app bundle ID
 - [ ] EAS Project ID set in app.json
 - [ ] Apple Team ID set in eas.json

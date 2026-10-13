@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
   Pressable,
   Linking,
-  ActivityIndicator,
-  Alert,
   Platform,
   ScrollView,
   Share,
@@ -13,13 +11,11 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
-import * as WebBrowser from "expo-web-browser";
-import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
-import { apiRequest, getApiUrl } from "@/lib/query-client";
+import { getApiUrl } from "@/lib/query-client";
 
 const PERSONAL_MESSAGE = `Friends,
 
@@ -34,68 +30,10 @@ More than anything, I am grateful for the opportunity to share something that ha
 With gratitude,
 Matt M.`;
 
-interface StripePrice {
-  id: string;
-  unitAmount: number;
-  currency: string;
-  interval: string;
-  productId: string;
-  productName: string;
-}
-
-const isNativePlatform = Platform.OS === "ios" || Platform.OS === "android";
-
 export default function SupportUsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
-
-  const { data: pricesData, isLoading: pricesLoading } = useQuery<{
-    prices: StripePrice[];
-  }>({
-    queryKey: ["/api/stripe/prices"],
-    enabled: !isNativePlatform,
-  });
-
-  const checkoutMutation = useMutation({
-    mutationFn: async (priceId: string) => {
-      const response = await apiRequest(
-        "POST",
-        "/api/stripe/create-checkout-session",
-        { priceId },
-      );
-      return response.json();
-    },
-    onSuccess: async (data: { url: string }) => {
-      if (data.url) {
-        if (Platform.OS === "web") {
-          window.location.href = data.url;
-        } else {
-          await WebBrowser.openBrowserAsync(data.url);
-        }
-      }
-      setLoadingPriceId(null);
-    },
-    onError: (error: Error) => {
-      setLoadingPriceId(null);
-      Alert.alert("Error", "Failed to start checkout. Please try again.");
-    },
-  });
-
-  const handleSupport = (priceId: string) => {
-    setLoadingPriceId(priceId);
-    checkoutMutation.mutate(priceId);
-  };
-
-  const handleRestorePurchases = () => {
-    Alert.alert(
-      "Restore Purchases",
-      "If you have an existing subscription, please contact support with your email address to restore your supporter status.",
-      [{ text: "OK" }],
-    );
-  };
-
   const handleContactSupport = () => {
     Linking.openURL(
       "mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support",
@@ -113,14 +51,6 @@ export default function SupportUsScreen() {
         title: "Serenity Path",
       });
     } catch {}
-  };
-
-  const monthlyPrice = pricesData?.prices?.find((p) => p.interval === "month");
-  const yearlyPrice = pricesData?.prices?.find((p) => p.interval === "year");
-
-  const formatPrice = (unitAmount: number, interval: string) => {
-    const amount = (unitAmount / 100).toFixed(2);
-    return `$${amount} / ${interval}`;
   };
 
   const renderNativePaymentSection = () => (
@@ -173,9 +103,8 @@ export default function SupportUsScreen() {
         <ThemedText
           style={[styles.nativeCardText, { color: theme.textSecondary }]}
         >
-          Voluntary donations to help cover maintenance costs are available
-          through the web version of the app. Your support is appreciated but
-          never expected.
+          If you'd like to help cover the costs of keeping Serenity Path
+          running, reach out. Your support is appreciated but never expected.
         </ThemedText>
         <Pressable
           style={[
@@ -245,64 +174,6 @@ export default function SupportUsScreen() {
     </View>
   );
 
-  const renderWebPaymentSection = () => (
-    <View style={styles.buttonsSection}>
-      {pricesLoading ? (
-        <ActivityIndicator
-          size="large"
-          color={theme.primary}
-          style={{ marginVertical: Spacing.xl }}
-        />
-      ) : (
-        <>
-          <Pressable
-            style={[
-              styles.primaryButton,
-              { backgroundColor: theme.primary },
-              loadingPriceId === monthlyPrice?.id && styles.buttonDisabled,
-            ]}
-            onPress={() => monthlyPrice && handleSupport(monthlyPrice.id)}
-            disabled={!monthlyPrice || loadingPriceId !== null}
-          >
-            {loadingPriceId === monthlyPrice?.id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <ThemedText style={styles.buttonText}>
-                {monthlyPrice
-                  ? formatPrice(monthlyPrice.unitAmount, "month")
-                  : "$1.99 / month"}
-              </ThemedText>
-            )}
-          </Pressable>
-
-          <ThemedText style={[styles.orText, { color: theme.textSecondary }]}>
-            or
-          </ThemedText>
-
-          <Pressable
-            style={[
-              styles.primaryButton,
-              { backgroundColor: theme.primary },
-              loadingPriceId === yearlyPrice?.id && styles.buttonDisabled,
-            ]}
-            onPress={() => yearlyPrice && handleSupport(yearlyPrice.id)}
-            disabled={!yearlyPrice || loadingPriceId !== null}
-          >
-            {loadingPriceId === yearlyPrice?.id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <ThemedText style={styles.buttonText}>
-                {yearlyPrice
-                  ? formatPrice(yearlyPrice.unitAmount, "year")
-                  : "$19.99 / year"}
-              </ThemedText>
-            )}
-          </Pressable>
-        </>
-      )}
-    </View>
-  );
-
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
@@ -335,9 +206,7 @@ export default function SupportUsScreen() {
         </ThemedText>
       </View>
 
-      {isNativePlatform
-        ? renderNativePaymentSection()
-        : renderWebPaymentSection()}
+      {renderNativePaymentSection()}
 
       <View style={styles.linksContainer}>
         <Pressable
@@ -366,17 +235,6 @@ export default function SupportUsScreen() {
           </ThemedText>
         </Pressable>
       </View>
-
-      {!isNativePlatform ? (
-        <Pressable
-          onPress={handleRestorePurchases}
-          style={styles.restoreButton}
-        >
-          <ThemedText style={[styles.restoreText, { color: theme.primary }]}>
-            Restore Purchases
-          </ThemedText>
-        </Pressable>
-      ) : null}
     </ScrollView>
   );
 }
@@ -455,17 +313,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
   },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "600",
-  },
-  orText: {
-    fontSize: 14,
-    marginVertical: Spacing.sm,
   },
   linksContainer: {
     flexDirection: "row",
@@ -477,13 +328,5 @@ const styles = StyleSheet.create({
   },
   linkSeparator: {
     fontSize: 14,
-  },
-  restoreButton: {
-    marginTop: Spacing.lg,
-    padding: Spacing.sm,
-  },
-  restoreText: {
-    fontSize: 16,
-    fontWeight: "500",
   },
 });
