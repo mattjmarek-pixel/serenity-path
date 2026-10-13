@@ -182,7 +182,7 @@ function SobrietyChip({ chip, earned, isNext, progress, index }: ChipProps) {
         {isNext ? (
           <Animated.View
             style={[
-              StyleSheet.absoluteFillObject,
+              StyleSheet.absoluteFill,
               { backgroundColor: theme.primary, borderRadius: BorderRadius.md },
               nextGlowStyle,
             ]}

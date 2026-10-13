@@ -46,7 +46,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const colorScheme: "light" | "dark" =
-    themeMode === "system" ? (deviceColorScheme ?? "light") : themeMode;
+    themeMode === "system"
+      ? deviceColorScheme === "dark"
+        ? "dark"
+        : "light"
+      : themeMode;
 
   if (!isLoaded) {
     return null;
