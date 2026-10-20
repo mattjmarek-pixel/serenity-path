@@ -41,10 +41,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/open-horizon-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#7B3FF2",
+          "backgroundColor": "#002C30",
           "dark": {
             "backgroundColor": "#0D1520"
           }
