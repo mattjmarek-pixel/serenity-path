@@ -4,7 +4,7 @@
     "slug": "serenity-path",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/open-horizon-icon.png",
     "scheme": "serenitypath",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#7B3FF2",
-        "foregroundImage": "./assets/images/icon.png"
+        "backgroundColor": "#002C30",
+        "foregroundImage": "./assets/images/open-horizon-adaptive.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.serenitypath.app",
