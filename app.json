@@ -14,7 +14,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Serenity Path uses your location to find nearby AA/NA meetings.",
-        "NSUserNotificationsUsageDescription": "Serenity Path sends daily reminders for reflections, check-ins, and gratitude practice."
+        "NSUserNotificationsUsageDescription": "Serenity Path sends daily reminders for reflections, check-ins, and gratitude practice.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
