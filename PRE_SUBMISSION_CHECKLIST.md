@@ -45,6 +45,6 @@
 - [ ] npm test passes
 - [ ] Production build tested on real iOS device via TestFlight
 - [ ] Production build tested on real Android device via Internal Testing
-- [ ] Crisis phone numbers (988, AA hotline) verified and dialable
+- [ ] Crisis phone numbers (988, SAMHSA National Helpline) verified and dialable
 - [ ] Push notifications tested on real device
 - [ ] Meeting finder tested with real GPS location

@@ -23,8 +23,6 @@ I began developing this app out of a simple need, one many of us share, to have 
 
 This app was created so that anyone, anywhere, can have recovery resources readily available, free from ads or distractions. My hope is that it serves as a quiet companion in moments of strength, struggle, and reflection.
 
-If you find value in using the app and choose to support its continued maintenance and improvement, that support is appreciated and entirely voluntary. The app will always remain free to use, and there is no expectation or obligation to contribute.
-
 More than anything, I am grateful for the opportunity to share something that has been meaningful in my own recovery.
 
 With gratitude,
@@ -92,19 +90,19 @@ export default function SupportUsScreen() {
         ]}
       >
         <Feather
-          name="globe"
+          name="message-circle"
           size={28}
           color={theme.primary}
           style={styles.nativeCardIcon}
         />
         <ThemedText style={[styles.nativeCardTitle, { color: theme.text }]}>
-          Want to Contribute?
+          Questions or Feedback?
         </ThemedText>
         <ThemedText
           style={[styles.nativeCardText, { color: theme.textSecondary }]}
         >
-          If you'd like to help cover the costs of keeping Serenity Path
-          running, reach out. Your support is appreciated but never expected.
+          Have a question, found a bug, or have an idea for the app? I'd love to
+          hear from you.
         </ThemedText>
         <Pressable
           style={[
