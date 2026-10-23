@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Pressable,
   Linking,
-  Platform,
   ScrollView,
   Share,
 } from "react-native";
@@ -42,10 +41,7 @@ export default function SupportUsScreen() {
     try {
       await Share.share({
         message:
-          Platform.OS === "ios"
-            ? "Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more."
-            : "Check out Serenity Path — a free recovery companion app with daily reflections, step work, and more. https://serenitypath.app",
-        url: "https://serenitypath.app",
+          "Check out Serenity Path, a free recovery companion app with daily reflections, step work, and more. Search for Serenity Path in the App Store or Google Play.",
         title: "Serenity Path",
       });
     } catch {}
