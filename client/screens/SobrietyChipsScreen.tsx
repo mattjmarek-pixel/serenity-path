@@ -291,7 +291,7 @@ export default function SobrietyChipsScreen() {
 
   const sobrietyDays = getSobrietyDays() ?? 0;
 
-  const { earnedChips, nextChip, totalEarned } = useMemo(() => {
+  const { nextChip, totalEarned } = useMemo(() => {
     const earned = SOBRIETY_CHIPS.filter((c) => sobrietyDays >= c.days);
     const next = SOBRIETY_CHIPS.find((c) => sobrietyDays < c.days) || null;
     return { earnedChips: earned, nextChip: next, totalEarned: earned.length };

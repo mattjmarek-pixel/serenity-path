@@ -20,7 +20,7 @@ export function useGratitude() {
       if (stored) {
         setEntries(JSON.parse(stored));
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +45,7 @@ export function useGratitude() {
         await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
         setEntries(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -64,7 +64,7 @@ export function useGratitude() {
         await AsyncStorage.setItem(GRATITUDE_KEY, JSON.stringify(updated));
         setEntries(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

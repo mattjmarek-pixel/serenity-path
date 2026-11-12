@@ -19,7 +19,7 @@ export function useStepWork() {
       if (stored) {
         setStepWorkData(JSON.parse(stored));
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +55,7 @@ export function useStepWork() {
         await AsyncStorage.setItem(STEPWORK_KEY, JSON.stringify(updated));
         setStepWorkData(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

@@ -283,7 +283,7 @@ export default function NotificationSettingsScreen() {
                 onPress={async () => {
                   try {
                     await Linking.openSettings();
-                  } catch (e) {}
+                  } catch {}
                 }}
                 style={[
                   styles.settingsButton,

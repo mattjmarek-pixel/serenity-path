@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
-import { useCheckIn, MOOD_OPTIONS, CheckIn } from "@/hooks/useCheckIn";
+import { useCheckIn, MOOD_OPTIONS } from "@/hooks/useCheckIn";
 import { Spacing, BorderRadius } from "@/constants/theme";
 
 const RANGE_OPTIONS = [
@@ -33,7 +33,7 @@ function formatDate(dateStr: string): string {
 export default function MoodHistoryScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-  const { getCheckInsForRange, getAverageMood, checkIns } = useCheckIn();
+  const { getCheckInsForRange, getAverageMood } = useCheckIn();
   const [selectedRange, setSelectedRange] = useState(7);
 
   const rangeData = useMemo(

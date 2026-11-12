@@ -124,7 +124,7 @@ export function useNotifications() {
       if (stored) {
         setPrefs({ ...DEFAULT_PREFS, ...JSON.parse(stored) });
       }
-    } catch (e) {
+    } catch {
     } finally {
       setIsLoading(false);
     }

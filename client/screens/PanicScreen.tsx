@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   Linking,
-  Platform,
   Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,11 +17,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withRepeat,
-  withSequence,
   Easing,
   cancelAnimation,
-  runOnJS,
 } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -119,14 +115,6 @@ export default function PanicScreen() {
       });
   };
 
-  const advancePhase = useCallback(
-    (index: number) => {
-      if (!breathingActive) return;
-      setCurrentPhaseIndex(index);
-    },
-    [breathingActive],
-  );
-
   useEffect(() => {
     if (!breathingActive) {
       cancelAnimation(breathScale);
@@ -167,15 +155,9 @@ export default function PanicScreen() {
     };
 
     runBreathCycle();
-    const totalCycleDuration = BREATH_PHASES.reduce(
-      (sum, p) => sum + p.duration,
-      0,
-    );
-    let elapsed = 0;
     let currentPhase = 0;
 
     const interval = setInterval(() => {
-      elapsed += BREATH_PHASES[currentPhase].duration;
       currentPhase = (currentPhase + 1) % BREATH_PHASES.length;
 
       const phase = BREATH_PHASES[currentPhase];

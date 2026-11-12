@@ -1,5 +1,3 @@
-import { Platform } from "react-native";
-
 export type CommunityType = "AA" | "NA";
 
 export const RECOVERY_PALETTE = {

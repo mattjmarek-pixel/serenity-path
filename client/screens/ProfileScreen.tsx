@@ -133,7 +133,7 @@ export default function ProfileScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { profile, loadProfile, getSobrietyDays } = useProfile();
-  const { user, isGuest, logout, deleteAccount } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
   const [showPathPicker, setShowPathPicker] = useState(false);
 
   useFocusEffect(

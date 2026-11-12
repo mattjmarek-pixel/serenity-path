@@ -48,7 +48,7 @@ export function useFourthStep() {
       if (stored) {
         setData(JSON.parse(stored));
       }
-    } catch (_) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ export function useFourthStep() {
       await AsyncStorage.setItem(FOURTH_STEP_KEY, JSON.stringify(updated));
       setData(updated);
       return true;
-    } catch (_) {
+    } catch {
       return false;
     }
   }, []);

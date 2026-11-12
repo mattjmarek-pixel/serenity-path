@@ -13,7 +13,7 @@ export function useBookmarks() {
       if (stored) {
         setBookmarked(new Set(JSON.parse(stored)));
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +35,7 @@ export function useBookmarks() {
         await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...newSet]));
         setBookmarked(newSet);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

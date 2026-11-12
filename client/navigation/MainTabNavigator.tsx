@@ -2,13 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import {
-  Platform,
-  StyleSheet,
-  View,
-  Pressable,
-  GestureResponderEvent,
-} from "react-native";
+import { Platform, StyleSheet, View, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
@@ -16,7 +10,6 @@ import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
 import ReflectionsStackNavigator from "@/navigation/ReflectionsStackNavigator";
 import StepsStackNavigator from "@/navigation/StepsStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export type MainTabParamList = {

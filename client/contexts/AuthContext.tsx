@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (stored) {
           setAuthState(JSON.parse(stored));
         }
-      } catch (e) {
+      } catch {
       } finally {
         setIsLoading(false);
       }

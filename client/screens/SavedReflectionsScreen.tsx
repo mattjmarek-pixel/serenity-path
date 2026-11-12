@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -13,9 +12,8 @@ import { DAILY_REFLECTIONS, DailyReflection } from "@/constants/reflections";
 
 export default function SavedReflectionsScreen() {
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
-  const { bookmarked, toggleBookmark, isBookmarked } = useBookmarks();
+  const { isBookmarked } = useBookmarks();
 
   const savedReflections = DAILY_REFLECTIONS.filter((r) =>
     isBookmarked(`reflection_${r.id}`),

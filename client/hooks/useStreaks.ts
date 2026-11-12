@@ -121,7 +121,7 @@ export function useStreaks() {
       } else {
         setGratitudeStreak({ current: 0, longest: 0, lastDate: null });
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }

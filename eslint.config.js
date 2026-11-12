@@ -8,6 +8,7 @@ module.exports = defineConfig([
     ignores: [
       "dist/*",
       "server_dist/*",
+      "static-build/**",
       "web-build/*",
       "attached_assets/*",
       "android/*",

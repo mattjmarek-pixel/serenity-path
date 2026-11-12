@@ -21,7 +21,7 @@ export function useJournal() {
       if (stored) {
         setEntries(JSON.parse(stored));
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +43,7 @@ export function useJournal() {
         await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
         setEntries(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -59,7 +59,7 @@ export function useJournal() {
         await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
         setEntries(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -73,7 +73,7 @@ export function useJournal() {
         await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updated));
         setEntries(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

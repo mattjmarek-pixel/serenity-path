@@ -52,7 +52,7 @@ export function useProfile() {
       } else if (legacyName) {
         setProfile({ ...DEFAULT_PROFILE, name: legacyName });
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export function useProfile() {
         await AsyncStorage.setItem(USER_NAME_KEY, newProfile.name);
         setProfile(newProfile);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

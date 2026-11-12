@@ -57,7 +57,7 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
           setIsEditingName(true);
           setShouldShow(true);
         }
-      } catch (error) {
+      } catch {
         onDismiss();
       }
     };
@@ -75,7 +75,7 @@ export function DailyGreeting({ onDismiss }: DailyGreetingProps) {
         );
         setUserName(nameInput.trim());
         setIsEditingName(false);
-      } catch (error) {}
+      } catch {}
     }
   };
 

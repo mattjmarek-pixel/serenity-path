@@ -1,16 +1,9 @@
 import React, { useState, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, StyleSheet, Pressable, TextInput } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
@@ -123,7 +116,6 @@ const STEP_TITLES: { [step: number]: string } = {
 
 export default function StepWorkScreen() {
   const route = useRoute<any>();
-  const navigation = useNavigation();
   const { theme } = useTheme();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();

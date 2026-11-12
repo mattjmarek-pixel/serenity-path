@@ -39,7 +39,7 @@ export function useCheckIn() {
       if (stored) {
         setCheckIns(JSON.parse(stored));
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +81,7 @@ export function useCheckIn() {
         await AsyncStorage.setItem(CHECKIN_KEY, JSON.stringify(updated));
         setCheckIns(updated);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

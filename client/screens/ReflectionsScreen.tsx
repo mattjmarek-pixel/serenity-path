@@ -18,7 +18,7 @@ export default function ReflectionsScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(getTodayIndex);
-  const { bookmarked, toggleBookmark, isBookmarked } = useBookmarks();
+  const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentReflection = DAILY_REFLECTIONS[currentIndex];
 
