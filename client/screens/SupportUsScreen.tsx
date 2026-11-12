@@ -14,6 +14,7 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import { SUPPORT_EMAIL } from "@/constants/contact";
 import { getApiUrl } from "@/lib/query-client";
 
 const PERSONAL_MESSAGE = `Friends,
@@ -33,7 +34,7 @@ export default function SupportUsScreen() {
   const { theme } = useTheme();
   const handleContactSupport = () => {
     Linking.openURL(
-      "mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20Support",
+      `mailto:${SUPPORT_EMAIL}?subject=Serenity%20Path%20Support`,
     );
   };
 

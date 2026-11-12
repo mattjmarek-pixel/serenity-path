@@ -109,7 +109,7 @@ shared/           # Shared code between client/server
 - **Privacy Policy**: Available at `/privacy`
 - **Terms of Service**: Available at `/terms`
 - **AA Disclaimer**: Displayed in Profile screen footer
-- **Support Contact**: Mattjmarek@gmail.com
+- **Support Contact**: mm.appsupport@gmail.com
 
 ### Key Features
 

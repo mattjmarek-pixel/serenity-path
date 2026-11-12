@@ -23,6 +23,7 @@ import { useCommunity, CommunityPath } from "@/contexts/CommunityContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { Spacing, BorderRadius } from "@/constants/theme";
+import { SUPPORT_EMAIL } from "@/constants/contact";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { getApiUrl } from "@/lib/query-client";
 
@@ -435,7 +436,7 @@ export default function ProfileScreen() {
           label="Help & Support"
           onPress={() => {
             Linking.openURL(
-              "mailto:Mattjmarek@gmail.com?subject=Serenity%20Path%20-%20Help%20%26%20Support",
+              `mailto:${SUPPORT_EMAIL}?subject=Serenity%20Path%20-%20Help%20%26%20Support`,
             );
           }}
         />
